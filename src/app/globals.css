@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --chicago: #1E5631;
+  --chicago-dark: #143D22;
+  --carbon: #1C1C1C;
+  --ladrillo: #B5502D;
+  --ladrillo-dark: #973F20;
+  --cuero: #8B5E3C;
+  --pampa: #F3E9D2;
+  --pampa-deep: #E7D9BA;
+  --pampa-surface: #FBF6EA;
+  --pampa-border: #D6C4A1;
+  --celeste: #6FA8DC;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--pampa);
+  color: var(--carbon);
+  font-family: var(--font-jakarta), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Textura sutil de calidez editorial sobre fondo Crema Pampa */
+.bg-pampa-texture {
+  background-color: #F3E9D2;
+  background-image:
+    radial-gradient(at 15% 15%, rgba(181, 80, 45, 0.06) 0px, transparent 50%),
+    radial-gradient(at 88% 12%, rgba(30, 86, 49, 0.07) 0px, transparent 48%),
+    radial-gradient(at 50% 85%, rgba(139, 94, 60, 0.06) 0px, transparent 55%);
+}
+
+/* Marquee continuo en barra superior (pausa al pasar el mouse) */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 36s linear infinite;
+}
+
+.marquee-wrapper:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Aparición suave */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-float-gentle {
+  animation: floatGentle 5.5s ease-in-out infinite;
+}
+
+/* Respeto por preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .animate-float-gentle,
+  .animate-fade-up {
+    animation: none !important;
+  }
+}

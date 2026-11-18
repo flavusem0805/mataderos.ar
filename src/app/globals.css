@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  --font-jakarta: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --chicago: #1E5631;
   --chicago-dark: #143D22;
   --carbon: #1C1C1C;

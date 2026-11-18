@@ -1,40 +1,5 @@
 import type { Metadata } from 'next';
-import {
-  Big_Shoulders,
-  Fraunces,
-  IBM_Plex_Mono,
-  Source_Sans_3
-} from 'next/font/google';
 import './globals.css';
-
-const bigShoulders = Big_Shoulders({
-  subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-display',
-  display: 'swap'
-});
-
-const fraunces = Fraunces({
-  subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-serif',
-  display: 'swap'
-});
-
-const sourceSans = Source_Sans_3({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-sans',
-  display: 'swap'
-});
-
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-mono',
-  display: 'swap'
-});
 
 export const metadata: Metadata = {
   title: 'Mataderos.ar — Comunidad Barrial, Noticias y Guía de Comercios',
@@ -48,10 +13,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es-AR"
-      className={`${bigShoulders.variable} ${fraunces.variable} ${sourceSans.variable} ${ibmPlexMono.variable}`}
-    >
+    <html lang="es-AR">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-screen bg-pampa font-sans text-carbon antialiased">{children}</body>
     </html>
   );

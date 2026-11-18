@@ -57,7 +57,7 @@ export async function fetchBusinesses(): Promise<Business[]> {
     hasSubdomain: Boolean(row.has_subdomain),
     featured: Boolean(row.featured),
     heroImage: String(row.hero_image),
-    emoji: '📍',
+    emoji: '',
     yearsInNeighborhood: 'Comercio de Mataderos',
     paymentMethods: 'Consultar medios de pago',
     services: Array.isArray(row.services) ? row.services : [],

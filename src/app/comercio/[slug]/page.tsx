@@ -1,17 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import {
-  ArrowLeft,
-  BadgeCheck,
-  Clock,
-  CreditCard,
-  Globe,
-  Lock,
-  MapPin,
-  MessageCircle,
-  Phone,
-  Star
-} from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, MapPin, Phone, Star } from 'lucide-react';
 import { BUSINESSES } from '@/lib/data';
 import { fetchBusinessBySlug } from '@/lib/supabase';
 
@@ -26,7 +16,7 @@ export async function generateMetadata({ params }: CommercePageProps) {
     return { title: 'Comercio no encontrado · Mataderos.ar' };
   }
   return {
-    title: `${business.name} — ${business.slug}.mataderos.ar`,
+    title: `${business.name} — Web Oficial · ${business.slug}.mataderos.ar`,
     description: business.description
   };
 }
@@ -40,43 +30,44 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
   }
 
   const demoSubdomains = BUSINESSES.filter((b) => b.hasSubdomain);
-  const mapsQuery = encodeURIComponent(`${business.address}, Mataderos, Ciudad Autónoma de Buenos Aires`);
+  const mapsQuery = encodeURIComponent(
+    `${business.address}, Mataderos, Ciudad Autónoma de Buenos Aires`
+  );
 
   return (
-    <div className="min-h-screen flex flex-col bg-pampa-texture text-carbon">
+    <div className="min-h-screen flex flex-col bg-pampa text-carbon">
       {/* =========================================================
-          BARRA SIMULADORA DE SUBDOMINIO MULTI-TENANT
+          BARRA DE SUBDOMINIO MULTI-TENANT
          ========================================================= */}
-      <div className="bg-carbon text-pampa border-b border-white/10 py-2.5 sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-between gap-3">
+      <div
+        data-surface="dark"
+        className="bg-carbon text-pampa border-b border-pampa/20 sticky top-0 z-50"
+      >
+        <div className="editorial-container min-h-[56px] py-2 flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+            className="min-h-[48px] inline-flex items-center gap-2 px-3 border border-pampa/30 text-pampa text-[1rem] font-medium hover:bg-pampa hover:text-carbon color-field"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
             Volver al Portal Mataderos
           </Link>
 
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-800 border border-white/10 text-xs font-mono text-white">
-            <Lock className="w-3.5 h-3.5 text-emerald-400" />
-            <span>
-              https://<strong className="text-celeste">{business.slug}</strong>.mataderos.ar
-            </span>
-          </div>
+          <p className="font-mono type-meta text-pampa">
+            Web Oficial · {business.slug}.mataderos.ar
+          </p>
 
-          <div className="hidden md:flex items-center gap-1.5 text-[11px]">
-            <span className="text-pampa/60 font-bold mr-1">Probar otros:</span>
+          <div className="hidden lg:flex items-center gap-2">
             {demoSubdomains.map((item) => (
               <Link
                 key={item.slug}
                 href={`/comercio/${item.slug}`}
-                className={`px-2.5 py-1 rounded-md font-bold transition-colors ${
+                className={`min-h-[48px] px-3 inline-flex items-center font-mono text-[0.95rem] border color-field ${
                   item.slug === business.slug
-                    ? 'bg-ladrillo text-white'
-                    : 'bg-white/10 text-pampa/80 hover:bg-white/20'
+                    ? 'bg-pampa text-carbon border-pampa font-semibold'
+                    : 'border-pampa/25 text-pampa/85 hover:border-pampa'
                 }`}
               >
-                {item.emoji} {item.name.split(' ')[0]}
+                {item.slug}
               </Link>
             ))}
           </div>
@@ -84,115 +75,108 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
       </div>
 
       {/* =========================================================
-          HEADER DEL COMERCIO (VERDE CHICAGO)
+          HEADER DEL COMERCIO — VERDE CHICAGO #1E5631
          ========================================================= */}
-      <header className="bg-chicago text-white border-b border-chicago-dark shadow-md">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center text-2xl shadow-inner">
-              {business.emoji}
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-1">
-                <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-pampa">
-                  <BadgeCheck className="w-3.5 h-3.5 text-celeste" />
-                  Comercio Verificado en Mataderos
-                </span>
+      <header data-surface="dark" className="bg-chicago text-pampa border-b border-pampa/20">
+        <div className="editorial-container py-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="font-mono type-meta text-pampa/90 mb-2">
+              {business.isOpenNow && (
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${
-                    business.isOpenNow
-                      ? 'bg-emerald-100 text-emerald-950'
-                      : 'bg-stone-200 text-stone-800'
-                  }`}
-                >
-                  {business.isOpenNow && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                  )}
-                  {business.hoursSummary}
-                </span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                {business.name}
-              </h1>
-            </div>
+                  className="inline-block w-2 h-2 rounded-full bg-pampa mr-2 align-middle"
+                  aria-hidden="true"
+                />
+              )}
+              Comercio verificado en Mataderos · {business.hoursSummary}
+            </p>
+            <h1 className="font-display type-h1 font-semibold uppercase">
+              {business.name}
+            </h1>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-3">
             <a
               href="#horarios"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-white/25 text-white text-xs font-bold hover:bg-white/10 transition-colors"
+              className="min-h-[48px] px-5 inline-flex items-center border border-pampa/40 text-pampa font-medium text-[1rem] hover:bg-pampa hover:text-chicago color-field"
             >
-              <Clock className="w-3.5 h-3.5" />
               Ver horarios
             </a>
-            <a
-              href={`https://wa.me/${business.whatsapp}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-ladrillo hover:bg-ladrillo-dark text-white text-xs sm:text-sm font-extrabold shadow-sm transition-colors"
-            >
-              <MessageCircle className="w-4 h-4" />
-              Contactar por WhatsApp
-            </a>
+            {Boolean(business.whatsapp.trim()) && (
+              <a
+                href={`https://wa.me/${business.whatsapp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-h-[48px] px-5 inline-flex items-center gap-2 bg-pampa text-chicago font-semibold text-[1rem] hover:bg-pampa-deep color-field"
+              >
+                WhatsApp
+                <ArrowUpRight className="w-4 h-4" strokeWidth={1.5} />
+              </a>
+            )}
           </div>
         </div>
       </header>
 
-      {/* =========================================================
-          HERO DEL COMERCIO
-         ========================================================= */}
       <main className="flex-1">
-        <section className="py-12 md:py-16 border-b border-pampa-border">
-          <div className="max-w-6xl mx-auto px-4 grid lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-6 animate-fade-up">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ladrillo/10 text-ladrillo text-xs font-extrabold uppercase tracking-wider mb-4">
+        {/* =========================================================
+            HERO DEL COMERCIO (SOBRE BLANCO PARA EL BOTÓN LADRILLO)
+           ========================================================= */}
+        <section className="bg-white text-carbon border-b border-carbon/20">
+          <div className="editorial-container section-pad grid lg:grid-cols-12 gap-10 items-start">
+            <div className="lg:col-span-6">
+              <p className="font-mono type-meta text-carbon/75 mb-3">
                 {business.category} · {business.yearsInNeighborhood}
-              </div>
+              </p>
 
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-carbon leading-[1.12] mb-4">
+              <h2 className="font-serif type-h2 font-semibold text-carbon mb-5">
                 {business.tagline}
               </h2>
 
-              <p className="text-base text-carbon/75 leading-relaxed mb-6">
+              <p className="type-body text-carbon/85 mb-8">
                 {business.longDescription}
               </p>
 
-              <div className="bg-pampa-surface border-l-4 border-ladrillo rounded-r-xl p-4 mb-6 shadow-sm">
-                <div className="font-extrabold text-sm text-carbon flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-ladrillo shrink-0" />
+              <div className="border-t border-b border-carbon/20 py-4 mb-8">
+                <p className="type-meta font-semibold text-carbon flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-chicago shrink-0" strokeWidth={1.5} />
                   {business.address}, Mataderos · {business.zone}
-                </div>
-                <p className="text-xs text-carbon/70 mt-1">{business.nearCorner}</p>
+                </p>
+                <p className="type-meta text-carbon/75 mt-1">{business.nearCorner}</p>
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <a
-                  href={`https://wa.me/${business.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-ladrillo hover:bg-ladrillo-dark text-white text-sm font-extrabold shadow-md transition-all hover:-translate-y-0.5"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  Escribir por WhatsApp
-                </a>
+                {Boolean(business.whatsapp.trim()) && (
+                  <a
+                    href={`https://wa.me/${business.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cta-ladrillo min-h-[48px] px-6 rounded-[4px] bg-ladrillo hover:bg-ladrillo-dark text-white font-semibold text-[1rem] inline-flex items-center justify-center gap-2 color-field"
+                  >
+                    Escribir por WhatsApp
+                    <ArrowUpRight className="w-4 h-4" strokeWidth={1.5} />
+                  </a>
+                )}
+
                 <a
                   href={`https://maps.google.com/?q=${mapsQuery}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border-2 border-chicago text-chicago hover:bg-chicago hover:text-white text-sm font-extrabold transition-colors"
+                  className="min-h-[48px] px-5 border border-chicago text-chicago hover:bg-chicago hover:text-pampa font-semibold text-[1rem] inline-flex items-center justify-center gap-2 color-field"
                 >
-                  <MapPin className="w-4 h-4" />
-                  Cómo llegar (Maps)
+                  Cómo llegar
+                  <ArrowUpRight className="w-4 h-4" strokeWidth={1.5} />
                 </a>
               </div>
             </div>
 
             <div className="lg:col-span-6">
-              <div className="rounded-2xl overflow-hidden border border-pampa-border shadow-xl bg-pampa-deep h-72 sm:h-96">
-                <img
+              <div className="relative aspect-[4/5] sm:aspect-[4/3] w-full overflow-hidden border border-carbon/20">
+                <Image
                   src={business.heroImage}
                   alt={business.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  className="object-cover opacity-100"
                 />
               </div>
             </div>
@@ -200,36 +184,35 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
         </section>
 
         {/* =========================================================
-            SERVICIOS Y PROPUESTA
+            SERVICIOS EN GRILLA CON FILETES
            ========================================================= */}
         {business.services.length > 0 && (
-          <section className="py-14 bg-pampa-deep/55 border-b border-pampa-border">
-            <div className="max-w-6xl mx-auto px-4">
-              <div className="mb-8">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-ladrillo">
-                  Servicios y especialidades
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-carbon mt-1">
+          <section className="bg-pampa border-b border-carbon/20">
+            <div className="editorial-container section-pad">
+              <div className="pb-6 mb-8 border-b border-carbon/20">
+                <p className="font-mono type-meta text-carbon/75 mb-2">
+                  SERVICIOS Y ESPECIALIDADES
+                </p>
+                <h2 className="font-display type-h2 font-semibold uppercase">
                   Qué ofrecemos en {business.name}
                 </h2>
               </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 border-t border-l border-carbon/20">
                 {business.services.map((srv) => (
                   <article
                     key={srv.title}
-                    className="bg-pampa-surface border border-pampa-border rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all flex flex-col justify-between"
+                    className="border-r border-b border-carbon/20 p-6 bg-pampa-surface flex flex-col justify-between gap-5"
                   >
                     <div>
-                      <div className="text-3xl mb-3">{srv.icon}</div>
-                      <h3 className="text-base font-extrabold text-carbon mb-2">{srv.title}</h3>
-                      <p className="text-xs sm:text-sm text-carbon/75 leading-relaxed mb-4">
-                        {srv.description}
-                      </p>
+                      <h3 className="type-h3 font-semibold text-carbon mb-3">
+                        {srv.title}
+                      </h3>
+                      <p className="type-body text-carbon/80">{srv.description}</p>
                     </div>
-                    <span className="inline-block text-[11px] font-extrabold text-chicago bg-chicago/10 px-2.5 py-1 rounded-full self-start">
+                    <p className="font-mono type-meta text-chicago pt-4 border-t border-carbon/15">
                       {srv.badge}
-                    </span>
+                    </p>
                   </article>
                 ))}
               </div>
@@ -238,74 +221,66 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
         )}
 
         {/* =========================================================
-            HORARIOS Y RESEÑAS DE VECINOS
+            HORARIOS Y OPINIONES DE VECINOS
            ========================================================= */}
-        <section id="horarios" className="py-14">
-          <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-6">
-            <div className="bg-pampa-surface border border-pampa-border rounded-2xl p-6 sm:p-7 shadow-sm">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-ladrillo">
-                Horarios y contacto
-              </span>
-              <h3 className="text-2xl font-extrabold text-carbon mt-1 mb-5">
+        <section id="horarios" className="bg-pampa-deep border-b border-carbon/20">
+          <div className="editorial-container section-pad grid md:grid-cols-2 gap-10">
+            <div className="border border-carbon/20 bg-pampa-surface p-6 sm:p-8">
+              <p className="font-mono type-meta text-carbon/75 mb-2">HORARIOS Y CONTACTO</p>
+              <h3 className="font-serif type-h3 font-semibold text-carbon mb-6">
                 Cuándo visitarnos
               </h3>
 
-              <ul className="divide-y divide-pampa-border mb-6">
+              <ul className="border-t border-carbon/20 divide-y divide-carbon/20 mb-6">
                 {business.hours.map((row) => (
                   <li
                     key={row.days}
-                    className="py-3 flex flex-wrap items-center justify-between gap-2 text-sm"
+                    className="py-4 flex flex-wrap items-center justify-between gap-2 type-meta"
                   >
-                    <span className="text-carbon/70 font-semibold">{row.days}</span>
-                    <strong className="text-carbon font-extrabold">{row.schedule}</strong>
+                    <span className="text-carbon/75">{row.days}</span>
+                    <span className="font-semibold text-carbon">{row.schedule}</span>
                   </li>
                 ))}
               </ul>
 
-              <div className="flex flex-wrap gap-2.5 text-xs font-bold">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pampa border border-pampa-border">
-                  <Phone className="w-3.5 h-3.5 text-chicago" />
-                  {business.phone}
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-pampa border border-pampa-border">
-                  <CreditCard className="w-3.5 h-3.5 text-ladrillo" />
-                  {business.paymentMethods}
-                </span>
+              <div className="pt-4 border-t border-carbon/20 space-y-2 type-meta text-carbon/85">
+                {business.phone && (
+                  <p className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-chicago shrink-0" strokeWidth={1.5} />
+                    {business.phone}
+                  </p>
+                )}
+                <p>{business.paymentMethods}</p>
               </div>
             </div>
 
-            <div className="bg-pampa-surface border border-pampa-border rounded-2xl p-6 sm:p-7 shadow-sm">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-chicago">
-                Confianza barrial
-              </span>
-              <h3 className="text-2xl font-extrabold text-carbon mt-1 mb-5">
+            <div className="border border-carbon/20 bg-pampa-surface p-6 sm:p-8">
+              <p className="font-mono type-meta text-carbon/75 mb-2">CONFIANZA BARRIAL</p>
+              <h3 className="font-serif type-h3 font-semibold text-carbon mb-6">
                 Opiniones de vecinos de Mataderos
               </h3>
 
-              <div className="space-y-4">
+              <div className="divide-y divide-carbon/20 border-t border-carbon/20">
                 {business.reviews.length > 0 ? (
                   business.reviews.map((rev) => (
-                    <blockquote
-                      key={rev.author}
-                      className="p-4 rounded-xl bg-pampa border border-pampa-border"
-                    >
-                      <div className="flex items-center gap-1 text-ladrillo mb-2">
+                    <blockquote key={rev.author} className="py-5">
+                      <div className="flex items-center gap-1 text-chicago mb-2" aria-label={`${rev.rating} de 5 estrellas`}>
                         {Array.from({ length: rev.rating }).map((_, idx) => (
-                          <Star key={idx} className="w-3.5 h-3.5 fill-current" />
+                          <Star key={idx} className="w-4 h-4 fill-current" strokeWidth={1.5} />
                         ))}
                       </div>
-                      <p className="text-sm text-carbon/85 leading-relaxed mb-2">
+                      <p className="type-body text-carbon/90 mb-2">
                         &ldquo;{rev.text}&rdquo;
                       </p>
-                      <footer className="text-xs font-bold text-cuero">
-                        — {rev.author} · {rev.neighborhoodNote}
+                      <footer className="font-mono type-meta text-carbon/75">
+                        {rev.author} · {rev.neighborhoodNote}
                       </footer>
                     </blockquote>
                   ))
                 ) : (
-                  <div className="p-5 rounded-xl bg-pampa border border-pampa-border text-sm text-carbon/75">
+                  <p className="py-5 type-body text-carbon/80">
                     Ficha verificada en la guía comercial de Mataderos.ar. Muy pronto vas a poder leer reseñas de vecinos del barrio acá.
-                  </div>
+                  </p>
                 )}
               </div>
             </div>
@@ -316,20 +291,16 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
       {/* =========================================================
           FOOTER IMPULSADO POR MATADEROS.AR
          ========================================================= */}
-      <footer className="bg-carbon text-pampa border-t border-white/10 py-6">
-        <div className="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-xs sm:text-sm text-pampa/80 flex items-center gap-2">
-            <Globe className="w-4 h-4 text-celeste shrink-0" />
-            <span>
-              Sitio web oficial alojado en la red de comercios de{' '}
-              <strong className="text-white">Mataderos.ar</strong>
-            </span>
+      <footer data-surface="dark" className="bg-carbon text-pampa border-t border-pampa/20">
+        <div className="editorial-container py-6 flex flex-wrap items-center justify-between gap-4">
+          <p className="font-mono type-meta text-pampa/85">
+            Web Oficial alojada en Mataderos.ar · Hecho en Mataderos
           </p>
           <Link
             href="/#sumar-comercio"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-ladrillo hover:bg-ladrillo-dark text-white text-xs font-extrabold transition-colors"
+            className="min-h-[48px] px-5 inline-flex items-center border border-pampa/40 text-pampa hover:bg-pampa hover:text-carbon font-semibold text-[1rem] color-field"
           >
-            ¿Querés una web así para tu negocio? →
+            ¿Querés una web así para tu negocio?
           </Link>
         </div>
       </footer>

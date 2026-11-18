@@ -133,33 +133,33 @@ export const BUSINESSES: Business[] = [
     featured: true,
     heroImage:
       'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1000&q=80',
-    emoji: '🐾',
+    emoji: '',
     yearsInNeighborhood: '12 años en Mataderos',
     paymentMethods: 'Efectivo, Débito, Transferencia y Mercado Pago',
     services: [
       {
-        icon: '🩺',
+        icon: '',
         title: 'Clínica General y Vacunación',
         description:
           'Consultas clínicas, libretas sanitarias, esquemas de vacunación completos y certificados de viaje.',
         badge: 'Orden de llegada o turno'
       },
       {
-        icon: '🦴',
+        icon: '',
         title: 'Pet Shop y Alimentos Balanceados',
         description:
           'Primeras marcas, dietas medicadas y pipetas. Entrega en el día sin cargo dentro de Mataderos.',
         badge: 'Envío gratis en el barrio'
       },
       {
-        icon: '✂️',
+        icon: '',
         title: 'Peluquería Canina sin Jaulas',
         description:
           'Baños higiénicos y medicados, cortes de raza y cuidado de uñas en ambiente tranquilo.',
         badge: 'Turnos de martes a sábados'
       },
       {
-        icon: '🔬',
+        icon: '',
         title: 'Laboratorio y Ecografías',
         description:
           'Análisis de sangre rápidos, estudios programados y seguimiento geriátrico para mascotas mayores.',
@@ -207,33 +207,33 @@ export const BUSINESSES: Business[] = [
     featured: true,
     heroImage:
       'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1000&q=80',
-    emoji: '☕',
+    emoji: '',
     yearsInNeighborhood: 'Nueva apertura 2026',
     paymentMethods: 'QR, Tarjetas, Efectivo y Cuenta DNI',
     services: [
       {
-        icon: '☕',
+        icon: '',
         title: 'Barra de Espresso y Filtrados',
         description:
           'Flat white, cold brew y métodos filtrados con granos de Colombia y Brasil molidos en el momento.',
         badge: 'Leche vegetal sin recargo'
       },
       {
-        icon: '🥐',
+        icon: '',
         title: 'Laminados y Panadería de Autor',
         description:
           'Croissants de manteca, roll de canela, chipá tibio y tortas de estación salidas del horno.',
         badge: 'Horneado diario 08:00 hs'
       },
       {
-        icon: '💻',
+        icon: '',
         title: 'Mesas con Wifi y Enchufes',
         description:
           'Sector interior tranquilo para trabajar o estudiar tomando un buen café sin apuros.',
         badge: 'Pet friendly en vereda'
       },
       {
-        icon: '📦',
+        icon: '',
         title: 'Cajas de Desayuno y Take Away',
         description:
           'Armá tu caja para regalar en el barrio o encargá tu pedido por WhatsApp para retirar sin fila.',
@@ -281,33 +281,33 @@ export const BUSINESSES: Business[] = [
     featured: true,
     heroImage:
       'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=80',
-    emoji: '🍷',
+    emoji: '',
     yearsInNeighborhood: '28 años de historia',
     paymentMethods: 'Efectivo (10% desc.), Débito y Mercado Pago',
     services: [
       {
-        icon: '🥟',
+        icon: '',
         title: 'Empanadas Cortadas a Cuchillo',
         description:
           'Carne suave o picante, humita y jamón y queso cocidas en horno de barro tradicional.',
         badge: 'Clásico de los domingos'
       },
       {
-        icon: '🥩',
+        icon: '',
         title: 'Parrilla y Milanesas para Compartir',
         description:
           'Asado banderita, bife de chorizo y milanesa napolitana tamaño familiar con papas fritas.',
         badge: 'Porciones abundantes'
       },
       {
-        icon: '🍝',
+        icon: '',
         title: 'Pastas Caseras del Barrio',
         description:
           'Ravioles de ricota y nuez, tallarines al huevo y estofado de larga cocción.',
         badge: 'Amasado propio'
       },
       {
-        icon: '🥂',
+        icon: '',
         title: 'Reservas para Reuniones y Clubes',
         description:
           'Salón amplio para cumpleaños familiares, peñas y cenas de amigos en Mataderos.',
@@ -354,7 +354,7 @@ export const BUSINESSES: Business[] = [
     featured: false,
     heroImage:
       'https://images.unsplash.com/photo-1581783898377-1c85bf937427?auto=format&fit=crop&w=900&q=80',
-    emoji: '🛠️',
+    emoji: '',
     yearsInNeighborhood: '34 años en el barrio',
     paymentMethods: 'Efectivo, Tarjetas y Factura A/B',
     services: [],
@@ -382,7 +382,7 @@ export const BUSINESSES: Business[] = [
     featured: false,
     heroImage:
       'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=900&q=80',
-    emoji: '🏥',
+    emoji: '',
     yearsInNeighborhood: '7 años en Mataderos',
     paymentMethods: 'Obras sociales y particular',
     services: [],
@@ -410,7 +410,7 @@ export const BUSINESSES: Business[] = [
     featured: false,
     heroImage:
       'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&w=900&q=80',
-    emoji: '🌿',
+    emoji: '',
     yearsInNeighborhood: '15 años en Eva Perón',
     paymentMethods: 'Efectivo, Débito y QR',
     services: [],
@@ -571,7 +571,7 @@ export const HERITAGE_MILESTONES: HeritageMilestone[] = [
     subtitle: 'El nacimiento de un barrio con carácter propio',
     description:
       'Con la piedra fundamental de los nuevos mataderos municipales y el Mercado Nacional de Hacienda, el oeste porteño se convirtió en el puente entre la pampa y la ciudad. Sus recovas en forma de "U" aún custodian ese origen.',
-    symbol: '🏛️'
+    symbol: ''
   },
   {
     year: '1932',
@@ -579,7 +579,7 @@ export const HERITAGE_MILESTONES: HeritageMilestone[] = [
     subtitle: 'Obra de Emilio Sarguignet en bronce y granito',
     description:
       'Inaugurado frente a la Antigua Administración, el jinete arreando ganado se transformó en el emblema visual por excelencia de Mataderos y símbolo de la cultura del trabajo rural.',
-    symbol: '🐎'
+    symbol: ''
   },
   {
     year: 'Tradición Viva',
@@ -587,6 +587,6 @@ export const HERITAGE_MILESTONES: HeritageMilestone[] = [
     subtitle: 'Identidad popular en cada esquina',
     description:
       'Desde la leyenda boxística de Justo Suárez ("El Torito de Mataderos") y los carros fileteados de hacienda hasta el verde y negro de Nueva Chicago, el orgullo vecinal se transmite de generación en generación.',
-    symbol: '🌿'
+    symbol: ''
   }
 ];

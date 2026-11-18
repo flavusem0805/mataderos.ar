@@ -1,29 +1,11 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
-import {
-  ArrowRight,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  Compass,
-  ExternalLink,
-  Flame,
-  Globe,
-  MapPin,
-  Menu,
-  MessageCircle,
-  Newspaper,
-  Search,
-  Sparkles,
-  Store,
-  Sun,
-  X
-} from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Menu, X } from 'lucide-react';
 import {
   HERITAGE_MILESTONES,
-  TICKER_ITEMS,
   ZONES,
   type Article,
   type Business,
@@ -46,6 +28,62 @@ const CATEGORIES: Array<'Todos' | BusinessCategory> = [
   'Salud y Estética'
 ];
 
+const CORRIDOR_FIELDS: Record<
+  NeighborhoodZone,
+  {
+    bg: string;
+    border: string;
+    text: string;
+    muted: string;
+    darkSurface: boolean;
+    aspect: string;
+    accentStripe?: string;
+    buttonClass: string;
+  }
+> = {
+  'Polo Emilio Castro': {
+    bg: 'bg-pampa',
+    border: 'border-carbon/20',
+    text: 'text-carbon',
+    muted: 'text-carbon/75',
+    darkSurface: false,
+    aspect: 'aspect-[16/10]',
+    buttonClass:
+      'border border-carbon text-carbon hover:bg-carbon hover:text-pampa'
+  },
+  'Av. Alberdi': {
+    bg: 'bg-pampa-deep',
+    border: 'border-carbon/20',
+    text: 'text-carbon',
+    muted: 'text-carbon/75',
+    darkSurface: false,
+    aspect: 'aspect-[4/5]',
+    accentStripe: 'border-t-4 border-t-celeste',
+    buttonClass:
+      'border border-carbon text-carbon hover:bg-carbon hover:text-pampa'
+  },
+  'Casco Histórico': {
+    bg: 'bg-carbon',
+    border: 'border-pampa/20',
+    text: 'text-pampa',
+    muted: 'text-pampa/80',
+    darkSurface: true,
+    aspect: 'aspect-[16/9]',
+    buttonClass:
+      'border border-pampa text-pampa hover:bg-pampa hover:text-carbon'
+  },
+  'Av. Eva Perón': {
+    bg: 'bg-chicago',
+    border: 'border-pampa/20',
+    text: 'text-pampa',
+    muted: 'text-pampa/85',
+    darkSurface: true,
+    aspect: 'aspect-[4/3]',
+    buttonClass:
+      'border border-pampa text-pampa hover:bg-pampa hover:text-chicago'
+  }
+};
+
 function slugifyShopName(input: string): string {
   const cleaned = input
     .toLowerCase()
@@ -60,24 +98,15 @@ export default function PortalClient({
   articles,
   events
 }: PortalClientProps) {
-  const subdomainShowcase = useMemo(
-    () => businesses.filter((b) => b.hasSubdomain),
-    [businesses]
-  );
-
-  const [activeShowcaseSlug, setActiveShowcaseSlug] = useState<string>(
-    subdomainShowcase[0]?.slug ?? 'veterinariaflavio'
-  );
-  const [activeZoneId, setActiveZoneId] = useState<NeighborhoodZone>('Polo Emilio Castro');
   const [selectedCategory, setSelectedCategory] = useState<'Todos' | BusinessCategory>('Todos');
   const [selectedZoneFilter, setSelectedZoneFilter] = useState<NeighborhoodZone | ''>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [openOnly, setOpenOnly] = useState<boolean>(false);
+  const [showAllBusinesses, setShowAllBusinesses] = useState<boolean>(false);
   const [activeArticle, setActiveArticle] = useState<Article | null>(null);
-  const [activeMilestoneIdx, setActiveMilestoneIdx] = useState<number>(0);
   const [b2bShopInput, setB2bShopInput] = useState<string>('Veterinaria Flavio');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
-  const [todayLabel, setTodayLabel] = useState<string>('Mataderos hoy');
+  const [todayLabel, setTodayLabel] = useState<string>('Edición Mataderos');
 
   useEffect(() => {
     const formatted = new Intl.DateTimeFormat('es-AR', {
@@ -95,11 +124,6 @@ export default function PortalClient({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  const currentShowcase =
-    subdomainShowcase.find((b) => b.slug === activeShowcaseSlug) ?? subdomainShowcase[0];
-
-  const currentZone = ZONES.find((z) => z.id === activeZoneId) ?? ZONES[0];
 
   const filteredBusinesses = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -124,540 +148,441 @@ export default function PortalClient({
     Boolean(searchQuery.trim()) ||
     openOnly;
 
+  const visibleBusinesses =
+    hasActiveFilters || showAllBusinesses
+      ? filteredBusinesses
+      : filteredBusinesses.slice(0, 4);
+
   const resetFilters = () => {
     setSelectedCategory('Todos');
     setSelectedZoneFilter('');
     setSearchQuery('');
     setOpenOnly(false);
+    setShowAllBusinesses(false);
   };
 
-  const jumpToDirectoryWithZone = (zone: NeighborhoodZone) => {
+  const filterDirectoryByZone = (zone: NeighborhoodZone) => {
     setSelectedZoneFilter((prev) => (prev === zone ? '' : zone));
     document.getElementById('directorio')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const simulatedSlug = slugifyShopName(b2bShopInput);
+  const heroPhoto = ZONES[2]?.imageUrl ?? articles[0]?.imageUrl ?? '';
+  const leadArticle = articles[0];
+  const secondaryArticles = articles.slice(1);
+  const heritagePhoto = ZONES[2]?.imageUrl ?? '';
 
   return (
-    <div className="min-h-screen flex flex-col bg-pampa-texture text-carbon">
+    <div className="min-h-screen flex flex-col bg-pampa text-carbon">
       {/* =========================================================
-          1. TOPBAR CARBÓN CON TICKER ANIMADO EN VIVO
+          NAVEGACIÓN PRINCIPAL — VERDE CHICAGO #1E5631
          ========================================================= */}
-      <div className="bg-carbon text-pampa text-xs border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-4 py-2 flex items-center gap-3 overflow-hidden">
-          <span className="inline-flex items-center gap-1.5 shrink-0 bg-ladrillo text-white font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider text-[10px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-            Mataderos Hoy
-          </span>
-
-          <div className="marquee-wrapper flex-1 overflow-hidden">
-            <div className="marquee-track gap-10">
-              {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
-                <span key={idx} className="inline-flex items-center gap-2 text-pampa/90 whitespace-nowrap">
-                  <span className="text-celeste">◆</span>
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="hidden lg:flex items-center gap-2 shrink-0 text-pampa/80 font-semibold">
-            <Sun className="w-3.5 h-3.5 text-celeste" />
-            <span>Comuna 9 · {todayLabel}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* =========================================================
-          2. HEADER STICKY VERDE CHICAGO
-         ========================================================= */}
-      <header className="sticky top-0 z-40 bg-chicago/95 backdrop-blur-md text-white border-b border-chicago-dark shadow-md">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <a href="#" className="flex items-center gap-3 group">
-            <span className="w-10 h-10 rounded-lg bg-ladrillo group-hover:bg-ladrillo-dark transition-colors flex items-center justify-center font-extrabold text-xl text-white shadow-sm">
-              M
-            </span>
-            <span className="flex flex-col">
-              <span className="text-xl font-extrabold tracking-tight leading-none">
-                Mataderos<span className="text-pampa">.ar</span>
-              </span>
-              <span className="text-[11px] font-semibold text-white/75 mt-0.5">
-                Comunidad, Cultura &amp; Comercios
-              </span>
-            </span>
+      <header
+        data-surface="dark"
+        className="sticky top-0 z-40 bg-chicago text-pampa border-b border-pampa/20 color-field"
+      >
+        <div className="editorial-container flex items-center justify-between gap-4 min-h-[64px]">
+          <a
+            href="#inicio"
+            className="min-h-[48px] flex items-center gap-3 font-display text-2xl sm:text-3xl tracking-tight font-semibold uppercase"
+          >
+            <span>Mataderos.ar</span>
           </a>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-white/85">
-            <a href="#rincones" className="hover:text-white transition-colors">
-              Zonas
+          <nav
+            aria-label="Navegación principal"
+            className="hidden lg:flex items-center gap-6 text-[1rem] font-medium"
+          >
+            <a href="#corredores" className="min-h-[48px] flex items-center hover:underline underline-offset-4">
+              Corredores
             </a>
-            <a href="#noticias" className="hover:text-white transition-colors">
-              Aperturas
+            <a href="#noticias" className="min-h-[48px] flex items-center hover:underline underline-offset-4">
+              Noticias
             </a>
-            <a href="#directorio" className="hover:text-white transition-colors">
-              Guía Comercial
+            <a href="#directorio" className="min-h-[48px] flex items-center hover:underline underline-offset-4">
+              Guía de comercios
             </a>
-            <a href="#feria-cultura" className="hover:text-white transition-colors">
-              Feria y Cultura
+            <a href="#agenda" className="min-h-[48px] flex items-center hover:underline underline-offset-4">
+              Agenda
             </a>
-            <a href="#historia" className="hover:text-white transition-colors">
+            <a href="#historia" className="min-h-[48px] flex items-center hover:underline underline-offset-4">
               Historia
             </a>
-          </nav>
-
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/comercio/veterinariaflavio"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-white/25 text-white hover:bg-white/10 transition-colors"
-            >
-              <Globe className="w-3.5 h-3.5 text-celeste" />
-              Ejemplo Subdominio
-            </Link>
             <a
               href="#sumar-comercio"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs sm:text-sm font-bold bg-ladrillo hover:bg-ladrillo-dark text-white shadow-sm transition-all hover:-translate-y-0.5"
+              className="min-h-[48px] flex items-center px-4 border border-pampa/50 hover:bg-pampa hover:text-chicago color-field font-semibold"
             >
               Sumá tu comercio
             </a>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen((v) => !v)}
-              className="md:hidden p-2 rounded-lg border border-white/20 text-white hover:bg-white/10"
-              aria-label="Abrir menú"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          </nav>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            className="lg:hidden min-h-[48px] min-w-[48px] px-3 flex items-center justify-center border border-pampa/40 text-pampa"
+            aria-expanded={mobileMenuOpen}
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          >
+            {mobileMenuOpen ? (
+              <X className="w-5 h-5" strokeWidth={1.5} />
+            ) : (
+              <Menu className="w-5 h-5" strokeWidth={1.5} />
+            )}
+          </button>
         </div>
 
-        {/* Menú Mobile */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-chicago-dark border-t border-white/10 px-4 py-4 flex flex-col gap-3 text-sm font-semibold">
-            <a href="#rincones" onClick={() => setMobileMenuOpen(false)}>
-              Zonas de Mataderos
-            </a>
-            <a href="#noticias" onClick={() => setMobileMenuOpen(false)}>
-              Noticias y Aperturas
-            </a>
-            <a href="#directorio" onClick={() => setMobileMenuOpen(false)}>
-              Guía de Comercios
-            </a>
-            <a href="#feria-cultura" onClick={() => setMobileMenuOpen(false)}>
-              Feria y Cultura
-            </a>
-            <a href="#historia" onClick={() => setMobileMenuOpen(false)}>
-              Raíces e Historia
-            </a>
-            <Link
-              href="/comercio/veterinariaflavio"
-              className="text-celeste flex items-center gap-1.5"
+          <nav
+            aria-label="Menú móvil"
+            className="lg:hidden bg-chicago-dark border-t border-pampa/20 editorial-container divide-y divide-pampa/15"
+          >
+            <a
+              href="#corredores"
               onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[48px] flex items-center justify-between text-[1rem] font-medium"
             >
-              <Globe className="w-4 h-4" />
-              Ver ejemplo: veterinariaflavio.mataderos.ar
-            </Link>
-          </div>
+              Corredores del barrio
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+            </a>
+            <a
+              href="#noticias"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[48px] flex items-center justify-between text-[1rem] font-medium"
+            >
+              Noticias y aperturas
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+            </a>
+            <a
+              href="#directorio"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[48px] flex items-center justify-between text-[1rem] font-medium"
+            >
+              Guía de comercios
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+            </a>
+            <a
+              href="#agenda"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[48px] flex items-center justify-between text-[1rem] font-medium"
+            >
+              Agenda
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+            </a>
+            <a
+              href="#historia"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[48px] flex items-center justify-between text-[1rem] font-medium"
+            >
+              Historia
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+            </a>
+            <a
+              href="#sumar-comercio"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[48px] flex items-center justify-between text-[1rem] font-semibold"
+            >
+              Sumá tu comercio
+              <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+            </a>
+          </nav>
         )}
       </header>
 
       <main className="flex-1">
         {/* =========================================================
-            3. HERO CON BUSCADOR Y SHOWCASE FLOTANTE DE SUBDOMINIOS
+            1. HERO — TAPA TIPOGRÁFICA A UN VIEWPORT (CARBÓN + CREMA)
            ========================================================= */}
-        <section className="border-b border-pampa-border/80 py-12 md:py-16">
-          <div className="max-w-6xl mx-auto px-4 grid lg:grid-cols-12 gap-10 items-center">
-            <div className="lg:col-span-7 animate-fade-up">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-chicago/10 border border-chicago/20 text-chicago text-xs font-extrabold mb-5">
-                <Sparkles className="w-3.5 h-3.5 text-ladrillo" />
-                Portal comunitario y vidriera digital · Comuna 9
-              </div>
-
-              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-carbon leading-[1.08] mb-4">
-                El pulso de Mataderos,{' '}
-                <span className="text-chicago underline decoration-ladrillo/70 decoration-4 underline-offset-4">
-                  en un solo lugar
-                </span>
-                .
-              </h1>
-
-              <p className="text-base sm:text-lg text-carbon/75 max-w-2xl mb-7 leading-relaxed">
-                Descubrí qué abrió nuevo en el barrio, enterate de la agenda de La Recova y conectá directo con los comercios de Mataderos que ya tienen su propia web.
-              </p>
-
-              {/* Buscador en vivo */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  document.getElementById('directorio')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="flex flex-col sm:flex-row gap-2.5 bg-pampa-surface p-2 rounded-xl border-2 border-pampa-border shadow-md mb-5 focus-within:border-chicago transition-colors"
-              >
-                <div className="flex items-center gap-2.5 flex-1 px-2">
-                  <Search className="w-5 h-5 text-cuero shrink-0" />
-                  <input
-                    type="search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Buscá veterinarias, cafés, ferreterías o calles (ej. Alberdi)..."
-                    className="w-full bg-transparent text-sm sm:text-base text-carbon placeholder:text-carbon/45 outline-none py-2"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="px-6 py-3 rounded-lg bg-ladrillo hover:bg-ladrillo-dark text-white font-bold text-sm transition-all shrink-0 shadow-sm"
-                >
-                  Buscar en el barrio
-                </button>
-              </form>
-
-              {/* Accesos rápidos de zonas */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-cuero mr-1">
-                  Zonas rápidas:
-                </span>
-                {ZONES.map((z) => {
-                  const active = selectedZoneFilter === z.id;
-                  return (
-                    <button
-                      key={z.id}
-                      type="button"
-                      onClick={() => jumpToDirectoryWithZone(z.id)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
-                        active
-                          ? 'bg-chicago text-white border-chicago shadow-sm'
-                          : 'bg-pampa-surface text-carbon/80 border-pampa-border hover:border-cuero hover:text-carbon'
-                      }`}
-                    >
-                      {z.id}
-                    </button>
-                  );
-                })}
+        <section
+          id="inicio"
+          data-surface="dark"
+          className="bg-carbon text-pampa grain-surface border-b border-pampa/20 min-h-[calc(100svh-65px)] flex flex-col justify-between"
+        >
+          <div className="editorial-container relative z-10 py-8 sm:py-12 flex-1 flex flex-col justify-between gap-8">
+            {/* Línea de edición y filete celeste gráfico */}
+            <div>
+              <div className="h-[3px] w-24 bg-celeste mb-6" aria-hidden="true" />
+              <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-pampa/20 font-mono type-meta">
+                <span>COMUNA 9 · CIUDAD DE BUENOS AIRES</span>
+                <span>{todayLabel}</span>
               </div>
             </div>
 
-            {/* Tarjeta Flotante Interactiva de Subdominios */}
-            <div className="lg:col-span-5">
-              <div className="animate-float-gentle bg-pampa-deep/90 border border-pampa-border rounded-2xl p-4 shadow-xl">
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-ladrillo flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5" />
-                    Subdominios activos del barrio
-                  </span>
-                  <span className="text-[11px] font-bold text-carbon/60">
-                    Clic para cambiar preview
-                  </span>
-                </div>
+            {/* Tapa monumental + fotografía única */}
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-end my-auto">
+              <div className="lg:col-span-7">
+                <h1 className="font-display type-h1 font-semibold uppercase text-pampa mb-6">
+                  MATADEROS
+                </h1>
+                <p className="type-body text-pampa/90 max-w-xl">
+                  Comercios de cercanía, oficios del barrio, aperturas y memoria viva entre La Recova, Emilio Castro y Avenida Alberdi.
+                </p>
+              </div>
 
-                {/* Selector de comercios con subdominio */}
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {subdomainShowcase.map((shop) => {
-                    const selected = shop.slug === currentShowcase?.slug;
-                    return (
-                      <button
-                        key={shop.slug}
-                        type="button"
-                        onClick={() => setActiveShowcaseSlug(shop.slug)}
-                        className={`px-2.5 py-1 rounded-md text-xs font-bold transition-all ${
-                          selected
-                            ? 'bg-chicago text-white shadow-sm'
-                            : 'bg-pampa-surface text-carbon/75 hover:text-carbon border border-pampa-border'
-                        }`}
-                      >
-                        {shop.emoji} {shop.name.split(' ')[0]}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Mini navegador del comercio seleccionado */}
-                {currentShowcase && (
-                  <div className="bg-pampa-surface border border-pampa-border rounded-xl overflow-hidden shadow-sm">
-                    <div className="bg-carbon text-pampa px-3 py-2 flex items-center justify-between text-[11px]">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-ladrillo" />
-                        <span className="w-2 h-2 rounded-full bg-celeste" />
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      </div>
-                      <span className="font-mono text-white/90 truncate">
-                        https://<strong>{currentShowcase.slug}</strong>.mataderos.ar
-                      </span>
-                    </div>
-
-                    <div className="relative h-36 overflow-hidden bg-pampa-deep">
-                      <img
-                        src={currentShowcase.heroImage}
-                        alt={currentShowcase.name}
-                        className="w-full h-full object-cover"
+              <div className="lg:col-span-5">
+                {heroPhoto && (
+                  <figure className="border border-pampa/25">
+                    <div className="relative aspect-[4/3] w-full overflow-hidden">
+                      <Image
+                        src={heroPhoto}
+                        alt="La Recova y el casco histórico de Mataderos"
+                        fill
+                        priority
+                        sizes="(max-width: 1024px) 100vw, 40vw"
+                        className="object-cover opacity-100"
                       />
-                      <span className="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[11px] font-extrabold inline-flex items-center gap-1 shadow">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                        {currentShowcase.hoursSummary}
-                      </span>
                     </div>
-
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div>
-                          <span className="text-[11px] font-extrabold uppercase tracking-wider text-ladrillo">
-                            {currentShowcase.category} · {currentShowcase.zone}
-                          </span>
-                          <h2 className="text-lg font-extrabold text-carbon">
-                            {currentShowcase.name}
-                          </h2>
-                        </div>
-                      </div>
-                      <p className="text-xs text-carbon/70 mb-4 line-clamp-2">
-                        {currentShowcase.tagline}
-                      </p>
-
-                      <div className="flex gap-2">
-                        <Link
-                          href={`/comercio/${currentShowcase.slug}`}
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg bg-ladrillo hover:bg-ladrillo-dark text-white text-xs font-extrabold transition-colors shadow-sm"
-                        >
-                          Abrir web completa
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                    <figcaption className="px-4 py-3 border-t border-pampa/20 font-mono type-meta">
+                      Av. de los Corrales y Lisandro de la Torre · Casco Histórico
+                    </figcaption>
+                  </figure>
                 )}
               </div>
             </div>
+
+            {/* Pie del viewport con filete y saltos directos */}
+            <div className="pt-4 border-t border-pampa/20 flex flex-wrap items-center justify-between gap-4">
+              <span className="font-mono type-meta">
+                Edición barrial independiente · Directorio y Web Oficial
+              </span>
+              <div className="flex flex-wrap items-center gap-4">
+                <a
+                  href="#directorio"
+                  className="min-h-[48px] inline-flex items-center gap-2 px-5 bg-chicago text-pampa font-semibold text-[1rem] hover:bg-chicago-dark color-field"
+                >
+                  Explorar comercios
+                  <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                </a>
+                <a
+                  href="#corredores"
+                  className="min-h-[48px] inline-flex items-center gap-2 px-4 border border-pampa/35 text-pampa font-medium text-[1rem] hover:bg-pampa hover:text-carbon color-field"
+                >
+                  Recorrer los 4 corredores
+                </a>
+              </div>
+            </div>
           </div>
         </section>
 
         {/* =========================================================
-            4. EXPLORADOR DE ZONAS: LOS 4 RINCONES DE MATADEROS
+            2. LOS 4 CORREDORES — ÍNDICE STICKY + CAMPOS DE COLOR FIJOS
            ========================================================= */}
-        <section id="rincones" className="py-14 bg-pampa-deep/55 border-b border-pampa-border">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-              <div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-ladrillo mb-1.5">
-                  <Compass className="w-3.5 h-3.5" />
-                  Mapa vivo del barrio
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-carbon">
-                  Los 4 rincones de Mataderos
+        <section id="corredores" className="border-b border-carbon/20 bg-pampa">
+          <div className="editorial-container section-pad">
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+              {/* Índice tipográfico sticky */}
+              <div className="lg:col-span-4 lg:sticky lg:top-24">
+                <p className="font-mono type-meta mb-3">01 — 04 · GEOGRAFÍA LOCAL</p>
+                <h2 className="font-display type-h2 font-semibold uppercase mb-4">
+                  Los 4 Corredores del Barrio
                 </h2>
-              </div>
-              <p className="text-sm text-carbon/70 max-w-md">
-                Elegí un corredor para ver qué lo identifica, sus puntos emblemáticos y qué comercios podés encontrar hoy ahí.
-              </p>
-            </div>
+                <p className="type-body text-carbon/80 mb-8">
+                  Cada arteria de Mataderos tiene su propio pulso comercial y vecinal.
+                </p>
 
-            <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-              <div className="lg:col-span-5 flex flex-col gap-2.5">
-                {ZONES.map((zone) => {
-                  const isActive = zone.id === currentZone.id;
-                  return (
-                    <button
+                <nav aria-label="Índice de corredores" className="border-t border-carbon/20 divide-y divide-carbon/20">
+                  {ZONES.map((zone, idx) => (
+                    <a
                       key={zone.id}
-                      type="button"
-                      onClick={() => setActiveZoneId(zone.id)}
-                      className={`text-left p-4 rounded-xl border transition-all ${
-                        isActive
-                          ? 'bg-chicago text-white border-chicago shadow-md translate-x-1'
-                          : 'bg-pampa-surface text-carbon border-pampa-border hover:border-cuero'
-                      }`}
+                      href={`#corredor-${idx + 1}`}
+                      className="min-h-[48px] py-3 flex items-center justify-between gap-3 hover:pl-2 transition-all duration-300"
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="font-extrabold text-base">{zone.title}</span>
-                        <ArrowRight
-                          className={`w-4 h-4 shrink-0 transition-transform ${
-                            isActive ? 'translate-x-0.5 text-pampa' : 'text-carbon/40'
-                          }`}
-                        />
+                      <span className="flex items-baseline gap-3">
+                        <span className="font-display text-2xl font-semibold">
+                          0{idx + 1}
+                        </span>
+                        <span className="type-meta font-semibold">{zone.id}</span>
+                      </span>
+                      <ArrowRight className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+                    </a>
+                  ))}
+                </nav>
+              </div>
+
+              {/* 4 campos de color fijos con proporciones distintas de fotografía */}
+              <div className="lg:col-span-8 flex flex-col gap-8">
+                {ZONES.map((zone, idx) => {
+                  const field = CORRIDOR_FIELDS[zone.id];
+                  const isFilteredHere = selectedZoneFilter === zone.id;
+                  return (
+                    <article
+                      key={zone.id}
+                      id={`corredor-${idx + 1}`}
+                      data-surface={field.darkSurface ? 'dark' : 'light'}
+                      className={`${field.bg} ${field.text} ${field.accentStripe ?? ''} border ${field.border} color-field p-6 sm:p-10`}
+                    >
+                      <div className={`flex flex-wrap items-baseline justify-between gap-2 pb-4 mb-6 border-b ${field.border}`}>
+                        <span className="font-display text-3xl sm:text-4xl font-semibold">
+                          0{idx + 1}
+                        </span>
+                        <span className="font-mono type-meta">{zone.highlightMetric}</span>
                       </div>
-                      <p
-                        className={`text-xs mt-1 font-medium ${
-                          isActive ? 'text-white/80' : 'text-carbon/65'
-                        }`}
-                      >
-                        {zone.subtitle}
-                      </p>
-                    </button>
+
+                      <div className="grid md:grid-cols-12 gap-6 items-start">
+                        <div className="md:col-span-6">
+                          <div className={`relative ${field.aspect} w-full overflow-hidden border ${field.border}`}>
+                            <Image
+                              src={zone.imageUrl}
+                              alt={zone.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 35vw"
+                              className="object-cover opacity-100"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="md:col-span-6 flex flex-col justify-between gap-5">
+                          <div>
+                            <p className={`font-mono type-meta mb-2 ${field.muted}`}>
+                              {zone.subtitle}
+                            </p>
+                            <h3 className="font-display type-h2 font-semibold uppercase mb-4">
+                              {zone.title}
+                            </h3>
+                            <p className={`type-body mb-5 ${field.muted}`}>
+                              {zone.atmosphere}
+                            </p>
+                            <p className={`type-meta pb-4 border-b ${field.border}`}>
+                              {zone.landmarks.join(' · ')}
+                            </p>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => filterDirectoryByZone(zone.id)}
+                            className={`min-h-[48px] px-5 inline-flex items-center justify-center gap-2 font-semibold text-[1rem] color-field self-start ${field.buttonClass}`}
+                          >
+                            {isFilteredHere
+                              ? `Quitando filtro de ${zone.id}`
+                              : `Ver comercios en ${zone.id}`}
+                            <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                          </button>
+                        </div>
+                      </div>
+                    </article>
                   );
                 })}
               </div>
+            </div>
+          </div>
+        </section>
 
-              <div className="lg:col-span-7 bg-pampa-surface border border-pampa-border rounded-2xl overflow-hidden shadow-sm grid sm:grid-cols-2">
-                <div className="relative min-h-[220px] bg-carbon">
-                  <img
-                    src={currentZone.imageUrl}
-                    alt={currentZone.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full bg-carbon/85 text-pampa text-xs font-bold backdrop-blur-sm">
-                    {currentZone.highlightMetric}
-                  </span>
-                </div>
-                <div className="p-6 flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-cuero">
-                      {currentZone.id}
-                    </span>
-                    <h3 className="text-xl font-extrabold text-carbon mt-1 mb-2.5">
-                      {currentZone.title}
-                    </h3>
-                    <p className="text-sm text-carbon/75 leading-relaxed mb-4">
-                      {currentZone.atmosphere}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 mb-5">
-                      {currentZone.landmarks.map((lm) => (
-                        <span
-                          key={lm}
-                          className="px-2.5 py-1 rounded-md bg-pampa text-carbon text-xs font-bold border border-pampa-border"
-                        >
-                          📍 {lm}
-                        </span>
-                      ))}
-                    </div>
+        {/* =========================================================
+            3. NOTICIAS Y APERTURAS — NOTA A SANGRE + LISTA CON FILETES
+           ========================================================= */}
+        <section id="noticias" className="border-b border-carbon/20 bg-pampa">
+          <div className="editorial-container section-pad">
+            <div className="pb-6 mb-10 border-b border-carbon/20 flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="font-mono type-meta mb-2">CRÓNICAS DEL BARRIO</p>
+                <h2 className="font-display type-h2 font-semibold uppercase">
+                  Noticias y Nuevas Aperturas
+                </h2>
+              </div>
+              <p className="type-meta text-carbon/75">
+                Hacé clic en cualquier nota para leerla completa
+              </p>
+            </div>
+
+            {/* Nota principal sin caja (foto a sangre + título Fraunces) */}
+            {leadArticle && (
+              <article className="mb-12">
+                <button
+                  type="button"
+                  onClick={() => setActiveArticle(leadArticle)}
+                  className="w-full text-left group block"
+                >
+                  <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] overflow-hidden mb-6">
+                    <Image
+                      src={leadArticle.imageUrl}
+                      alt={leadArticle.title}
+                      fill
+                      sizes="100vw"
+                      className="object-cover opacity-100"
+                    />
                   </div>
+                  <p className="font-mono type-meta text-carbon/75 mb-3">
+                    {leadArticle.category} · {leadArticle.zone} · {leadArticle.publishedLabel} · Lectura {leadArticle.readTime}
+                  </p>
+                  <h3 className="font-serif type-h2 font-semibold text-carbon mb-4 group-hover:underline underline-offset-4">
+                    {leadArticle.title}
+                  </h3>
+                  <p className="type-body text-carbon/80 max-w-3xl mb-5">
+                    {leadArticle.excerpt}
+                  </p>
+                  <span className="min-h-[48px] inline-flex items-center gap-2 font-semibold text-[1rem] text-chicago underline underline-offset-4">
+                    Leer crónica completa
+                    <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                  </span>
+                </button>
+              </article>
+            )}
+
+            {/* Resto de notas en lista con filetes */}
+            <div className="border-t border-carbon/20 divide-y divide-carbon/20">
+              {secondaryArticles.map((article) => (
+                <article key={article.id} className="py-8">
                   <button
                     type="button"
-                    onClick={() => jumpToDirectoryWithZone(currentZone.id)}
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-ladrillo hover:bg-ladrillo-dark text-white text-sm font-bold transition-colors"
-                  >
-                    Ver comercios en {currentZone.id}
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================
-            5. NOTICIAS Y NUEVAS APERTURAS (CON MODAL EDITORIAL)
-           ========================================================= */}
-        <section id="noticias" className="py-16">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-              <div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-ladrillo mb-1.5">
-                  <Newspaper className="w-3.5 h-3.5" />
-                  Actualidad barrial
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-carbon">
-                  Nuevas Aperturas y Crónicas de Mataderos
-                </h2>
-              </div>
-              <span className="text-xs font-bold text-cuero">
-                Hacé clic en cualquier nota para leerla completa
-              </span>
-            </div>
-
-            <div className="grid lg:grid-cols-12 gap-6">
-              {articles[0] && (
-                <article
-                  onClick={() => setActiveArticle(articles[0])}
-                  className="lg:col-span-7 group cursor-pointer bg-pampa-surface border border-pampa-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col"
-                >
-                  <div className="relative h-64 sm:h-72 overflow-hidden">
-                    <img
-                      src={articles[0].imageUrl}
-                      alt={articles[0].title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-ladrillo text-white text-xs font-extrabold shadow">
-                      {articles[0].category}
-                    </span>
-                  </div>
-                  <div className="p-6 flex-1 flex flex-col justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 text-xs font-bold text-cuero mb-2">
-                        <span>{articles[0].zone}</span>
-                        <span>·</span>
-                        <span>{articles[0].publishedLabel}</span>
-                        <span>·</span>
-                        <span>Lectura {articles[0].readTime}</span>
-                      </div>
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-carbon group-hover:text-chicago transition-colors mb-3">
-                        {articles[0].title}
-                      </h3>
-                      <p className="text-sm text-carbon/75 leading-relaxed mb-4">
-                        {articles[0].excerpt}
-                      </p>
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-extrabold text-ladrillo">
-                      Leer crónica completa
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </div>
-                </article>
-              )}
-
-              <div className="lg:col-span-5 flex flex-col gap-5">
-                {articles.slice(1).map((article) => (
-                  <article
-                    key={article.id}
                     onClick={() => setActiveArticle(article)}
-                    className="group cursor-pointer bg-pampa-surface border border-pampa-border rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 grid sm:grid-cols-12 flex-1"
+                    className="w-full text-left grid md:grid-cols-12 gap-6 items-center group"
                   >
-                    <div className="sm:col-span-5 relative min-h-[160px] overflow-hidden">
-                      <img
-                        src={article.imageUrl}
-                        alt={article.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <span
-                        className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold shadow ${
-                          article.category === 'Agenda Cultural'
-                            ? 'bg-celeste text-carbon'
-                            : 'bg-carbon text-pampa'
-                        }`}
-                      >
-                        {article.category}
-                      </span>
-                    </div>
-                    <div className="sm:col-span-7 p-5 flex flex-col justify-between">
-                      <div>
-                        <div className="text-[11px] font-bold text-cuero mb-1.5">
-                          {article.zone} · {article.publishedLabel}
-                        </div>
-                        <h3 className="text-base font-extrabold text-carbon group-hover:text-chicago transition-colors mb-2 leading-snug">
-                          {article.title}
-                        </h3>
-                        <p className="text-xs text-carbon/70 line-clamp-2">{article.excerpt}</p>
+                    <div className="md:col-span-3">
+                      <div className="relative aspect-[4/3] w-full overflow-hidden border border-carbon/20">
+                        <Image
+                          src={article.imageUrl}
+                          alt={article.title}
+                          fill
+                          sizes="(max-width: 768px) 100vw, 25vw"
+                          className="object-cover opacity-100"
+                        />
                       </div>
-                      <span className="inline-flex items-center gap-1 text-xs font-extrabold text-ladrillo mt-3">
-                        Leer nota <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+
+                    <div className="md:col-span-7">
+                      <p className="font-mono type-meta text-carbon/75 mb-2">
+                        {article.category} · {article.zone} · {article.publishedLabel}
+                      </p>
+                      <h3 className="font-serif type-h3 font-medium text-carbon mb-2 group-hover:underline underline-offset-4">
+                        {article.title}
+                      </h3>
+                      <p className="type-body text-carbon/80">{article.excerpt}</p>
+                    </div>
+
+                    <div className="md:col-span-2 flex md:justify-end">
+                      <span className="min-h-[48px] inline-flex items-center gap-2 font-semibold text-[1rem] text-chicago">
+                        Leer nota
+                        <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
                       </span>
                     </div>
-                  </article>
-                ))}
-              </div>
+                  </button>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
         {/* =========================================================
-            6. GUÍA DE COMERCIOS INTERACTIVA
+            4. GUÍA DE COMERCIOS — GRILLA CON FILETES DE 1PX
            ========================================================= */}
-        <section id="directorio" className="py-16 bg-pampa-deep/65 border-y border-pampa-border">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-7">
+        <section id="directorio" className="border-b border-carbon/20 bg-pampa-surface">
+          <div className="editorial-container section-pad">
+            <div className="pb-6 mb-8 border-b border-carbon/20 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-chicago mb-1.5">
-                  <Store className="w-3.5 h-3.5" />
-                  Directorio comercial
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-carbon">
-                  Guía de Comercios de Mataderos
+                <p className="font-mono type-meta mb-2">GUÍA COMERCIAL DE MATADEROS</p>
+                <h2 className="font-display type-h2 font-semibold uppercase">
+                  Comercios del Barrio
                 </h2>
               </div>
-              <div className="text-sm font-bold text-cuero">
-                Mostrando {filteredBusinesses.length}{' '}
+              <p className="font-mono type-meta text-carbon/80">
+                Mostrando {visibleBusinesses.length} de {filteredBusinesses.length}{' '}
                 {filteredBusinesses.length === 1 ? 'comercio' : 'comercios'}
-                {selectedZoneFilter ? ` en ${selectedZoneFilter}` : ''}
-              </div>
+                {selectedZoneFilter ? ` · ${selectedZoneFilter}` : ''}
+              </p>
             </div>
 
-            {/* Filtros */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
-              <div className="flex flex-wrap gap-2">
+            {/* Índice por rubro + buscador editorial + filtro abiertos */}
+            <div className="grid lg:grid-cols-12 gap-4 pb-8 mb-8 border-b border-carbon/20 items-stretch">
+              <div className="lg:col-span-7 flex flex-wrap gap-2">
                 {CATEGORIES.map((cat) => {
                   const active = selectedCategory === cat;
                   return (
@@ -665,10 +590,10 @@ export default function PortalClient({
                       key={cat}
                       type="button"
                       onClick={() => setSelectedCategory(cat)}
-                      className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold border transition-all ${
+                      className={`min-h-[48px] px-4 border text-[1rem] font-medium color-field ${
                         active
-                          ? 'bg-ladrillo text-white border-ladrillo shadow-sm'
-                          : 'bg-pampa-surface text-carbon/80 border-pampa-border hover:border-carbon'
+                          ? 'bg-carbon text-pampa border-carbon font-semibold'
+                          : 'bg-transparent text-carbon border-carbon/25 hover:border-carbon'
                       }`}
                     >
                       {cat}
@@ -677,111 +602,132 @@ export default function PortalClient({
                 })}
               </div>
 
-              <div className="flex flex-wrap items-center gap-4">
-                <label className="inline-flex items-center gap-2.5 cursor-pointer select-none">
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={openOnly}
-                    onClick={() => setOpenOnly((v) => !v)}
-                    className={`w-11 h-6 rounded-full transition-colors p-0.5 ${
-                      openOnly ? 'bg-chicago' : 'bg-pampa-border'
-                    }`}
-                  >
-                    <span
-                      className={`block w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                        openOnly ? 'translate-x-5' : 'translate-x-0'
-                      }`}
-                    />
-                  </button>
-                  <span className="text-sm font-bold text-carbon">Solo abiertos ahora</span>
+              <div className="lg:col-span-5 flex flex-col sm:flex-row gap-3">
+                <label className="sr-only" htmlFor="directory-search">
+                  Buscar comercio o calle
                 </label>
-
-                {hasActiveFilters && (
-                  <button
-                    type="button"
-                    onClick={resetFilters}
-                    className="text-xs font-extrabold text-ladrillo underline hover:text-ladrillo-dark"
-                  >
-                    Limpiar filtros
-                  </button>
-                )}
+                <input
+                  id="directory-search"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Buscar comercio, rubro o calle..."
+                  className="min-h-[48px] flex-1 px-4 bg-white border border-carbon/30 text-[1rem] text-carbon placeholder:text-carbon/50"
+                />
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={openOnly}
+                  onClick={() => setOpenOnly((v) => !v)}
+                  className={`min-h-[48px] px-4 border inline-flex items-center justify-center gap-2 text-[1rem] font-medium color-field shrink-0 ${
+                    openOnly
+                      ? 'bg-chicago text-pampa border-chicago font-semibold'
+                      : 'bg-transparent text-carbon border-carbon/30 hover:border-carbon'
+                  }`}
+                >
+                  <span
+                    className={`inline-block w-2 h-2 rounded-full ${
+                      openOnly ? 'bg-pampa' : 'bg-chicago'
+                    }`}
+                    aria-hidden="true"
+                  />
+                  Abierto ahora
+                </button>
               </div>
             </div>
 
-            {/* Grilla */}
-            {filteredBusinesses.length > 0 ? (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredBusinesses.map((biz) => (
-                  <article
-                    key={biz.id}
-                    className={`group bg-pampa-surface rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl flex flex-col ${
-                      biz.hasSubdomain
-                        ? 'border-ladrillo/70 shadow-md'
-                        : 'border-pampa-border shadow-sm'
-                    }`}
-                  >
-                    <div className="relative h-44 overflow-hidden bg-pampa-deep">
-                      <img
-                        src={biz.heroImage}
-                        alt={biz.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      {biz.hasSubdomain && (
-                        <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-ladrillo text-white text-[11px] font-extrabold shadow flex items-center gap-1">
-                          <Globe className="w-3 h-3" />
-                          Web Oficial
-                        </span>
-                      )}
-                      <span className="absolute bottom-3 left-3 px-2.5 py-0.5 rounded-md bg-carbon/80 text-pampa text-[11px] font-bold backdrop-blur-sm">
-                        {biz.zone}
-                      </span>
-                    </div>
+            {hasActiveFilters && (
+              <div className="mb-8 flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-carbon/20">
+                <p className="type-meta text-carbon/80">
+                  Filtros activos:{' '}
+                  {[
+                    selectedCategory !== 'Todos' ? selectedCategory : null,
+                    selectedZoneFilter || null,
+                    openOnly ? 'Abierto ahora' : null,
+                    searchQuery.trim() ? `"${searchQuery.trim()}"` : null
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
+                </p>
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="min-h-[48px] px-4 border border-carbon/30 text-[1rem] font-semibold hover:bg-carbon hover:text-pampa color-field"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            )}
 
-                    <div className="p-5 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between gap-2 mb-2">
-                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-ladrillo">
-                          {biz.category}
-                        </span>
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
-                            biz.isOpenNow
-                              ? 'bg-emerald-100 text-emerald-900'
-                              : 'bg-stone-200 text-stone-700'
-                          }`}
-                        >
+            {/* Grilla con filetes de 1px */}
+            {visibleBusinesses.length > 0 ? (
+              <>
+                <div className="grid md:grid-cols-2 border-t border-l border-carbon/20">
+                  {visibleBusinesses.map((biz) => (
+                    <article
+                      key={biz.id}
+                      className="border-r border-b border-carbon/20 p-6 sm:p-8 flex flex-col justify-between gap-6 bg-pampa-surface"
+                    >
+                      <div>
+                        <div className="relative aspect-[4/5] w-full overflow-hidden border border-carbon/20 mb-6">
+                          <Image
+                            src={biz.heroImage}
+                            alt={`${biz.name} en ${biz.address}`}
+                            fill
+                            sizes="(max-width: 768px) 100vw, 45vw"
+                            className="object-cover opacity-100"
+                          />
+                        </div>
+
+                        <p className="type-meta text-carbon/80 mb-2">
                           {biz.isOpenNow && (
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                            <span
+                              className="inline-block w-2 h-2 rounded-full bg-chicago mr-2 align-middle"
+                              aria-hidden="true"
+                            />
                           )}
-                          {biz.hoursSummary}
-                        </span>
+                          {biz.category} · {biz.zone} · {biz.hoursSummary}
+                        </p>
+
+                        <h3 className="type-h3 font-semibold text-carbon mb-2">
+                          {biz.name}
+                        </h3>
+
+                        <p className="type-meta text-carbon/75 mb-3">
+                          {biz.address} · Mataderos
+                        </p>
+
+                        <p className="type-body text-carbon/85 mb-4">
+                          {biz.description}
+                        </p>
+
+                        {biz.hasSubdomain && (
+                          <p className="font-mono type-meta text-chicago pb-2">
+                            Web Oficial · {biz.slug}.mataderos.ar
+                          </p>
+                        )}
                       </div>
 
-                      <h3 className="text-lg font-extrabold text-carbon mb-1">{biz.name}</h3>
-                      <p className="text-xs font-bold text-cuero flex items-center gap-1 mb-2.5">
-                        <MapPin className="w-3.5 h-3.5 shrink-0" />
-                        {biz.address}
-                      </p>
-                      <p className="text-sm text-carbon/75 mb-5 flex-1">{biz.description}</p>
-
-                      <div className="pt-3.5 border-t border-pampa-border flex gap-2">
-                        <a
-                          href={`https://wa.me/${biz.whatsapp}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-pampa-border hover:border-chicago text-carbon text-xs font-bold transition-colors"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5 text-chicago" />
-                          WhatsApp
-                        </a>
+                      <div className="pt-4 border-t border-carbon/20 flex flex-wrap gap-3">
+                        {Boolean(biz.whatsapp.trim()) && (
+                          <a
+                            href={`https://wa.me/${biz.whatsapp}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="min-h-[48px] flex-1 px-4 bg-chicago hover:bg-chicago-dark text-pampa font-semibold text-[1rem] inline-flex items-center justify-center gap-2 color-field"
+                          >
+                            WhatsApp
+                            <ArrowUpRight className="w-4 h-4" strokeWidth={1.5} />
+                          </a>
+                        )}
 
                         {biz.hasSubdomain ? (
                           <Link
                             href={`/comercio/${biz.slug}`}
-                            className="flex-[1.35] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-ladrillo hover:bg-ladrillo-dark text-white text-xs font-extrabold transition-colors shadow-sm"
+                            className="min-h-[48px] flex-1 px-4 border border-carbon text-carbon hover:bg-carbon hover:text-pampa font-semibold text-[1rem] inline-flex items-center justify-center gap-2 color-field"
                           >
-                            Ver {biz.slug}.mataderos.ar
-                            <ExternalLink className="w-3 h-3" />
+                            Ver Web Oficial
+                            <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
                           </Link>
                         ) : (
                           <a
@@ -790,27 +736,42 @@ export default function PortalClient({
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-chicago/10 hover:bg-chicago text-chicago hover:text-white text-xs font-bold transition-colors"
+                            className="min-h-[48px] flex-1 px-4 border border-carbon/35 text-carbon hover:border-carbon font-semibold text-[1rem] inline-flex items-center justify-center gap-2 color-field"
                           >
                             Ver mapa
+                            <ArrowUpRight className="w-4 h-4" strokeWidth={1.5} />
                           </a>
                         )}
                       </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
+                    </article>
+                  ))}
+                </div>
+
+                {!hasActiveFilters && filteredBusinesses.length > 4 && (
+                  <div className="mt-8 flex justify-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowAllBusinesses((prev) => !prev)}
+                      className="min-h-[48px] px-8 border border-carbon text-carbon hover:bg-carbon hover:text-pampa font-semibold text-[1rem] color-field"
+                    >
+                      {showAllBusinesses
+                        ? 'Mostrar solo destacados'
+                        : `Ver todos los comercios (${filteredBusinesses.length})`}
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
-              <div className="bg-pampa-surface border-2 border-dashed border-pampa-border rounded-2xl p-10 text-center">
-                <p className="text-carbon/75 font-semibold mb-4">
+              <div className="border border-carbon/25 p-10 text-center">
+                <p className="type-body mb-6">
                   No encontramos comercios con esos filtros en Mataderos.
                 </p>
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="px-5 py-2.5 rounded-lg bg-ladrillo text-white text-sm font-bold"
+                  className="min-h-[48px] px-6 bg-chicago text-pampa font-semibold text-[1rem]"
                 >
-                  Ver toda la guía del barrio
+                  Ver todos los comercios
                 </button>
               </div>
             )}
@@ -818,300 +779,173 @@ export default function PortalClient({
         </section>
 
         {/* =========================================================
-            7. ACTIVIDADES, FERIA DE MATADEROS Y CULTURA
-               (Acentos Ladrillo #B5502D + Celeste #6FA8DC)
+            5. AGENDA — FILAS TIPO CARTELERA CON FILETE CELESTE Y FECHA ENORME
            ========================================================= */}
-        <section id="feria-cultura" className="py-16">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+        <section id="agenda" className="border-b border-carbon/20 bg-pampa">
+          <div className="editorial-container section-pad">
+            <div className="pb-6 mb-8 border-b border-carbon/20 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-celeste-soft text-carbon text-xs font-extrabold mb-2">
-                  <Calendar className="w-3.5 h-3.5 text-ladrillo" />
-                  Feria de Mataderos &amp; Agenda Comuna 9
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-carbon">
-                  Actividades, Música y Encuentro Vecinal
+                <div className="h-[4px] w-20 bg-celeste mb-4" aria-hidden="true" />
+                <p className="font-mono type-meta mb-2">CARTELERA CULTURAL Y FERIA</p>
+                <h2 className="font-display type-h2 font-semibold uppercase">
+                  Agenda de Mataderos
                 </h2>
               </div>
-              <p className="text-sm text-carbon/70 max-w-md">
-                Lo que mueve a las familias todos los fines de semana entre La Recova, el Cine Teatro El Plata y los clubes del barrio.
+              <p className="type-meta text-carbon/75">
+                Feria de La Recova, Cine Teatro El Plata y peñas
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              {events.map((ev) => (
-                <article
+            <div className="border-t border-carbon/20 divide-y divide-carbon/20">
+              {events.map((ev, index) => (
+                <div
                   key={ev.id}
-                  className="bg-pampa-surface border border-pampa-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between relative overflow-hidden"
+                  className={`py-8 grid lg:grid-cols-12 gap-6 items-baseline ${
+                    index === 0 ? 'bg-celeste/20 px-4 sm:px-6 border-l-4 border-l-celeste' : ''
+                  }`}
                 >
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-ladrillo via-celeste to-chicago" />
-                  <div>
-                    <div className="flex items-center justify-between gap-2 mb-4 pt-1">
-                      <span className="px-2.5 py-1 rounded-full bg-celeste text-carbon text-[11px] font-extrabold">
-                        {ev.category}
-                      </span>
-                      <span className="text-[11px] font-extrabold text-ladrillo uppercase tracking-wider">
-                        {ev.highlightTag}
-                      </span>
-                    </div>
-                    <h3 className="text-lg font-extrabold text-carbon mb-2">{ev.title}</h3>
-                    <p className="text-sm text-carbon/75 leading-relaxed mb-5">
-                      {ev.description}
+                  <div className="lg:col-span-4">
+                    <p className="font-display type-h2 font-semibold uppercase text-carbon">
+                      {ev.dateLabel}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-pampa-border space-y-1.5 text-xs font-bold text-carbon/80">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-ladrillo shrink-0" />
-                      <span>
-                        {ev.dateLabel} · {ev.timeLabel}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-chicago shrink-0" />
-                      <span>{ev.location}</span>
-                    </div>
+                  <div className="lg:col-span-5">
+                    <h3 className="type-h3 font-semibold text-carbon mb-2">
+                      {ev.title}
+                    </h3>
+                    <p className="type-body text-carbon/80">{ev.description}</p>
                   </div>
-                </article>
+
+                  <div className="lg:col-span-3 lg:text-right font-mono type-meta text-carbon/85 space-y-1">
+                    <p>{ev.timeLabel}</p>
+                    <p>{ev.location}</p>
+                    <p>{ev.category} · {ev.highlightTag}</p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* =========================================================
-            8. RAÍCES Y TRADICIÓN: EL ALMA GAUCHA (Tonos Cuero y Crema)
+            6. HISTORIA — CAMPO CUERO / CREMA, FRAUNCES Y FOTO STICKY
            ========================================================= */}
         <section
           id="historia"
-          className="py-16 bg-cuero text-pampa border-y border-cuero-dark relative overflow-hidden"
+          data-surface="dark"
+          className="bg-cuero text-pampa border-b border-carbon/20 color-field"
         >
-          <div className="max-w-6xl mx-auto px-4 relative z-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-9">
-              <div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pampa/15 text-pampa text-xs font-extrabold uppercase tracking-wider mb-2">
-                  <Flame className="w-3.5 h-3.5 text-pampa" />
-                  Historia y Tradición
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                  De los Antiguos Corrales al Mataderos de Hoy
-                </h2>
-              </div>
-              <p className="text-sm text-pampa/85 max-w-md">
-                Nuestra identidad nace donde se abrazan la pampa, la industria del trabajo y el orgullo de barrio.
-              </p>
+          <div className="editorial-container section-pad">
+            <div className="pb-6 mb-12 border-b border-pampa/25">
+              <p className="font-mono type-meta mb-2">MEMORIA DEL BARRIO</p>
+              <h2 className="font-serif type-h2 font-semibold text-pampa">
+                De los Antiguos Corrales al Mataderos de Hoy
+              </h2>
             </div>
 
-            <div className="grid lg:grid-cols-12 gap-6 items-stretch">
-              <div className="lg:col-span-5 flex flex-col gap-3">
-                {HERITAGE_MILESTONES.map((m, idx) => {
-                  const active = idx === activeMilestoneIdx;
-                  return (
-                    <button
-                      key={m.year}
-                      type="button"
-                      onClick={() => setActiveMilestoneIdx(idx)}
-                      className={`text-left p-4 rounded-xl border transition-all ${
-                        active
-                          ? 'bg-pampa text-carbon border-pampa shadow-lg'
-                          : 'bg-cuero-dark/55 text-pampa border-white/15 hover:bg-cuero-dark'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span
-                          className={`text-xs font-extrabold uppercase tracking-wider ${
-                            active ? 'text-ladrillo' : 'text-pampa/75'
-                          }`}
-                        >
-                          {m.year}
-                        </span>
-                        <span className="text-lg">{m.symbol}</span>
-                      </div>
-                      <h3 className="text-base font-extrabold mt-1">{m.title}</h3>
-                    </button>
-                  );
-                })}
+            <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+              {/* Foto que acompaña el scroll */}
+              <div className="lg:col-span-5 lg:sticky lg:top-24">
+                {heritagePhoto && (
+                  <figure className="border border-pampa/30">
+                    <div className="relative aspect-[4/5] w-full overflow-hidden">
+                      <Image
+                        src={heritagePhoto}
+                        alt="Casco Histórico y Feria de Mataderos"
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 38vw"
+                        className="object-cover opacity-100"
+                      />
+                    </div>
+                    <figcaption className="px-4 py-3 border-t border-pampa/25 font-mono type-meta">
+                      Antigua Administración y Recova · Monumento Histórico Nacional
+                    </figcaption>
+                  </figure>
+                )}
               </div>
 
-              <div className="lg:col-span-7 bg-pampa text-carbon rounded-2xl p-7 sm:p-9 shadow-xl flex flex-col justify-between">
-                {HERITAGE_MILESTONES[activeMilestoneIdx] && (
-                  <div key={activeMilestoneIdx} className="animate-fade-up">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cuero/15 text-cuero text-xs font-extrabold mb-3">
-                      <span>{HERITAGE_MILESTONES[activeMilestoneIdx].symbol}</span>
-                      <span>{HERITAGE_MILESTONES[activeMilestoneIdx].year}</span>
-                    </div>
-                    <h3 className="text-2xl sm:text-3xl font-extrabold text-carbon mb-2">
-                      {HERITAGE_MILESTONES[activeMilestoneIdx].title}
+              {/* Hitos continuos con años grandes en Fraunces */}
+              <div className="lg:col-span-7 divide-y divide-pampa/25 border-t border-b border-pampa/25">
+                {HERITAGE_MILESTONES.map((m) => (
+                  <article key={m.year} className="py-10">
+                    <p className="font-serif type-h1 font-semibold text-pampa mb-3">
+                      {m.year}
+                    </p>
+                    <h3 className="font-serif type-h3 font-semibold text-pampa mb-2">
+                      {m.title}
                     </h3>
-                    <p className="text-sm font-bold text-ladrillo mb-4">
-                      {HERITAGE_MILESTONES[activeMilestoneIdx].subtitle}
-                    </p>
-                    <p className="text-base text-carbon/80 leading-relaxed mb-6">
-                      {HERITAGE_MILESTONES[activeMilestoneIdx].description}
-                    </p>
-                  </div>
-                )}
-
-                <div className="pt-5 border-t border-pampa-border flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-cuero">
-                  <span>🏛️ Antigua Administración y Recova: Monumento Histórico Nacional</span>
-                  <button
-                    type="button"
-                    onClick={() => jumpToDirectoryWithZone('Casco Histórico')}
-                    className="text-ladrillo font-extrabold hover:underline"
-                  >
-                    Explorar comercios del Casco Histórico →
-                  </button>
-                </div>
+                    <p className="type-meta text-pampa/85 mb-4">{m.subtitle}</p>
+                    <p className="type-body text-pampa/90">{m.description}</p>
+                  </article>
+                ))}
               </div>
             </div>
           </div>
         </section>
 
         {/* =========================================================
-            9. SIMULADOR B2B EN VIVO: SUMÁ TU COMERCIO Y SUBDOMINIO
+            7. SUMÁ TU COMERCIO — BLOQUE DE CONFIANZA SOBRE BLANCO
            ========================================================= */}
-        <section id="sumar-comercio" className="py-16">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="bg-pampa-surface border-2 border-pampa-border rounded-3xl p-6 sm:p-10 shadow-lg">
-              <div className="grid lg:grid-cols-12 gap-8 items-center mb-10">
-                <div className="lg:col-span-7">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-widest text-chicago mb-2">
-                    <Globe className="w-4 h-4 text-ladrillo" />
-                    Presencia digital accesible para Mataderos
-                  </span>
-                  <h2 className="text-2xl sm:text-4xl font-extrabold text-carbon mb-3">
-                    Tu comercio con web propia en el dominio del barrio
-                  </h2>
-                  <p className="text-sm sm:text-base text-carbon/75 leading-relaxed">
-                    Probá acá cómo quedaría la dirección web de tu negocio. Sin contratar programadores, sin comprar dominio aparte y listo para aparecer cuando un vecino busca en Google.
-                  </p>
-                </div>
-
-                {/* Simulador interactivo de subdominio */}
-                <div className="lg:col-span-5 bg-pampa p-5 rounded-2xl border border-pampa-border">
-                  <label
-                    htmlFor="b2b-slug-input"
-                    className="block text-xs font-extrabold uppercase tracking-wider text-cuero mb-2"
-                  >
-                    Escribí el nombre de tu local:
-                  </label>
-                  <input
-                    id="b2b-slug-input"
-                    type="text"
-                    value={b2bShopInput}
-                    onChange={(e) => setB2bShopInput(e.target.value)}
-                    placeholder="Ej. Panadería Don José"
-                    className="w-full px-3.5 py-2.5 rounded-lg bg-white border border-pampa-border text-sm font-bold text-carbon outline-none focus:border-chicago mb-3"
-                  />
-                  <div className="bg-carbon text-pampa px-3.5 py-2.5 rounded-lg font-mono text-xs sm:text-sm flex items-center justify-between gap-2">
-                    <span className="truncate">
-                      https://<strong className="text-celeste">{simulatedSlug}</strong>.mataderos.ar
-                    </span>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  </div>
-                </div>
+        <section id="sumar-comercio" className="bg-white text-carbon border-b border-carbon/20">
+          <div className="editorial-container section-pad">
+            <div className="grid lg:grid-cols-12 gap-10 items-start">
+              <div className="lg:col-span-6">
+                <p className="font-mono type-meta text-chicago mb-3">
+                  PARA COMERCIANTES Y OFICIOS DE MATADEROS
+                </p>
+                <h2 className="font-display type-h2 font-semibold uppercase mb-5">
+                  Sumá tu comercio al mapa del barrio
+                </h2>
+                <p className="type-body text-carbon/85 mb-5">
+                  La ficha básica en esta guía es gratuita para cualquier local o profesional de la Comuna 9: dirección, horarios reales y botón directo a tu WhatsApp para que el vecino te encuentre caminando o desde casa.
+                </p>
+                <p className="type-body text-carbon/85">
+                  Si querés dar un paso más sin pagar agencias ni dominios aparte, activamos tu <strong>Web Oficial</strong> dentro de Mataderos.ar con servicios, reseñas del barrio y lista para aparecer en Google.
+                </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Plan Gratis */}
-                <div className="bg-pampa/60 border border-pampa-border rounded-2xl p-6 flex flex-col justify-between">
-                  <div>
-                    <span className="inline-block px-3 py-1 rounded-full bg-pampa-deep text-carbon text-xs font-extrabold mb-3">
-                      Para empezar hoy
-                    </span>
-                    <h3 className="text-xl font-extrabold text-carbon mb-1">
-                      Ficha en la Guía Barrial
-                    </h3>
-                    <div className="text-3xl font-extrabold text-carbon mb-4">
-                      $0 <span className="text-sm font-semibold text-carbon/60">/ mes</span>
-                    </div>
-                    <ul className="space-y-2.5 text-sm text-carbon/80 mb-6">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-chicago shrink-0" />
-                        Presencia permanente en el directorio de Mataderos
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-chicago shrink-0" />
-                        Dirección, rubro, horarios y mapa de ubicación
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-chicago shrink-0" />
-                        Botón directo a tu WhatsApp
-                      </li>
-                    </ul>
-                  </div>
+              <div className="lg:col-span-6 border border-carbon/25 p-6 sm:p-8 bg-white">
+                <label
+                  htmlFor="b2b-slug-input"
+                  className="block type-meta font-semibold text-carbon mb-3"
+                >
+                  Escribí el nombre de tu negocio para ver tu dirección Web Oficial:
+                </label>
+                <input
+                  id="b2b-slug-input"
+                  type="text"
+                  value={b2bShopInput}
+                  onChange={(e) => setB2bShopInput(e.target.value)}
+                  placeholder="Ej. Veterinaria Flavio"
+                  className="min-h-[48px] w-full px-4 bg-white border border-carbon/35 text-[1.125rem] text-carbon placeholder:text-carbon/45 mb-4"
+                />
+
+                <div className="px-4 py-3 border border-carbon/20 bg-pampa-surface font-mono type-meta text-carbon mb-6 break-all">
+                  Web Oficial · {simulatedSlug}.mataderos.ar
+                </div>
+
+                {/* Único botón Ladrillo principal por pantalla sobre blanco */}
+                <div className="flex flex-col sm:flex-row gap-3">
                   <a
                     href={`https://wa.me/5491100000000?text=${encodeURIComponent(
-                      `Hola! Quiero cargar la ficha gratuita de "${b2bShopInput || 'mi comercio'}" en Mataderos.ar`
+                      `Hola! Quiero consultar por la ficha o Web Oficial (${simulatedSlug}.mataderos.ar) para mi comercio.`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border-2 border-chicago text-chicago hover:bg-chicago hover:text-white font-extrabold text-sm transition-colors"
+                    className="cta-ladrillo min-h-[48px] px-6 rounded-[4px] bg-ladrillo hover:bg-ladrillo-dark text-white font-semibold text-[1rem] inline-flex items-center justify-center gap-2 color-field"
                   >
-                    Solicitar ficha gratuita por WhatsApp
+                    Pedir Web Oficial por WhatsApp
+                    <ArrowUpRight className="w-4 h-4" strokeWidth={1.5} />
                   </a>
-                </div>
 
-                {/* Plan Subdominio */}
-                <div className="bg-white border-2 border-ladrillo rounded-2xl p-6 shadow-md flex flex-col justify-between relative">
-                  <span className="absolute -top-3 right-6 px-3 py-1 rounded-full bg-ladrillo text-white text-xs font-extrabold shadow">
-                    Más elegido por comercios
-                  </span>
-                  <div>
-                    <span className="inline-block px-3 py-1 rounded-full bg-ladrillo/10 text-ladrillo text-xs font-extrabold mb-3">
-                      Presencia Digital Completa
-                    </span>
-                    <h3 className="text-xl font-extrabold text-carbon mb-1">
-                      Web Propia + Subdominio
-                    </h3>
-                    <div className="text-3xl font-extrabold text-carbon mb-4">
-                      Bajo abono{' '}
-                      <span className="text-sm font-semibold text-carbon/60">/ mensual accesible</span>
-                    </div>
-                    <ul className="space-y-2.5 text-sm text-carbon/80 mb-6">
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-ladrillo shrink-0" />
-                        <span>
-                          Subdominio propio:{' '}
-                          <code className="px-1.5 py-0.5 rounded bg-pampa font-bold text-carbon">
-                            {simulatedSlug}.mataderos.ar
-                          </code>
-                        </span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-ladrillo shrink-0" />
-                        Landing optimizada para celular, Google y turnos por WhatsApp
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-ladrillo shrink-0" />
-                        Nota de bienvenida en portada y badge &ldquo;Web Oficial&rdquo;
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-ladrillo shrink-0" />
-                        Servicios, horarios en vivo y reseñas de vecinos
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-2.5">
-                    <Link
-                      href="/comercio/veterinariaflavio"
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-ladrillo hover:bg-ladrillo-dark text-white font-extrabold text-sm transition-colors shadow-sm"
-                    >
-                      Ver ejemplo real
-                      <ArrowRight className="w-4 h-4" />
-                    </Link>
-                    <a
-                      href={`https://wa.me/5491100000000?text=${encodeURIComponent(
-                        `Hola! Quiero activar la web ${simulatedSlug}.mataderos.ar para mi negocio.`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-chicago hover:bg-chicago-dark text-white font-extrabold text-sm transition-colors"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                      Consultar plan
-                    </a>
-                  </div>
+                  <Link
+                    href="/comercio/veterinariaflavio"
+                    className="min-h-[48px] px-5 border border-carbon text-carbon hover:bg-carbon hover:text-pampa font-semibold text-[1rem] inline-flex items-center justify-center gap-2 color-field"
+                  >
+                    Ver ejemplo real
+                    <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+                  </Link>
                 </div>
               </div>
             </div>
@@ -1120,106 +954,129 @@ export default function PortalClient({
       </main>
 
       {/* =========================================================
-          FOOTER
+          8. FOOTER — FILETE SUPERIOR, LINKS, REDES, HECHO EN MATADEROS
          ========================================================= */}
-      <footer className="bg-carbon text-pampa border-t border-white/10 py-10">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div>
-            <div className="text-xl font-extrabold tracking-tight">
-              Mataderos<span className="text-ladrillo">.ar</span>
-            </div>
-            <p className="text-xs text-pampa/70 mt-1 max-w-md">
-              Portal barrial independiente y plataforma de presencia digital para comercios de Mataderos, Comuna 9, Ciudad Autónoma de Buenos Aires.
+      <footer
+        data-surface="dark"
+        className="bg-carbon text-pampa border-t border-pampa/20"
+      >
+        <div className="editorial-container py-12 grid md:grid-cols-12 gap-8 items-start">
+          <div className="md:col-span-5">
+            <p className="font-display text-3xl font-semibold uppercase mb-3">
+              Mataderos.ar
+            </p>
+            <p className="type-body text-pampa/80 max-w-md">
+              Portal comunitario y guía de comercios de Mataderos, Comuna 9, Ciudad Autónoma de Buenos Aires.
             </p>
           </div>
-          <div className="flex flex-wrap gap-5 text-xs font-bold text-pampa/80">
-            <a href="#noticias" className="hover:text-white">
-              Aperturas
-            </a>
-            <a href="#directorio" className="hover:text-white">
-              Guía de Comercios
-            </a>
-            <a href="#feria-cultura" className="hover:text-white">
-              Feria y Cultura
-            </a>
-            <Link href="/comercio/veterinariaflavio" className="text-celeste hover:underline">
-              veterinariaflavio.mataderos.ar
-            </Link>
-            <Link href="/comercio/tostadorescastro" className="text-celeste hover:underline">
-              tostadorescastro.mataderos.ar
-            </Link>
+
+          <div className="md:col-span-4">
+            <p className="font-mono type-meta text-pampa/70 mb-3">SECCIONES Y EJEMPLOS</p>
+            <div className="flex flex-col">
+              <a href="#corredores" className="min-h-[48px] flex items-center hover:underline underline-offset-4">
+                Corredores del barrio
+              </a>
+              <a href="#directorio" className="min-h-[48px] flex items-center hover:underline underline-offset-4">
+                Guía de comercios
+              </a>
+              <Link href="/comercio/veterinariaflavio" className="min-h-[48px] flex items-center font-mono text-[1rem] hover:underline underline-offset-4">
+                Web Oficial · veterinariaflavio.mataderos.ar
+              </Link>
+              <Link href="/comercio/tostadorescastro" className="min-h-[48px] flex items-center font-mono text-[1rem] hover:underline underline-offset-4">
+                Web Oficial · tostadorescastro.mataderos.ar
+              </Link>
+            </div>
           </div>
+
+          <div className="md:col-span-3">
+            <p className="font-mono type-meta text-pampa/70 mb-3">REDES Y CONTACTO</p>
+            <div className="flex flex-col">
+              <a
+                href="https://wa.me/5491100000000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="min-h-[48px] flex items-center gap-2 hover:underline underline-offset-4"
+              >
+                WhatsApp vecinal
+                <ArrowUpRight className="w-4 h-4" strokeWidth={1.5} />
+              </a>
+              <a
+                href="#sumar-comercio"
+                className="min-h-[48px] flex items-center gap-2 hover:underline underline-offset-4"
+              >
+                Sumar mi comercio
+                <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="editorial-container py-5 border-t border-pampa/20 flex flex-wrap items-center justify-between gap-4 font-mono type-meta">
+          <span>Hecho en Mataderos</span>
+          <span>Comuna 9 · CABA</span>
         </div>
       </footer>
 
       {/* =========================================================
-          MODAL EDITORIAL PARA LEER NOTICIAS COMPLETAS
+          MODAL EDITORIAL PARA LEER NOTAS COMPLETAS
          ========================================================= */}
       {activeArticle && (
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="article-modal-title"
-          className="fixed inset-0 z-50 bg-carbon/75 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-carbon/80 flex items-center justify-center p-4 sm:p-6"
           onClick={() => setActiveArticle(null)}
         >
           <div
-            className="bg-pampa-surface border border-pampa-border rounded-2xl max-w-2xl w-full max-h-[88vh] overflow-y-auto shadow-2xl animate-fade-up"
+            className="bg-pampa-surface border border-carbon max-w-2xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative h-56 sm:h-64">
-              <img
+            <div className="relative aspect-[16/9] w-full border-b border-carbon/20">
+              <Image
                 src={activeArticle.imageUrl}
                 alt={activeArticle.title}
-                className="w-full h-full object-cover"
+                fill
+                sizes="(max-width: 768px) 100vw, 680px"
+                className="object-cover opacity-100"
               />
-              <button
-                type="button"
-                onClick={() => setActiveArticle(null)}
-                aria-label="Cerrar nota"
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-carbon/80 text-white flex items-center justify-center hover:bg-carbon"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              <span className="absolute bottom-4 left-4 px-3 py-1 rounded-full bg-ladrillo text-white text-xs font-extrabold">
-                {activeArticle.category}
-              </span>
             </div>
 
-            <div className="p-6 sm:p-8">
-              <div className="text-xs font-bold text-cuero mb-2">
-                {activeArticle.zone} · {activeArticle.publishedLabel} · Lectura{' '}
-                {activeArticle.readTime}
-              </div>
+            <div className="p-6 sm:p-10">
+              <p className="font-mono type-meta text-carbon/75 mb-3">
+                {activeArticle.category} · {activeArticle.zone} · {activeArticle.publishedLabel} · Lectura {activeArticle.readTime}
+              </p>
+
               <h2
                 id="article-modal-title"
-                className="text-2xl font-extrabold text-carbon leading-snug mb-4"
+                className="font-serif type-h2 font-semibold text-carbon mb-6"
               >
                 {activeArticle.title}
               </h2>
 
-              <div className="space-y-4 text-sm sm:text-base text-carbon/85 leading-relaxed mb-6">
+              <div className="space-y-5 type-body text-carbon/90 mb-8">
                 {activeArticle.content.map((para, index) => (
                   <p key={index}>{para}</p>
                 ))}
               </div>
 
-              <div className="pt-5 border-t border-pampa-border flex flex-wrap items-center justify-between gap-3">
+              <div className="pt-6 border-t border-carbon/20 flex flex-wrap items-center justify-between gap-3">
                 {activeArticle.mentionedBusinessSlug ? (
                   <Link
                     href={`/comercio/${activeArticle.mentionedBusinessSlug}`}
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-chicago hover:bg-chicago-dark text-white text-xs font-extrabold transition-colors"
+                    className="min-h-[48px] px-5 bg-chicago hover:bg-chicago-dark text-pampa font-semibold text-[1rem] inline-flex items-center gap-2 color-field"
                   >
-                    Visitar comercio mencionado ({activeArticle.mentionedBusinessSlug}.mataderos.ar)
-                    <ArrowRight className="w-4 h-4" />
+                    Web Oficial · {activeArticle.mentionedBusinessSlug}.mataderos.ar
+                    <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
                   </Link>
                 ) : (
                   <span />
                 )}
+
                 <button
                   type="button"
                   onClick={() => setActiveArticle(null)}
-                  className="px-4 py-2 rounded-lg border border-pampa-border text-xs font-bold text-carbon hover:bg-pampa-deep"
+                  className="min-h-[48px] px-5 border border-carbon text-carbon hover:bg-carbon hover:text-pampa font-semibold text-[1rem] color-field"
                 >
                   Cerrar nota
                 </button>

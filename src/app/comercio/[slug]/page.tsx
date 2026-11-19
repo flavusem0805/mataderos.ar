@@ -46,8 +46,15 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
         <div className="editorial-container min-h-[56px] py-2 flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/"
-            className="min-h-[48px] inline-flex items-center gap-2 px-3 border border-pampa/30 text-pampa text-[1rem] font-medium hover:bg-pampa hover:text-carbon color-field"
+            className="min-h-[48px] inline-flex items-center gap-2.5 px-3 border border-pampa/30 text-pampa text-[1rem] font-medium hover:bg-pampa hover:text-carbon color-field"
           >
+            <Image
+              src="/logo-emblem.png"
+              alt="Mataderos.ar"
+              width={26}
+              height={26}
+              className="border border-pampa/30 shrink-0"
+            />
             <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
             Volver al Portal Mataderos
           </Link>
@@ -293,9 +300,18 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
          ========================================================= */}
       <footer data-surface="dark" className="bg-carbon text-pampa border-t border-pampa/20">
         <div className="editorial-container py-6 flex flex-wrap items-center justify-between gap-4">
-          <p className="font-mono type-meta text-pampa/85">
-            Web Oficial alojada en Mataderos.ar · Hecho en Mataderos
-          </p>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo-emblem.png"
+              alt="Emblema de Mataderos.ar"
+              width={36}
+              height={36}
+              className="border border-pampa/30 shrink-0"
+            />
+            <p className="font-mono type-meta text-pampa/85">
+              Web Oficial alojada en Mataderos.ar · Hecho en Mataderos
+            </p>
+          </div>
           <Link
             href="/#sumar-comercio"
             className="min-h-[48px] px-5 inline-flex items-center border border-pampa/40 text-pampa hover:bg-pampa hover:text-carbon font-semibold text-[1rem] color-field"

@@ -2,9 +2,34 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mataderos.ar'),
   title: 'Mataderos.ar — Comunidad Barrial, Noticias y Guía de Comercios',
   description:
-    'El portal de Mataderos, Comuna 9 (CABA). Nuevas aperturas, agenda de la Feria y La Recova, historia viva y Web Oficial para comercios del barrio.'
+    'El portal de Mataderos, Comuna 9 (CABA). Nuevas aperturas, agenda de la Feria y La Recova, historia viva y Web Oficial para comercios del barrio.',
+  openGraph: {
+    title: 'Mataderos.ar — Comunidad Barrial, Noticias y Guía de Comercios',
+    description:
+      'Comercios de cercanía, oficios del barrio, aperturas y memoria viva entre La Recova, Emilio Castro y Avenida Alberdi.',
+    url: 'https://mataderos.ar',
+    siteName: 'Mataderos.ar',
+    locale: 'es_AR',
+    type: 'website',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1024,
+        height: 571,
+        alt: 'Mataderos.ar — Emblema Oficial del Barrio'
+      }
+    ]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mataderos.ar — Comunidad Barrial y Guía de Comercios',
+    description:
+      'Comercios de cercanía, oficios, aperturas y memoria viva de Mataderos, Comuna 9.',
+    images: ['/og-image.jpg']
+  }
 };
 
 export default function RootLayout({

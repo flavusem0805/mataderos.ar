@@ -184,8 +184,16 @@ export default function PortalClient({
         <div className="editorial-container flex items-center justify-between gap-4 min-h-[64px]">
           <a
             href="#inicio"
-            className="min-h-[48px] flex items-center gap-3 font-display text-2xl sm:text-3xl tracking-tight font-semibold uppercase"
+            className="min-h-[48px] py-1.5 flex items-center gap-3 font-display text-2xl sm:text-3xl tracking-tight font-semibold uppercase"
           >
+            <Image
+              src="/logo-emblem.png"
+              alt="Emblema de Mataderos.ar"
+              width={40}
+              height={40}
+              priority
+              className="border border-pampa/40 shrink-0"
+            />
             <span>Mataderos.ar</span>
           </a>
 
@@ -310,6 +318,16 @@ export default function PortalClient({
             {/* Tapa monumental + fotografía única */}
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-end my-auto">
               <div className="lg:col-span-7">
+                <div className="mb-6 inline-block border border-pampa/30 p-1.5 bg-pampa">
+                  <Image
+                    src="/logo-emblem.png"
+                    alt="Escudo de Mataderos — La Recova y El Torito"
+                    width={92}
+                    height={92}
+                    priority
+                    className="block"
+                  />
+                </div>
                 <h1 className="font-display type-h1 font-semibold uppercase text-pampa mb-6">
                   MATADEROS
                 </h1>
@@ -962,9 +980,18 @@ export default function PortalClient({
       >
         <div className="editorial-container py-12 grid md:grid-cols-12 gap-8 items-start">
           <div className="md:col-span-5">
-            <p className="font-display text-3xl font-semibold uppercase mb-3">
-              Mataderos.ar
-            </p>
+            <div className="flex items-center gap-3.5 mb-4">
+              <Image
+                src="/logo-emblem.png"
+                alt="Emblema de Mataderos.ar"
+                width={52}
+                height={52}
+                className="border border-pampa/35 shrink-0"
+              />
+              <p className="font-display text-3xl font-semibold uppercase">
+                Mataderos.ar
+              </p>
+            </div>
             <p className="type-body text-pampa/80 max-w-md">
               Portal comunitario y guía de comercios de Mataderos, Comuna 9, Ciudad Autónoma de Buenos Aires.
             </p>

@@ -12,8 +12,8 @@
  * El embed usa el bloque oficial de Instagram (blockquote.instagram-media
  * y embed.js) recién cuando alguien pide ver la publicación.
  *
- * Si el array queda vacío, la nota sigue con la foto acreditada
- * (avenida de los Corrales, Ch nch, CC BY-SA 3.0) y el botón al perfil.
+ * Si el array queda vacío, la nota sigue con la fachada publicada por el GCBA
+ * y el botón al perfil.
  * Desde este entorno el perfil redirige al login, así que no se pudieron
  * elegir publicaciones.
  */

@@ -28,7 +28,7 @@ export function ElPlataInstagram() {
         </ul>
       ) : (
         <p className="mt-4 text-lg leading-relaxed">
-          La foto de esta nota sigue siendo la de la avenida de los Corrales, con autor y licencia. No es una imagen del teatro.
+          La foto de arriba es la fachada del teatro, publicada por el Gobierno de la Ciudad. Las publicaciones de Instagram se muestran acá solo cuando hay URLs cargadas, sin copiar sus archivos.
         </p>
       )}
     </section>

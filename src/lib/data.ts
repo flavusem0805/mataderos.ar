@@ -669,6 +669,7 @@ export interface ViviTile {
   imageUrl: string;
   imageAlt: string;
   imageCredit: string;
+  imageCreditHref?: string;
 }
 
 export const HERO_MEDIA = {
@@ -831,9 +832,11 @@ export const VIVI_TILES: ViviTile[] = [
     title: 'El Plata',
     line: 'Cine y teatro en la sala de Av. Alberdi 5765.',
     href: '/notas/cine-teatro-el-plata',
-    imageUrl: '/notas/vista-corrales.jpg',
-    imageAlt: 'Avenida de los Corrales un domingo de feria. No es la fachada del Cine Teatro El Plata.',
-    imageCredit: 'Ch nch, 2011 · CC BY-SA 3.0. No es la sala.'
+    imageUrl: '/notas/el-plata.jpg',
+    imageAlt: 'Fachada del Cine Teatro El Plata sobre la avenida Juan B. Alberdi, con el nombre EL PLATA en el frente.',
+    imageCredit: 'Foto: Gobierno de la Ciudad de Buenos Aires',
+    imageCreditHref:
+      'https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos'
   },
   {
     id: 'vivi-corredores',

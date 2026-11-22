@@ -160,10 +160,18 @@ export default async function NotaPage({ params }: NotaPageProps) {
             />
           </div>
           <figcaption className="mt-2 max-w-[75ch] font-mono text-base leading-relaxed">
-            Foto: {nota.image.author}, {nota.image.taken}. {nota.image.alt} Licencia {nota.image.license}. {nota.image.changes}{' '}
-            <a href={nota.image.sourceUrl} className="underline underline-offset-4">Fuente</a>
-            {' · '}
-            <a href={nota.image.licenseUrl} className="underline underline-offset-4">Licencia</a>
+            Foto: {nota.image.author}, {nota.image.taken}. {nota.image.alt} {nota.image.changes}{' '}
+            <a href={nota.image.sourceUrl} className="underline underline-offset-4">
+              Fuente
+            </a>
+            {nota.image.license.startsWith('CC') && (
+              <>
+                {' · '}
+                <a href={nota.image.licenseUrl} className="underline underline-offset-4">
+                  {nota.image.license}
+                </a>
+              </>
+            )}
           </figcaption>
         </figure>
 

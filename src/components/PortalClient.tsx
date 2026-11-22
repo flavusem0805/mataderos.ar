@@ -606,10 +606,32 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
                 key={venue.id}
                 id={`agenda-${venue.id}`}
                 data-snap-card
-                className={`relative w-[88%] min-w-0 shrink-0 snap-start border bg-pampa-surface p-5 [hyphens:manual] [overflow-wrap:normal] sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
+                className={`relative flex w-[88%] min-w-0 shrink-0 snap-start flex-col border bg-pampa-surface [hyphens:manual] [overflow-wrap:normal] sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
                   isSoonest ? 'border-2 border-carbon' : 'border-carbon/30'
                 }`}
               >
+                {venue.id === 'el-plata' && (
+                  <figure className="min-w-0">
+                    <span className="relative block aspect-[16/9] overflow-hidden">
+                      <PhotoFill
+                        src="/notas/el-plata.jpg"
+                        alt="Fachada del Cine Teatro El Plata sobre la avenida Juan B. Alberdi, con el nombre EL PLATA en el frente."
+                        sizes="(max-width: 1024px) 88vw, 33vw"
+                      />
+                    </span>
+                    <figcaption className="px-5 pt-3 font-mono text-base leading-snug">
+                      <a
+                        href="https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos"
+                        className="underline underline-offset-4"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Foto: Gobierno de la Ciudad de Buenos Aires
+                      </a>
+                    </figcaption>
+                  </figure>
+                )}
+                <div className="p-5">
                 <p className="font-mono text-base">{isSoonest ? 'El más cercano' : 'Cartelera'}</p>
                 <h3 className="mt-2 font-display text-[clamp(1.75rem,2.5vw,2.25rem)] font-semibold uppercase leading-none">
                   {venue.venue}
@@ -672,6 +694,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
                     <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                   </button>
                 </div>
+                </div>
               </article>
             );
           })}
@@ -724,16 +747,28 @@ function ViviTile({
       <span className={`relative block overflow-hidden ${imageClass}`}>
         <PhotoFill src={tile.imageUrl} alt={tile.imageAlt} sizes="(max-width: 1024px) 85vw, 25vw" />
       </span>
-      <span className="block p-4">
+      <span className="block p-4 pb-0">
         <span className="block font-display text-[clamp(1.75rem,2vw,2.25rem)] font-semibold uppercase leading-none group-hover:underline group-hover:underline-offset-4">
           {tile.title}
         </span>
         <span className="mt-3 block text-lg leading-snug [hyphens:manual] [overflow-wrap:normal] [word-break:normal]">
           {tile.line}
         </span>
-        <span className="mt-3 block font-mono text-base leading-snug text-pampa/80">{tile.imageCredit}</span>
       </span>
     </>
+  );
+
+  const credit = tile.imageCreditHref ? (
+    <a
+      href={tile.imageCreditHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-3 block font-mono text-base leading-snug text-pampa underline underline-offset-4"
+    >
+      {tile.imageCredit}
+    </a>
+  ) : (
+    <span className="mt-3 block font-mono text-base leading-snug text-pampa/80">{tile.imageCredit}</span>
   );
 
   if (tile.id === 'vivi-plata') {
@@ -742,7 +777,8 @@ function ViviTile({
         <a href={tile.href} aria-label={`${tile.title}. ${tile.line}`} className="group block">
           {figure}
         </a>
-        <div className="px-4 pb-4">
+        <div className="space-y-4 px-4 py-4">
+          {credit}
           <ElPlataInstagramLink tone="dark" />
         </div>
       </div>
@@ -756,6 +792,7 @@ function ViviTile({
       className="group block border border-pampa/30 bg-carbon"
     >
       {figure}
+      <span className="block px-4 pb-4">{credit}</span>
     </a>
   );
 }

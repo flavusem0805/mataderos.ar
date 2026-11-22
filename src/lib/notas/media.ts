@@ -60,6 +60,16 @@ export const FOTOS = {
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Vista_desde_Av._De_los_Corrales,_domingo_dia_de_Feria.jpg',
     changes: 'Copia reducida para la web. Subida a Wikimedia en el marco de Wiki Loves Monuments 2012.'
   },
+  elPlata: {
+    src: '/notas/el-plata.jpg',
+    alt: 'Fachada del Cine Teatro El Plata sobre la avenida Juan B. Alberdi, con el nombre EL PLATA en el frente.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'octubre de 2021',
+    license: 'Nota oficial del GCBA',
+    licenseUrl: 'https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos',
+    sourceUrl: 'https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos',
+    changes: 'Copia JPEG de la imagen publicada en esa nota. Archivo original: https://static.buenosaires.gob.ar/sites/default/files/media/image/2021/10/15/1ee37c06a4d00fbcf73555e0a4c19a6ae2919424.png'
+  },
   gauchos: {
     src: '/notas/gauchos-feria.jpg',
     alt: 'Jinetes en la Feria de Mataderos, sobre la avenida Lisandro de la Torre.',

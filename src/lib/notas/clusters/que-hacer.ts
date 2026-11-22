@@ -343,7 +343,7 @@ export const QUE_HACER: Nota[] = [
     dek: 'Fue La Scala y le decían el Gran Rex de Mataderos. Cerró en 1987. Los vecinos lo pelearon durante años. Volvió a abrir en octubre de 2021.',
     category: 'Cultura',
     publishedAt: '2026-09-24',
-    image: 'corrales',
+    image: 'elPlata',
     datos: {
       title: 'La sala',
       rows: [
@@ -412,7 +412,7 @@ export const QUE_HACER: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'No tenemos una foto propia de la sala con licencia identificada, y por eso esta página no muestra una fachada que no es. La imagen es la avenida de los Corrales un domingo, de Ch nch, y el pie lo dice. El edificio que hay que ir a ver está sobre Alberdi. La guía de [qué hacer en Mataderos](/notas/que-hacer-en-mataderos) lo deja en su corredor para que nadie lo busque detrás de la torre del mercado.'
+        text: 'La foto de esta nota es la fachada del Cine Teatro El Plata, publicada por el Gobierno de la Ciudad en la crónica de la reapertura de octubre de 2021. El edificio que hay que ir a ver está sobre Alberdi 5765. La guía de [qué hacer en Mataderos](/notas/que-hacer-en-mataderos) lo deja en ese corredor, no detrás de la torre del mercado.'
       }
     ]
   }

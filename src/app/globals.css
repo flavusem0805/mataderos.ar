@@ -173,6 +173,34 @@ body {
   }
 }
 
+.rail-ticker {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.rail-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: rail-ticker 36s linear infinite;
+}
+
+.rail-ticker:hover .rail-ticker-track,
+.rail-ticker:focus-within .rail-ticker-track,
+.rail-ticker.is-held .rail-ticker-track {
+  animation-play-state: paused;
+}
+
+@keyframes rail-ticker {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 .snap-row {
   scroll-snap-type: x mandatory;
   scroll-padding-inline: var(--gutter);
@@ -207,5 +235,19 @@ body {
 
   .snap-row {
     scroll-snap-type: none;
+  }
+
+  .rail-ticker {
+    overflow-x: auto;
+    touch-action: pan-x pan-y;
+  }
+
+  .rail-ticker-track {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .rail-ticker-set[aria-hidden='true'] {
+    display: none;
   }
 }

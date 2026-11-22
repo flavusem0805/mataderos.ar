@@ -196,38 +196,66 @@ function Countdown({ target }: { target: number }) {
 }
 
 function TopRail() {
-  const [line, setLine] = useState('Comuna 9 · Agenda de la Feria, La Recova y El Plata');
+  const [held, setHeld] = useState(false);
+  const [labels, setLabels] = useState<string[] | null>(null);
 
   useEffect(() => {
     const now = Date.now();
-    const clocks = AGENDA_VENUES.map((venue) => ({
-      venue,
-      clock: venueClock(venue.weekday, venue.hour, venue.minute, venue.durationHours, now)
-    }));
-    const upcoming = clocks
-      .filter((item) => !item.clock.inProgress)
-      .sort((a, b) => a.clock.nextStart - b.clock.nextStart)[0];
-    const today = formatBaDate(now);
-    if (!upcoming) {
-      setLine(`${today} · Hay actividad en curso en el barrio`);
-      return;
-    }
-    setLine(
-      `${today} · Próximo: ${upcoming.venue.venue} · ${formatBaDate(upcoming.clock.nextStart)} · ${formatBaTime(upcoming.clock.nextStart)}`
+    setLabels(
+      AGENDA_VENUES.map((venue) => {
+        const moments = venueMoments(venue, now);
+        const when = moments.clock.inProgress
+          ? 'En curso'
+          : `${formatBaDate(moments.nextInstant)} · ${formatBaTime(moments.nextInstant)}`;
+        return `${venue.venue} · ${when}`;
+      })
     );
   }, []);
 
-  return (
-      <div className="border-b border-pampa/20 bg-carbon text-pampa">
-      <div className="editorial-container flex min-h-[48px] min-w-0 flex-col py-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4">
-        <p className="min-w-0 break-words font-mono text-base sm:flex-1">{line}</p>
+  const items = AGENDA_VENUES.map((venue, index) => ({
+    href: `#agenda-${venue.id}`,
+    label: labels?.[index] ?? `${venue.venue} · ${venue.nextTitle}`
+  }));
+
+  const renderSet = (hidden: boolean) => (
+    <div className="rail-ticker-set flex" aria-hidden={hidden || undefined}>
+      {items.map((item) => (
         <a
-          href="#agenda"
-          className="inline-flex min-h-[48px] items-center font-mono text-base underline underline-offset-4"
+          key={`${hidden ? 'copy' : 'live'}-${item.href}`}
+          href={item.href}
+          tabIndex={hidden ? -1 : undefined}
+          className="inline-flex min-h-[48px] items-center whitespace-nowrap px-4 font-mono text-base underline-offset-4 hover:underline"
         >
-          Ver agenda
+          {item.label}
+          <span className="ml-4" aria-hidden="true">
+            ·
+          </span>
         </a>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="flex min-h-[48px] items-stretch border-b border-pampa/20 bg-carbon text-pampa">
+      <div
+        className={`rail-ticker ${held ? 'is-held' : ''}`}
+        role="region"
+        aria-label="Próximos encuentros"
+        onPointerDown={() => setHeld(true)}
+        onPointerUp={() => setHeld(false)}
+        onPointerCancel={() => setHeld(false)}
+      >
+        <div className="rail-ticker-track">
+          {renderSet(false)}
+          {renderSet(true)}
+        </div>
       </div>
+      <a
+        href="#agenda"
+        className="inline-flex min-h-[48px] shrink-0 items-center border-l border-pampa/30 px-4 font-mono text-base underline-offset-4 hover:underline"
+      >
+        Ver agenda
+      </a>
     </div>
   );
 }
@@ -414,35 +442,35 @@ function NewsCarousel({
           role="region"
           aria-label="Noticias y aperturas"
           tabIndex={0}
-          className="snap-row -mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="snap-row -mx-[var(--gutter)] flex items-stretch gap-2 overflow-x-auto px-[var(--gutter)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {articles.map((article, index) => (
             <article
               key={article.id}
               data-snap-card
-              className={`${NEWS_WIDTHS[index % NEWS_WIDTHS.length]} min-w-0 shrink-0 snap-start`}
+              className={`${NEWS_WIDTHS[index % NEWS_WIDTHS.length]} flex min-w-0 shrink-0 snap-start`}
             >
               <button
                 type="button"
                 onClick={() => onOpen(article)}
                 aria-label={`Leer nota: ${article.title}`}
-                className="relative flex min-h-[20rem] w-full flex-col justify-end overflow-hidden bg-carbon text-left sm:min-h-[24rem]"
+                className="flex h-full w-full flex-col bg-carbon text-left"
               >
-                <span className="absolute inset-0">
+                <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden">
                   <PhotoFill
                     src={article.imageUrl}
                     alt=""
                     sizes="(max-width: 640px) 86vw, 40vw"
                   />
                 </span>
-                <span className="relative z-10 block bg-carbon p-4 text-pampa sm:p-5">
-                  <span className="block font-mono text-base">
+                <span className="flex flex-1 flex-col p-4 text-pampa">
+                  <span className="font-mono text-base">
                     {article.category} · {article.publishedLabel}
                   </span>
-                  <h3 className="mt-2 break-words font-serif text-[clamp(1.35rem,2vw,1.85rem)] font-semibold leading-tight">
+                  <h3 className="mt-2 line-clamp-3 font-serif text-xl font-semibold leading-snug">
                     {article.title}
                   </h3>
-                  <span className="mt-3 inline-flex min-h-[48px] items-center gap-2 font-semibold">
+                  <span className="mt-auto inline-flex min-h-[48px] items-center gap-2 pt-3 font-semibold">
                     Leer nota
                     <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                   </span>
@@ -580,6 +608,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
             return (
               <article
                 key={venue.id}
+                id={`agenda-${venue.id}`}
                 data-snap-card
                 className={`relative w-[88%] min-w-0 shrink-0 snap-start break-words border bg-pampa-surface p-5 sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
                   isSoonest ? 'border-2 border-carbon' : 'border-carbon/30'

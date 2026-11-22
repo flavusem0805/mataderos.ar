@@ -31,6 +31,7 @@ import {
   type VenueClock
 } from '@/lib/agenda';
 import { isShopOpen } from '@/lib/hours';
+import { ElPlataInstagramLink } from '@/components/ElPlataInstagramLink';
 
 export interface HomeNote {
   slug: string;
@@ -661,6 +662,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
                     Entradas / Cómo llegar
                     <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                   </a>
+                  {venue.id === 'el-plata' && <ElPlataInstagramLink />}
                   <button
                     type="button"
                     onClick={() => openInfo(venue.id)}
@@ -699,6 +701,11 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
             Ver el aviso práctico
             <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </a>
+          {active.id === 'el-plata' && (
+            <div className="mt-4 max-w-md">
+              <ElPlataInstagramLink />
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -712,12 +719,8 @@ function ViviTile({
   tile: (typeof VIVI_TILES)[number];
   imageClass: string;
 }) {
-  return (
-    <a
-      href={tile.href}
-      aria-label={`${tile.title}. ${tile.line}`}
-      className="group block border border-pampa/30 bg-carbon"
-    >
+  const figure = (
+    <>
       <span className={`relative block overflow-hidden ${imageClass}`}>
         <PhotoFill src={tile.imageUrl} alt={tile.imageAlt} sizes="(max-width: 1024px) 85vw, 25vw" />
       </span>
@@ -730,6 +733,29 @@ function ViviTile({
         </span>
         <span className="mt-3 block font-mono text-base leading-snug text-pampa/80">{tile.imageCredit}</span>
       </span>
+    </>
+  );
+
+  if (tile.id === 'vivi-plata') {
+    return (
+      <div className="border border-pampa/30 bg-carbon">
+        <a href={tile.href} aria-label={`${tile.title}. ${tile.line}`} className="group block">
+          {figure}
+        </a>
+        <div className="px-4 pb-4">
+          <ElPlataInstagramLink tone="dark" />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={tile.href}
+      aria-label={`${tile.title}. ${tile.line}`}
+      className="group block border border-pampa/30 bg-carbon"
+    >
+      {figure}
     </a>
   );
 }

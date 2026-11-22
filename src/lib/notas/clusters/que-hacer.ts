@@ -352,7 +352,8 @@ export const QUE_HACER: Nota[] = [
         { label: 'Cierre como cine', value: '1987' },
         { label: 'Reapertura', value: 'Octubre de 2021, fiesta el sábado 16' },
         { label: 'Dependencia', value: 'Complejo Teatral de Buenos Aires' },
-        { label: 'Capacidad actual', value: 'Más de 500 localidades entre platea y pullman, más dos microcines' }
+        { label: 'Capacidad actual', value: 'Más de 500 localidades entre platea y pullman, más dos microcines' },
+        { label: 'Instagram', value: '@cineteatroelplata' }
       ]
     },
     fuentes: [
@@ -407,7 +408,7 @@ export const QUE_HACER: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'La dirección sigue siendo Alberdi 5765. La cartelera es la del Complejo Teatral y cambia con la temporada: esta nota no inventa la función de la semana. Conviene mirarla antes de viajar, sobre todo si se quiere combinar con el [domingo de feria](/notas/domingo-en-mataderos), que ocurre en otro punto del barrio. De noche, El Plata es la parada cultural más clara de [Alberdi](/notas/avenida-alberdi-y-emilio-castro). De día, la fachada se puede mirar aunque no haya función.'
+        text: 'La dirección sigue siendo Alberdi 5765. La cartelera cambia con la temporada y la sala la publica en su Instagram, [@cineteatroelplata](https://www.instagram.com/cineteatroelplata/). Esta nota no copia esa grilla ni esas fotos. Conviene mirarla antes de viajar, sobre todo si se quiere combinar con el [domingo de feria](/notas/domingo-en-mataderos), que ocurre en otro punto del barrio. De noche, El Plata es la parada cultural más clara de [Alberdi](/notas/avenida-alberdi-y-emilio-castro). De día, la fachada se puede mirar aunque no haya función.'
       },
       {
         kind: 'p',

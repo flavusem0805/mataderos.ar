@@ -1,8 +1,13 @@
 import type { Metadata } from 'next';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { NotaFrame, RichText } from '@/components/notas/NotaFrame';
+
+const ElPlataInstagram = dynamic(() =>
+  import('@/components/notas/ElPlataInstagram').then((mod) => mod.ElPlataInstagram)
+);
 import {
   NOTAS,
   canonicalNota,
@@ -161,6 +166,8 @@ export default async function NotaPage({ params }: NotaPageProps) {
             <a href={nota.image.licenseUrl} className="underline underline-offset-4">Licencia</a>
           </figcaption>
         </figure>
+
+        {nota.slug === 'cine-teatro-el-plata' && <ElPlataInstagram />}
 
         {nota.type === 'pilar' && <GuiaIndex pilar={nota} />}
 

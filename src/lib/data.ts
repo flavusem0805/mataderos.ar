@@ -585,7 +585,7 @@ export const EVENTS: NeighborhoodEvent[] = [
     location: 'Cine Teatro El Plata · Av. Juan B. Alberdi 5765',
     category: 'Cultura',
     description:
-      'Funciones gratuitas y con entrada popular en la sala Art Déco recuperada más emblemática de la Comuna 9.',
+      'Funciones en la sala de Alberdi 5765. La cartelera de la semana está en el Instagram oficial, @cineteatroelplata.',
     highlightTag: 'Entrada Libre'
   },
   {
@@ -723,7 +723,7 @@ export const AGENDA_VENUES: AgendaVenue[] = [
     nextTitle: 'Ciclo de cine nacional en la sala de Alberdi',
     lastTitle: 'Función de cine y música en El Plata',
     description:
-      'Funciones y conciertos en la sala de Av. Alberdi 5765. La cartelera del portal junta el horario de la semana y cómo llegar desde el centro comercial.',
+      'Funciones y conciertos en la sala de Av. Alberdi 5765. La cartelera vigente está en el Instagram oficial, @cineteatroelplata.',
     noticeId: 'aviso-el-plata'
   }
 ];

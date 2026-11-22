@@ -641,15 +641,6 @@ export interface AgendaVenue {
   nextTitle: string;
   lastTitle: string;
   description: string;
-  noticeId: string;
-}
-
-export interface PracticalNotice {
-  id: string;
-  dateLabel: string;
-  category: string;
-  title: string;
-  body: string;
 }
 
 export interface ArchiveNote {
@@ -692,8 +683,7 @@ export const AGENDA_VENUES: AgendaVenue[] = [
     nextTitle: 'Artesanías, cocina regional y escenario criollo',
     lastTitle: 'Puestos y música frente a La Recova',
     description:
-      'Más de 300 puestos de talabartería, mates, platería y comidas regionales, con escenario abierto. Entrada libre, de 11 a 19.',
-    noticeId: 'aviso-feria'
+      'Más de 300 puestos de talabartería, mates, platería y comidas regionales, con escenario abierto. Entrada libre, de 11 a 19.'
   },
   {
     id: 'recova',
@@ -708,8 +698,7 @@ export const AGENDA_VENUES: AgendaVenue[] = [
     nextTitle: 'Peña criolla y encuentro en la plazoleta',
     lastTitle: 'Guitarras y baile abierto junto a la recova',
     description:
-      'La Recova enmarca el encuentro del sábado: guitarras, bombos y parejas de baile en la plazoleta, con la feria como continuación el domingo.',
-    noticeId: 'aviso-recova'
+      'La Recova enmarca el encuentro del sábado: guitarras, bombos y parejas de baile en la plazoleta, con la feria como continuación el domingo.'
   },
   {
     id: 'el-plata',
@@ -724,39 +713,7 @@ export const AGENDA_VENUES: AgendaVenue[] = [
     nextTitle: 'Ciclo de cine nacional en la sala de Alberdi',
     lastTitle: 'Función de cine y música en El Plata',
     description:
-      'Funciones y conciertos en la sala de Av. Alberdi 5765. La cartelera vigente está en el Instagram oficial, @cineteatroelplata.',
-    noticeId: 'aviso-el-plata'
-  }
-];
-
-export const NOTICES: PracticalNotice[] = [
-  {
-    id: 'aviso-feria',
-    dateLabel: 'Todos los domingos',
-    category: 'Feria',
-    title: 'Horario de la Feria de Mataderos',
-    body: 'De 11 a 19 hs, con entrada libre. Los puestos se arman sobre Lisandro de la Torre y Av. de los Corrales, con el escenario frente a La Recova.'
-  },
-  {
-    id: 'aviso-corte',
-    dateLabel: 'Domingos de feria',
-    category: 'Calles',
-    title: 'El casco se recorre a pie',
-    body: 'Durante la feria el entorno de Lisandro de la Torre y Av. de los Corrales queda tomado por el público. Conviene llegar caminando desde Alberdi o en transporte público.'
-  },
-  {
-    id: 'aviso-vecinos',
-    dateLabel: 'Mensaje a vecinos',
-    category: 'Vecinos',
-    title: 'Cómo moverse el domingo',
-    body: 'Entre las 12 y las 18 el cruce de La Recova está al límite. Si salís con el carro, con chicos o con una mascota, bordeá la feria y entrá por una bocacalle.'
-  },
-  {
-    id: 'aviso-comercios',
-    dateLabel: 'Mensaje a locales',
-    category: 'Comercios',
-    title: 'Actualizá el domingo en la guía',
-    body: 'Si atendés cerca de la feria, dejá el horario del domingo en tu ficha. La ficha es gratuita. La Web Oficial —el subdominio slug.mataderos.ar— es la que sostiene el portal.'
+      'Funciones y conciertos en la sala de Av. Alberdi 5765. La cartelera vigente está en el Instagram oficial, @cineteatroelplata.'
   }
 ];
 

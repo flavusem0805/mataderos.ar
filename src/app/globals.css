@@ -155,6 +155,24 @@ body {
   height: auto;
 }
 
+.hero-title {
+  animation: hero-title-in 700ms ease-out 2s both;
+}
+
+@keyframes hero-title-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-pin[data-settled] .hero-title {
+  animation: none;
+  opacity: 1;
+}
+
 .news-overlap {
   /* Pull the news row over the photo only while the title block (about 36rem) stays clear. */
   margin-top: min(0px, calc(-100svh + 36rem));
@@ -227,6 +245,11 @@ body {
     position: relative;
     height: auto;
     min-height: 70vh;
+  }
+
+  .hero-title {
+    opacity: 1 !important;
+    animation: none !important;
   }
 
   .news-overlap {

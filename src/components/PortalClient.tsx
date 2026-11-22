@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -268,6 +269,24 @@ function TopRail() {
   );
 }
 
+const BRAND_CLASS =
+  'inline-flex min-h-[48px] items-center gap-3 whitespace-nowrap py-1 font-display text-2xl font-semibold uppercase tracking-tight text-pampa xl:text-3xl';
+
+function BrandLockup() {
+  return (
+    <>
+      <Image
+        src="/logo-emblem.png"
+        alt=""
+        width={40}
+        height={40}
+        className="h-10 w-10 shrink-0 border border-pampa/40"
+      />
+      <span>Mataderos.ar</span>
+    </>
+  );
+}
+
 function SiteHeader() {
   const [open, setOpen] = useState(false);
   const menuId = useId();
@@ -295,18 +314,8 @@ function SiteHeader() {
       <TopRail />
       <div className="border-b border-pampa/20 bg-chicago text-pampa">
         <div className="editorial-container flex min-h-[64px] items-center justify-between gap-4">
-          <a
-            href="#inicio"
-            className="inline-flex min-h-[48px] items-center gap-3 py-1 font-display text-2xl font-semibold uppercase tracking-tight xl:text-3xl"
-          >
-            <Image
-              src="/logo-emblem.png"
-              alt=""
-              width={40}
-              height={40}
-              className="shrink-0 border border-pampa/40"
-            />
-            <span>Mataderos.ar</span>
+          <a href="#inicio" data-brand className={BRAND_CLASS}>
+            <BrandLockup />
           </a>
 
           <nav aria-label="Navegación principal" className="hidden items-center gap-5 xl:flex">
@@ -377,61 +386,7 @@ const HERO_POSTER = '/hero/hero-poster.jpg';
 const HERO_LOGO_KEY = 'mataderos.heroLogo';
 
 function Hero() {
-  const logoRef = useRef<HTMLDivElement>(null);
   const [playVideo, setPlayVideo] = useState(false);
-
-  useLayoutEffect(() => {
-    const logo = logoRef.current;
-    const hero = logo?.closest('section');
-    if (!logo || !hero) return;
-
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const seen = window.sessionStorage.getItem(HERO_LOGO_KEY) === '1';
-    const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 128;
-    const heroBox = hero.getBoundingClientRect();
-    const top = Math.max(12, headerBottom - heroBox.top + 12);
-    logo.style.top = `${top}px`;
-
-    const place = () => logo.getBoundingClientRect();
-    const box = place();
-    const mobile = window.innerWidth < 768;
-    const overlap = Math.max(0, window.innerHeight - (mobile ? 36 : 42) * 16);
-    const visibleTop = headerBottom;
-    const visibleBottom = heroBox.bottom - overlap;
-    const centerX = heroBox.left + heroBox.width / 2;
-    const centerY = visibleTop + Math.max(0, visibleBottom - visibleTop) * (mobile ? 0.42 : 0.46);
-    const dx = centerX - (box.left + box.width / 2);
-    const dy = centerY - (box.top + box.height / 2);
-    const scale = Math.min(mobile ? 1.85 : 2.35, (heroBox.width * 0.9) / box.width);
-    const travel = mobile ? 900 : 1200;
-
-    if (reduce || seen) {
-      logo.style.transform = 'translate3d(0, 0, 0) scale(1)';
-      logo.style.opacity = '1';
-      hero.setAttribute('data-settled', 'true');
-      return;
-    }
-
-    logo.style.opacity = '1';
-    const animation = logo.animate(
-      [
-        { transform: `translate3d(${dx}px, ${dy}px, 0) scale(${scale})` },
-        { transform: 'translate3d(0, 0, 0) scale(1)' }
-      ],
-      {
-        duration: travel,
-        delay: 800,
-        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        fill: 'both'
-      }
-    );
-    const remember = () => window.sessionStorage.setItem(HERO_LOGO_KEY, '1');
-    animation.onfinish = remember;
-    return () => {
-      animation.onfinish = null;
-      animation.cancel();
-    };
-  }, []);
 
   useEffect(() => {
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -482,35 +437,136 @@ function Hero() {
         }}
       />
 
-      <div
-        ref={logoRef}
-        className="absolute right-[var(--gutter)] z-20 opacity-0"
-        style={{ top: '8.5rem', transform: 'translate3d(0, 0, 0) scale(1)' }}
-      >
-        <a
-          href="#inicio"
-          className="pointer-events-auto inline-flex items-center gap-2 whitespace-nowrap border border-pampa/50 bg-carbon/80 px-2 py-1 text-pampa"
-        >
-          <img src="/logo-emblem.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 border border-pampa/40" />
-          <span className="font-display text-2xl font-semibold uppercase leading-none tracking-tight">Mataderos.ar</span>
-        </a>
-      </div>
-
-      <div className="relative z-20 flex min-h-[100svh] flex-col justify-end px-[var(--gutter)] pb-[calc(max(0px,100svh-36rem)+1.5rem)] pt-36 sm:pb-[calc(max(0px,100svh-42rem)+1.75rem)]">
-        <div className="hero-title max-w-[18rem] border-t-4 border-celeste bg-carbon/90 p-5 text-pampa sm:max-w-xl sm:p-8">
+      <div className="relative z-20 flex min-h-[100svh] flex-col justify-end px-[var(--gutter)] pb-[calc(max(0px,100svh-36rem)+1.25rem)] pt-28 sm:pb-[calc(max(0px,100svh-42rem)+1.5rem)]">
+        <div className="hero-title max-w-[15.5rem] border-t-4 border-celeste bg-carbon/90 p-3 text-pampa sm:max-w-xl sm:p-8">
           <p className="font-mono text-base">Comuna 9 · CABA</p>
-          <h1 className="mt-3 font-display text-[clamp(3rem,8vw,6.5rem)] font-semibold uppercase leading-[0.9] tracking-tight text-pampa">
+          <h1 className="mt-1 font-display text-[2.35rem] font-semibold uppercase leading-[0.9] tracking-tight text-pampa sm:mt-3 sm:text-[clamp(3rem,8vw,6.5rem)]">
             Mataderos
           </h1>
-          <p className="mt-4 font-serif text-[clamp(1.125rem,2vw,1.5rem)] italic leading-snug text-pampa">
+          <p className="mt-2 font-serif text-base italic leading-snug text-pampa sm:mt-4 sm:text-[clamp(1.125rem,2vw,1.5rem)]">
             Portal del barrio: oficios, feria y memoria entre La Recova, Alberdi y Emilio Castro.
           </p>
-          <p className="mt-5 border-t border-pampa/30 pt-3 font-mono text-base text-pampa">
+          <p className="mt-5 hidden border-t border-pampa/30 pt-3 font-mono text-base text-pampa sm:block">
             Feria de Mataderos · baile, público y La Recova
           </p>
         </div>
       </div>
     </section>
+  );
+}
+
+function HeroLogoFlight() {
+  const flyRef = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(false);
+
+  useLayoutEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const seen = window.sessionStorage.getItem(HERO_LOGO_KEY) === '1';
+    const hero = document.getElementById('inicio');
+    if (reduce || seen) {
+      hero?.setAttribute('data-settled', 'true');
+      return;
+    }
+    const brand = document.querySelector<HTMLElement>('[data-brand]');
+    if (!brand) return;
+    brand.style.visibility = 'hidden';
+    setActive(true);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!active) return;
+    const brand = document.querySelector<HTMLElement>('[data-brand]');
+    const node = flyRef.current;
+    const hero = document.getElementById('inicio');
+    if (!brand || !node) return;
+
+    let done = false;
+    let anim: Animation | null = null;
+
+    const finish = () => {
+      if (done) return;
+      done = true;
+      anim?.cancel();
+      brand.style.visibility = '';
+      hero?.setAttribute('data-settled', 'true');
+      window.sessionStorage.setItem(HERO_LOGO_KEY, '1');
+      setActive(false);
+    };
+
+    const flight = (delay: number) => {
+      const rect = brand.getBoundingClientRect();
+      node.style.left = `${rect.left}px`;
+      node.style.top = `${rect.top}px`;
+      const mobile = window.innerWidth < 768;
+      const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? rect.bottom;
+      const focusY = headerBottom + Math.max(96, window.innerHeight - headerBottom) * (mobile ? 0.36 : 0.4);
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const desired = Math.min(window.innerWidth * (mobile ? 0.84 : 0.4), mobile ? 320 : 520);
+      const scale = Math.min(mobile ? 2.15 : 2.6, Math.max(1.4, desired / Math.max(rect.width, 1)));
+      const from = `translate3d(${window.innerWidth / 2 - cx}px, ${focusY - cy}px, 0) scale(${scale})`;
+      anim?.cancel();
+      anim = node.animate([{ transform: from }, { transform: 'translate3d(0, 0, 0) scale(1)' }], {
+        duration: mobile ? 1000 : 1200,
+        delay,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        fill: 'both'
+      });
+      anim.onfinish = finish;
+    };
+
+    flight(800);
+
+    const onResize = () => {
+      if (done) return;
+      const elapsed = Number(anim?.currentTime ?? 0);
+      if (elapsed < 800) {
+        flight(800);
+        return;
+      }
+      const visual = node.getBoundingClientRect();
+      const rect = brand.getBoundingClientRect();
+      node.style.left = `${rect.left}px`;
+      node.style.top = `${rect.top}px`;
+      const scale = visual.width / Math.max(rect.width, 1);
+      const dx = visual.left + visual.width / 2 - (rect.left + rect.width / 2);
+      const dy = visual.top + visual.height / 2 - (rect.top + rect.height / 2);
+      anim?.cancel();
+      anim = node.animate(
+        [
+          { transform: `translate3d(${dx}px, ${dy}px, 0) scale(${scale})` },
+          { transform: 'translate3d(0, 0, 0) scale(1)' }
+        ],
+        { duration: 420, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'both' }
+      );
+      anim.onfinish = finish;
+    };
+
+    const onScroll = () => {
+      if (window.scrollY > 8) finish();
+    };
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('scroll', onScroll);
+      anim?.cancel();
+      if (!done) brand.style.visibility = '';
+    };
+  }, [active]);
+
+  if (!active) return null;
+
+  return createPortal(
+    <div
+      ref={flyRef}
+      aria-hidden="true"
+      className={`pointer-events-none fixed z-[60] origin-center ${BRAND_CLASS}`}
+    >
+      <BrandLockup />
+    </div>,
+    document.body
   );
 }
 
@@ -1431,6 +1487,7 @@ export default function PortalClient({ businesses, notes, events }: PortalClient
         Saltar al contenido
       </a>
       <SiteHeader />
+      <HeroLogoFlight />
       <main id="contenido" className="min-w-0">
         <Hero />
         <div className="relative z-10">

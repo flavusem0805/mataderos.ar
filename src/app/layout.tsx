@@ -1,5 +1,41 @@
 import type { Metadata } from 'next';
+import localFont from 'next/font/local';
+import { Fraunces, IBM_Plex_Mono, Source_Sans_3 } from 'next/font/google';
 import './globals.css';
+
+// Big Shoulders Display is not in this Next.js Google font catalog
+// (the bundled name is the later "Big Shoulders" variable family).
+// The file is the real Display cut, loaded with next/font.
+const display = localFont({
+  src: '../fonts/big-shoulders-display-latin.woff2',
+  weight: '600 800',
+  style: 'normal',
+  variable: '--font-display',
+  display: 'swap',
+  fallback: ['Arial Narrow', 'sans-serif']
+});
+
+const serif = Fraunces({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+  display: 'swap'
+});
+
+const sans = Source_Sans_3({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap'
+});
+
+const mono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-mono',
+  display: 'swap'
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://mataderos.ar'),
@@ -38,15 +74,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es-AR">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html
+      lang="es-AR"
+      className={`${display.variable} ${serif.variable} ${sans.variable} ${mono.variable}`}
+    >
       <body className="min-h-screen bg-pampa font-sans text-carbon antialiased">{children}</body>
     </html>
   );

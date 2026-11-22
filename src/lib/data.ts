@@ -476,8 +476,45 @@ export const ARTICLES: Article[] = [
     readTime: '2 min',
     publishedLabel: 'Este finde',
     imageUrl:
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=70',
     mentionedBusinessSlug: 'cantinaloscorrales'
+  },
+  {
+    id: 'art-4',
+    slug: 'domingo-de-feria-casco-peatonal',
+    title: 'El domingo de feria, el casco histórico se recorre a pie',
+    excerpt:
+      'Entre las 11 y las 19 el entorno de La Recova se llena de público. Conviene dejar el auto y llegar caminando desde Alberdi o Emilio Castro.',
+    content: [
+      'La Feria de Mataderos no es un evento que pase al lado del barrio: ocupa el casco. Desde las 11, Lisandro de la Torre y Av. de los Corrales funcionan como un gran paseo peatonal de puestos, música y comidas.',
+      'Para los vecinos, el dato práctico es de circulación. El cruce de la recova se pone denso entre el mediodía y las 18. Si salís con el carro, con chicos o con una mascota, conviene bordearlo por las calles de atrás y entrar a pie.',
+      'Los locales del casco suelen atender en horario corrido ese día. En la guía de Mataderos.ar se puede mirar cuál está abierto antes de salir de casa.'
+    ],
+    category: 'Barrio',
+    zone: 'Casco Histórico',
+    readTime: '3 min',
+    publishedLabel: 'Esta semana',
+    imageUrl:
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=70'
+  },
+  {
+    id: 'art-5',
+    slug: 'subdominios-comercios-que-sostienen-el-portal',
+    title: 'Tres comercios ya tienen casa propia en un subdominio del barrio',
+    excerpt:
+      'Veterinaria Flavio, Tostadores de la Castro y Cantina Los Corrales estrenan su Web Oficial dentro de Mataderos.ar, sin salir a un dominio aparte.',
+    content: [
+      'La ficha de la guía sigue siendo gratuita para cualquier local de la Comuna 9. El paso siguiente, el que sostiene este portal, es la Web Oficial: un sitio en slug.mataderos.ar con servicios, horarios y reseñas de vecinos.',
+      'Hoy ese subdominio ya está activo para Veterinaria Flavio, Tostadores de la Castro y Cantina Los Corrales. Cada uno conserva su nombre en la dirección y aparece enlazado desde la guía.',
+      'No hace falta una agencia ni un hosting aparte. El portal arma la página, la deja lista para que un vecino la encuentre y la marca con el sello Web Oficial.'
+    ],
+    category: 'Comercios',
+    zone: 'Mataderos',
+    readTime: '3 min',
+    publishedLabel: 'Reciente',
+    imageUrl:
+      'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=70',
+    mentionedBusinessSlug: 'veterinariaflavio'
   }
 ];
 
@@ -576,7 +613,7 @@ export const HERITAGE_MILESTONES: HeritageMilestone[] = [
   {
     year: '1932',
     title: 'El Monumento al Resero',
-    subtitle: 'Obra de Emilio Sarguignet en bronce y granito',
+    subtitle: 'Obra de Emilio Jacinto Sarniguet en bronce y granito',
     description:
       'Inaugurado frente a la Antigua Administración, el jinete arreando ganado se transformó en el emblema visual por excelencia de Mataderos y símbolo de la cultura del trabajo rural.',
     symbol: ''
@@ -590,3 +627,221 @@ export const HERITAGE_MILESTONES: HeritageMilestone[] = [
     symbol: ''
   }
 ];
+
+export interface AgendaVenue {
+  id: string;
+  eventId: string;
+  venue: string;
+  place: string;
+  mapsQuery: string;
+  weekday: number;
+  hour: number;
+  minute: number;
+  durationHours: number;
+  nextTitle: string;
+  lastTitle: string;
+  description: string;
+  noticeId: string;
+}
+
+export interface PracticalNotice {
+  id: string;
+  dateLabel: string;
+  category: string;
+  title: string;
+  body: string;
+}
+
+export interface ArchiveNote {
+  id: string;
+  dateLabel: string;
+  category: string;
+  title: string;
+  summary: string;
+}
+
+export interface ViviTile {
+  id: string;
+  title: string;
+  line: string;
+  href: string;
+  imageUrl: string;
+  imageAlt: string;
+}
+
+export const HERO_MEDIA = {
+  src: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=2000&q=70',
+  alt: 'Multitud en un festival al aire libre. Fotografía de referencia: no es un registro de Mataderos.'
+};
+
+export const AGENDA_VENUES: AgendaVenue[] = [
+  {
+    id: 'feria',
+    eventId: 'ev-1',
+    venue: 'Feria de Mataderos',
+    place: 'Lisandro de la Torre y Av. de los Corrales',
+    mapsQuery: 'Feria de Mataderos, Av. Lisandro de la Torre, CABA, Argentina',
+    weekday: 0,
+    hour: 11,
+    minute: 0,
+    durationHours: 8,
+    nextTitle: 'Artesanías, cocina regional y escenario criollo',
+    lastTitle: 'Puestos y música frente a La Recova',
+    description:
+      'Más de 300 puestos de talabartería, mates, platería y comidas regionales, con escenario abierto. Entrada libre, de 11 a 19.',
+    noticeId: 'aviso-feria'
+  },
+  {
+    id: 'recova',
+    eventId: 'ev-3',
+    venue: 'La Recova',
+    place: 'Antigua Administración y plazoleta El Resero',
+    mapsQuery: 'La Recova de Mataderos, Av. de los Corrales, CABA, Argentina',
+    weekday: 6,
+    hour: 17,
+    minute: 0,
+    durationHours: 3,
+    nextTitle: 'Peña criolla y encuentro en la plazoleta',
+    lastTitle: 'Guitarras y baile abierto junto a la recova',
+    description:
+      'La Recova enmarca el encuentro del sábado: guitarras, bombos y parejas de baile en la plazoleta, con la feria como continuación el domingo.',
+    noticeId: 'aviso-recova'
+  },
+  {
+    id: 'el-plata',
+    eventId: 'ev-2',
+    venue: 'Cine Teatro El Plata',
+    place: 'Av. Juan B. Alberdi 5765',
+    mapsQuery: 'Cine Teatro El Plata, Av. Juan B. Alberdi 5765, CABA, Argentina',
+    weekday: 5,
+    hour: 19,
+    minute: 30,
+    durationHours: 3,
+    nextTitle: 'Ciclo de cine nacional en la sala de Alberdi',
+    lastTitle: 'Función de cine y música en El Plata',
+    description:
+      'Funciones y conciertos en la sala de Av. Alberdi 5765. La cartelera del portal junta el horario de la semana y cómo llegar desde el centro comercial.',
+    noticeId: 'aviso-el-plata'
+  }
+];
+
+export const NOTICES: PracticalNotice[] = [
+  {
+    id: 'aviso-feria',
+    dateLabel: 'Todos los domingos',
+    category: 'Feria',
+    title: 'Horario de la Feria de Mataderos',
+    body: 'De 11 a 19 hs, con entrada libre. Los puestos se arman sobre Lisandro de la Torre y Av. de los Corrales, con el escenario frente a La Recova.'
+  },
+  {
+    id: 'aviso-corte',
+    dateLabel: 'Domingos de feria',
+    category: 'Calles',
+    title: 'El casco se recorre a pie',
+    body: 'Durante la feria el entorno de Lisandro de la Torre y Av. de los Corrales queda tomado por el público. Conviene llegar caminando desde Alberdi o en transporte público.'
+  },
+  {
+    id: 'aviso-vecinos',
+    dateLabel: 'Mensaje a vecinos',
+    category: 'Vecinos',
+    title: 'Cómo moverse el domingo',
+    body: 'Entre las 12 y las 18 el cruce de La Recova está al límite. Si salís con el carro, con chicos o con una mascota, bordeá la feria y entrá por una bocacalle.'
+  },
+  {
+    id: 'aviso-comercios',
+    dateLabel: 'Mensaje a locales',
+    category: 'Comercios',
+    title: 'Actualizá el domingo en la guía',
+    body: 'Si atendés cerca de la feria, dejá el horario del domingo en tu ficha. La ficha es gratuita. La Web Oficial —el subdominio slug.mataderos.ar— es la que sostiene el portal.'
+  }
+];
+
+export const ARCHIVE_NOTES: ArchiveNote[] = [
+  {
+    id: 'archivo-1889',
+    dateLabel: '1889',
+    category: 'Origen',
+    title: 'Los mataderos nuevos y el Mercado de Hacienda',
+    summary:
+      'El oeste porteño pasa a ser el puente entre la pampa y la ciudad. De ese traslado salen el barrio y su nombre.'
+  },
+  {
+    id: 'archivo-1901',
+    dateLabel: '1901',
+    category: 'Obra',
+    title: 'La Recova cierra en forma de U',
+    summary:
+      'La antigua administración del mercado y sus recovas quedan como el casco que la feria sigue usando cada domingo.'
+  },
+  {
+    id: 'archivo-1919',
+    dateLabel: '1919',
+    category: 'Club',
+    title: 'Nueva Chicago y el verde del barrio',
+    summary:
+      'El club se suma a la identidad del barrio. El verde y el negro siguen siendo una seña de la Comuna 9.'
+  },
+  {
+    id: 'archivo-1932',
+    dateLabel: '1932',
+    category: 'Monumento',
+    title: 'El Resero, de Emilio Jacinto Sarniguet',
+    summary:
+      'El jinete que arrea el ganado se inaugura frente a la antigua administración y queda como emblema del trabajo rural.'
+  },
+  {
+    id: 'archivo-torito',
+    dateLabel: '1930',
+    category: 'Barrio',
+    title: 'Justo Suárez, El Torito de Mataderos',
+    summary:
+      'El boxeador del barrio entra en la leyenda local, junto con los carros fileteados y los bodegones del casco.'
+  }
+];
+
+export const VIVI_TILES: ViviTile[] = [
+  {
+    id: 'vivi-feria',
+    title: 'Feria',
+    line: 'Domingos de artesanía, cocina regional y música criolla.',
+    href: '#agenda',
+    imageUrl:
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=900&q=70',
+    imageAlt: 'Concierto con público. Fotografía de referencia, no es la Feria de Mataderos.'
+  },
+  {
+    id: 'vivi-recova',
+    title: 'La Recova',
+    line: 'La antigua administración del mercado, todavía en pie.',
+    href: '#historia',
+    imageUrl:
+      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=70',
+    imageAlt: 'Interior de un local con mesas. Fotografía de referencia, no es La Recova.'
+  },
+  {
+    id: 'vivi-plata',
+    title: 'El Plata',
+    line: 'Cine y teatro en la sala de Av. Alberdi 5765.',
+    href: '#agenda',
+    imageUrl:
+      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=70',
+    imageAlt: 'Sala con mesas y luces cálidas. Fotografía de referencia, no es el Cine Teatro El Plata.'
+  },
+  {
+    id: 'vivi-corredores',
+    title: 'Corredores',
+    line: 'Emilio Castro, Alberdi, el casco y Eva Perón.',
+    href: '#directorio',
+    imageUrl:
+      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=70',
+    imageAlt: 'Interior de un comercio. Fotografía de referencia, no es un local de Mataderos.'
+  }
+];
+
+export const REFERENCE_STILLS = {
+  dogs:
+    'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&w=1400&q=70',
+  cafe: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1000&q=70',
+  counter:
+    'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=70'
+};

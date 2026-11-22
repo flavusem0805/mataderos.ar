@@ -108,9 +108,9 @@ function PhotoFill({
       />
       <span
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 z-10 bg-carbon px-2 py-1 font-mono text-base text-pampa"
+        className="pointer-events-none absolute left-0 top-0 z-10 whitespace-nowrap bg-carbon px-2 py-1 font-mono text-base text-pampa"
       >
-        Foto de referencia
+        Referencia
       </span>
     </>
   );
@@ -218,9 +218,9 @@ function TopRail() {
   }, []);
 
   return (
-    <div className="border-b border-pampa/20 bg-carbon text-pampa">
-      <div className="editorial-container flex min-h-[48px] flex-wrap items-center justify-between gap-x-4 gap-y-1 py-1">
-        <p className="font-mono text-base">{line}</p>
+      <div className="border-b border-pampa/20 bg-carbon text-pampa">
+      <div className="editorial-container flex min-h-[48px] min-w-0 flex-col py-1 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-x-4">
+        <p className="min-w-0 break-words font-mono text-base sm:flex-1">{line}</p>
         <a
           href="#agenda"
           className="inline-flex min-h-[48px] items-center font-mono text-base underline underline-offset-4"
@@ -254,7 +254,7 @@ function SiteHeader() {
   ];
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50" data-surface="dark">
+    <header className="fixed inset-x-0 top-0 z-50 w-full max-w-full" data-surface="dark">
       <TopRail />
       <div className="border-b border-pampa/20 bg-chicago text-pampa">
         <div className="editorial-container flex min-h-[64px] items-center justify-between gap-4">
@@ -339,16 +339,19 @@ function SiteHeader() {
 
 function Hero() {
   return (
-    <section id="inicio" className="hero-pin relative overflow-hidden bg-carbon">
-      <Image
-        src={HERO_MEDIA.src}
-        alt={HERO_MEDIA.alt}
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
-      />
-      <div className="relative z-10 flex h-full flex-col px-[var(--gutter)] pb-8 pt-56 sm:pt-44">
+    <section id="inicio" className="hero-pin relative bg-carbon">
+      <div className="absolute inset-0 overflow-hidden">
+        <Image
+          src={HERO_MEDIA.src}
+          alt={HERO_MEDIA.alt}
+          fill
+          priority
+          quality={70}
+          sizes="(max-width: 768px) 160vw, 100vw"
+          className="object-cover"
+        />
+      </div>
+      <div className="relative z-10 flex min-h-[100svh] flex-col px-[var(--gutter)] pb-28 pt-56 sm:pt-44">
         <div className="max-w-[18rem] border-t-4 border-celeste bg-carbon p-5 text-pampa sm:max-w-xl sm:p-8">
           <p className="font-mono text-base">Comuna 9 · CABA</p>
           <h1 className="mt-3 font-display text-[clamp(3rem,8vw,6.5rem)] font-semibold uppercase leading-[0.9] tracking-tight text-pampa">
@@ -417,25 +420,26 @@ function NewsCarousel({
             <article
               key={article.id}
               data-snap-card
-              className={`${NEWS_WIDTHS[index % NEWS_WIDTHS.length]} shrink-0 snap-start`}
+              className={`${NEWS_WIDTHS[index % NEWS_WIDTHS.length]} min-w-0 shrink-0 snap-start`}
             >
               <button
                 type="button"
                 onClick={() => onOpen(article)}
                 aria-label={`Leer nota: ${article.title}`}
-                className="relative block h-[22rem] w-full bg-carbon text-left sm:h-[30rem]"
+                className="relative flex min-h-[20rem] w-full flex-col justify-end overflow-hidden bg-carbon text-left sm:min-h-[24rem]"
               >
-                <PhotoFill
-                  src={article.imageUrl}
-                  alt={`Foto de referencia de la nota «${article.title}». No muestra un lugar de Mataderos.`}
-                  sizes="(max-width: 640px) 84vw, 40vw"
-                  priority={index === 0}
-                />
-                <span className="absolute inset-x-0 bottom-0 z-10 block bg-carbon p-4 text-pampa sm:p-5">
+                <span className="absolute inset-0">
+                  <PhotoFill
+                    src={article.imageUrl}
+                    alt=""
+                    sizes="(max-width: 640px) 86vw, 40vw"
+                  />
+                </span>
+                <span className="relative z-10 block bg-carbon p-4 text-pampa sm:p-5">
                   <span className="block font-mono text-base">
                     {article.category} · {article.publishedLabel}
                   </span>
-                  <h3 className="mt-2 font-serif text-[clamp(1.35rem,2vw,1.85rem)] font-semibold leading-tight">
+                  <h3 className="mt-2 break-words font-serif text-[clamp(1.35rem,2vw,1.85rem)] font-semibold leading-tight">
                     {article.title}
                   </h3>
                   <span className="mt-3 inline-flex min-h-[48px] items-center gap-2 font-semibold">
@@ -577,7 +581,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
               <article
                 key={venue.id}
                 data-snap-card
-                className={`relative w-[88%] shrink-0 snap-start border bg-pampa-surface p-5 sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
+                className={`relative w-[88%] min-w-0 shrink-0 snap-start break-words border bg-pampa-surface p-5 sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
                   isSoonest ? 'border-2 border-carbon' : 'border-carbon/30'
                 }`}
               >
@@ -587,7 +591,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
                 </h3>
                 <p className="mt-2 font-mono text-base">{venue.place}</p>
 
-                <div className="mt-5 grid grid-cols-2 gap-3 border-t border-carbon/20 pt-4">
+                <div className="mt-5 grid grid-cols-1 gap-4 border-t border-carbon/20 pt-4 sm:grid-cols-2">
                   <div className="min-w-0">
                     <p className="font-mono text-base">Último</p>
                     <p className="mt-2 font-serif text-xl leading-tight">
@@ -699,7 +703,7 @@ function ViviBand() {
               key={tile.id}
               href={tile.href}
               aria-label={`${tile.title}. ${tile.line}`}
-              className="group block border border-pampa/30 bg-carbon"
+              className="group block min-w-0 break-words border border-pampa/30 bg-carbon"
             >
               <span className="relative block aspect-[3/4] overflow-hidden">
                 <PhotoFill src={tile.imageUrl} alt={tile.imageAlt} sizes="(max-width: 1024px) 50vw, 25vw" />
@@ -790,7 +794,7 @@ function Notices() {
         >
           Avisos prácticos
         </h2>
-        <div className="mt-8 grid border-l border-t border-carbon/30 md:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 border-l border-t border-carbon/30 md:grid-cols-2">
           {NOTICES.map((notice) => (
             <article key={notice.id} id={notice.id} className="border-b border-r border-carbon/30 p-6 sm:p-8">
               <p className="font-mono text-base text-chicago">
@@ -893,7 +897,7 @@ function ShopShowcase({ businesses }: { businesses: Business[] }) {
             Cada ficha de la guía es gratuita. Los locales con sello Web Oficial sostienen Mataderos.ar con su subdominio.
           </p>
 
-          <div className="mt-8 grid border-l border-t border-carbon sm:grid-cols-2">
+          <div className="mt-8 grid min-w-0 grid-cols-1 border-l border-t border-carbon sm:grid-cols-2">
             {supporters.map((business, index) => {
               const lastOdd = supporters.length % 2 === 1 && index === supporters.length - 1;
               const href = business.hasSubdomain
@@ -910,11 +914,11 @@ function ShopShowcase({ businesses }: { businesses: Business[] }) {
               return (
                 <article
                   key={business.id}
-                  className={`flex flex-col border-b border-r border-carbon bg-pampa-surface ${
+                  className={`flex min-w-0 flex-col border-b border-r border-carbon bg-pampa-surface ${
                     lastOdd ? 'sm:col-span-2 sm:grid sm:grid-cols-2' : ''
                   }`}
                 >
-                  <div className={`relative min-h-[200px] ${lastOdd ? 'sm:min-h-full' : 'aspect-[4/3]'}`}>
+                  <div className="relative aspect-[4/3] w-full min-w-0 overflow-hidden">
                     <PhotoFill
                       src={business.heroImage}
                       alt={`Foto de referencia junto a la ficha de ${business.name}. No es la fachada del local.`}

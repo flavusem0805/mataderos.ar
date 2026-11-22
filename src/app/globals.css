@@ -150,9 +150,8 @@ body {
 .hero-pin {
   position: relative;
   z-index: 0;
-  /* svh stays put when the mobile browser bar shows or hides. dvh would jump and clip the title. */
-  min-height: 100svh;
-  height: auto;
+  height: 82svh;
+  min-height: 82svh;
 }
 
 .hero-title {
@@ -173,21 +172,10 @@ body {
   opacity: 1;
 }
 
-.news-overlap {
-  /* Pull the news row over the photo only while the title block (about 36rem) stays clear. */
-  margin-top: min(0px, calc(-100svh + 36rem));
-}
-
 @media (min-width: 768px) {
   .hero-pin {
-    position: sticky;
-    top: 0;
     height: 100svh;
     min-height: 100svh;
-  }
-
-  .news-overlap {
-    margin-top: min(0px, calc(-100svh + 42rem));
   }
 }
 
@@ -250,10 +238,6 @@ body {
   .hero-title {
     opacity: 1 !important;
     animation: none !important;
-  }
-
-  .news-overlap {
-    margin-top: 0;
   }
 
   .snap-row {

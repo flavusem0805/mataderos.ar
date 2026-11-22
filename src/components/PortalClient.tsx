@@ -433,22 +433,33 @@ function Hero() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'linear-gradient(180deg, rgb(28 28 28 / 0.5) 0%, rgb(28 28 28 / 0.18) 24%, rgb(28 28 28 / 0.05) 48%, rgb(28 28 28 / 0.62) 100%)'
+            'linear-gradient(180deg, rgb(28 28 28 / 0.28) 0%, rgb(28 28 28 / 0.02) 36%, rgb(28 28 28 / 0.08) 58%, rgb(28 28 28 / 0.78) 100%)'
         }}
       />
 
-      <div className="relative z-20 flex min-h-[100svh] flex-col justify-end px-[var(--gutter)] pb-[calc(max(0px,100svh-36rem)+1.25rem)] pt-28 sm:pb-[calc(max(0px,100svh-42rem)+1.5rem)]">
-        <div className="hero-title max-w-[15.5rem] border-t-4 border-celeste bg-carbon/90 p-3 text-pampa sm:max-w-xl sm:p-8">
-          <p className="font-mono text-base">Comuna 9 · CABA</p>
-          <h1 className="mt-1 font-display text-[2.35rem] font-semibold uppercase leading-[0.9] tracking-tight text-pampa sm:mt-3 sm:text-[clamp(3rem,8vw,6.5rem)]">
-            Mataderos
+      <div className="relative z-20 flex h-full flex-col justify-end px-[var(--gutter)] pb-5 pt-28 sm:pb-10">
+        <div className="hero-title max-w-[14rem] text-pampa sm:max-w-xl">
+          <p className="font-mono text-base">Mataderos · Comuna 9 · CABA</p>
+          <h1 className="mt-2 font-display text-[2.35rem] font-semibold uppercase leading-[0.9] tracking-tight sm:text-[clamp(3.25rem,6vw,5.75rem)]">
+            El domingo se baila en la feria
           </h1>
-          <p className="mt-2 font-serif text-base italic leading-snug text-pampa sm:mt-4 sm:text-[clamp(1.125rem,2vw,1.5rem)]">
-            Portal del barrio: oficios, feria y memoria entre La Recova, Alberdi y Emilio Castro.
+          <p className="mt-3 max-w-[28ch] font-serif text-lg italic leading-snug sm:max-w-none sm:text-2xl">
+            Noticias, comercios, agenda y memoria del barrio.
           </p>
-          <p className="mt-5 hidden border-t border-pampa/30 pt-3 font-mono text-base text-pampa sm:block">
-            Feria de Mataderos · baile, público y La Recova
-          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <a
+              href="#agenda"
+              className="inline-flex min-h-[48px] items-center border border-pampa px-4 text-base font-semibold text-pampa"
+            >
+              Agenda de la semana
+            </a>
+            <a
+              href="#directorio"
+              className="inline-flex min-h-[48px] items-center bg-pampa px-4 text-base font-semibold text-carbon"
+            >
+              Comercios
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -575,27 +586,26 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
   if (notes.length === 0) return null;
 
   return (
-    <section id="noticias" aria-labelledby="noticias-titulo" className="news-overlap relative z-10">
-      <div className="editorial-container pt-2">
-        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-          <div className="basis-full bg-carbon px-4 py-3 text-pampa sm:basis-auto sm:max-w-[70%]">
-            <p className="font-mono text-base">01 — Guías y crónicas</p>
+    <section id="noticias" aria-labelledby="noticias-titulo" className="relative z-10 border-t-8 border-chicago bg-pampa text-carbon">
+      <div className="editorial-container pb-4 pt-10 sm:pt-16">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-carbon/20 pb-5">
+          <div className="min-w-0">
+            <p className="font-mono text-base text-chicago">Guías y crónicas</p>
             <h2
               id="noticias-titulo"
-              className="font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold uppercase leading-[0.95]"
+              className="mt-2 font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold uppercase leading-[0.95]"
             >
               Noticias del barrio
             </h2>
           </div>
-          <div className="flex flex-wrap items-center gap-2" data-surface="dark">
+          <div className="flex flex-wrap items-center gap-2">
             <Link
               href="/notas"
-              className="inline-flex min-h-[48px] items-center rounded-[4px] bg-carbon px-4 font-semibold text-pampa"
+              className="inline-flex min-h-[48px] items-center bg-chicago px-4 font-semibold text-pampa"
             >
               Ver todas
             </Link>
             <SnapButtons
-              dark
               prevLabel="Notas anteriores"
               nextLabel="Notas siguientes"
               onPrev={() => scrollSnap(scroller.current, -1)}
@@ -738,7 +748,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
       <div className="editorial-container section-pad">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-carbon/25 pb-6">
           <div className="min-w-0">
-            <p className="font-mono text-base">02 — Feria, La Recova y El Plata</p>
+            <p className="font-mono text-base">Feria, La Recova y El Plata</p>
             <h2
               id="agenda-titulo"
               className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
@@ -973,7 +983,7 @@ function ViviBand() {
       <div className="editorial-container section-pad">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">
-            <p className="font-mono text-base">03 — Cuatro maneras de entrar al barrio</p>
+            <p className="font-mono text-base">Cuatro maneras de entrar al barrio</p>
             <h2
               id="vivi-titulo"
               className="mt-2 max-w-4xl font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
@@ -1030,7 +1040,7 @@ function ArchiveCarousel() {
       <div className="editorial-container section-pad">
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-pampa/30 pb-6">
           <div className="min-w-0 basis-full sm:basis-auto sm:max-w-[70%]">
-            <p className="font-mono text-base">04 — Archivo del barrio</p>
+            <p className="font-mono text-base">Archivo del barrio</p>
             <h2
               id="historia-titulo"
               className="mt-2 font-serif text-[clamp(2rem,4.5vw,3.5rem)] font-semibold leading-[1.05]"
@@ -1086,7 +1096,7 @@ function Notices() {
   return (
     <section id="avisos" aria-labelledby="avisos-titulo" className="relative z-10 bg-pampa-deep text-carbon">
       <div className="editorial-container section-pad">
-        <p className="font-mono text-base">05 — Para moverse y atender</p>
+        <p className="font-mono text-base">Para moverse y atender</p>
         <h2
           id="avisos-titulo"
           className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
@@ -1218,7 +1228,7 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
   return (
     <section id="directorio" aria-labelledby="directorio-titulo" className="relative z-10 bg-pampa text-carbon">
       <div className="editorial-container section-pad">
-        <p className="font-mono text-base">06 — Guía del barrio</p>
+        <p className="font-mono text-base">Guía del barrio</p>
         <h2
           id="directorio-titulo"
           className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"

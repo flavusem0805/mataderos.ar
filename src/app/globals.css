@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 :root {
-  --font-display: 'Big Shoulders Display', sans-serif;
-  --font-serif: 'Fraunces', Georgia, serif;
-  --font-sans: 'Source Sans 3', system-ui, -apple-system, sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
   --chicago: #1E5631;
   --chicago-dark: #143D22;
   --carbon: #1C1C1C;
@@ -30,9 +26,8 @@ html {
 body {
   background-color: var(--pampa);
   color: var(--carbon);
-  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 /* Accesibilidad: foco visible con alto contraste */
@@ -122,6 +117,64 @@ body {
   transition: background-color 500ms ease, color 500ms ease, border-color 500ms ease;
 }
 
+[id] {
+  scroll-margin-top: 8.5rem;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: 0.75rem;
+  z-index: 80;
+  transform: translateY(-200%);
+  background: var(--pampa);
+  color: var(--carbon);
+  border: 1px solid var(--carbon);
+  padding: 0.75rem 1rem;
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* The Tailwind sr-only box can still widen the page when it is absolutely positioned. */
+.sr-only {
+  clip-path: inset(50%);
+}
+
+.hero-pin {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100svh;
+  min-height: 100svh;
+}
+
+.news-overlap {
+  margin-top: -16rem;
+}
+
+@media (min-width: 768px) {
+  .news-overlap {
+    margin-top: -20rem;
+  }
+}
+
+.snap-row {
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  overscroll-behavior-x: contain;
+}
+
+.snap-row > * {
+  scroll-snap-align: start;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -131,5 +184,20 @@ body {
   * {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .hero-pin {
+    position: relative;
+    height: auto;
+    min-height: 70vh;
+  }
+
+  .news-overlap {
+    margin-top: 0;
+  }
+
+  .snap-row {
+    scroll-snap-type: none;
   }
 }

@@ -17,11 +17,11 @@ import {
   ARCHIVE_NOTES,
   HERO_MEDIA,
   NOTICES,
-  REFERENCE_STILLS,
   VIVI_TILES,
   type AgendaVenue,
   type Article,
   type Business,
+  type BusinessCategory,
   type NeighborhoodEvent
 } from '@/lib/data';
 import {
@@ -31,6 +31,7 @@ import {
   venueClock,
   type VenueClock
 } from '@/lib/agenda';
+import { isShopOpen } from '@/lib/hours';
 
 interface PortalClientProps {
   businesses: Business[];
@@ -236,9 +237,9 @@ function TopRail() {
   );
 
   return (
-    <div className="flex min-h-[48px] items-stretch border-b border-pampa/20 bg-carbon text-pampa">
+    <div className="border-b border-pampa/20 bg-carbon text-pampa">
       <div
-        className={`rail-ticker ${held ? 'is-held' : ''}`}
+        className={`rail-ticker w-full ${held ? 'is-held' : ''}`}
         role="region"
         aria-label="Próximos encuentros"
         onPointerDown={() => setHeld(true)}
@@ -250,12 +251,6 @@ function TopRail() {
           {renderSet(true)}
         </div>
       </div>
-      <a
-        href="#agenda"
-        className="inline-flex min-h-[48px] shrink-0 items-center border-l border-pampa/30 px-4 font-mono text-base underline-offset-4 hover:underline"
-      >
-        Ver agenda
-      </a>
     </div>
   );
 }
@@ -610,7 +605,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
                 key={venue.id}
                 id={`agenda-${venue.id}`}
                 data-snap-card
-                className={`relative w-[88%] min-w-0 shrink-0 snap-start break-words border bg-pampa-surface p-5 sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
+                className={`relative w-[88%] min-w-0 shrink-0 snap-start border bg-pampa-surface p-5 [hyphens:manual] [overflow-wrap:normal] sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
                   isSoonest ? 'border-2 border-carbon' : 'border-carbon/30'
                 }`}
               >
@@ -710,7 +705,37 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
   );
 }
 
+function ViviTile({
+  tile,
+  imageClass
+}: {
+  tile: (typeof VIVI_TILES)[number];
+  imageClass: string;
+}) {
+  return (
+    <a
+      href={tile.href}
+      aria-label={`${tile.title}. ${tile.line}`}
+      className="group block border border-pampa/30 bg-carbon"
+    >
+      <span className={`relative block overflow-hidden ${imageClass}`}>
+        <PhotoFill src={tile.imageUrl} alt={tile.imageAlt} sizes="(max-width: 1024px) 85vw, 25vw" />
+      </span>
+      <span className="block p-4">
+        <span className="block font-display text-[clamp(1.75rem,2vw,2.25rem)] font-semibold uppercase leading-none group-hover:underline group-hover:underline-offset-4">
+          {tile.title}
+        </span>
+        <span className="mt-3 block text-lg leading-snug [hyphens:manual] [overflow-wrap:normal] [word-break:normal]">
+          {tile.line}
+        </span>
+      </span>
+    </a>
+  );
+}
+
 function ViviBand() {
+  const scroller = useRef<HTMLDivElement>(null);
+
   return (
     <section
       id="vivi"
@@ -719,31 +744,44 @@ function ViviBand() {
       className="relative z-10 bg-carbon text-pampa"
     >
       <div className="editorial-container section-pad">
-        <p className="font-mono text-base">03 — Cuatro maneras de entrar al barrio</p>
-        <h2
-          id="vivi-titulo"
-          className="mt-2 max-w-4xl font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
-        >
-          Viví Mataderos
-        </h2>
-        <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {VIVI_TILES.map((tile) => (
-            <a
-              key={tile.id}
-              href={tile.href}
-              aria-label={`${tile.title}. ${tile.line}`}
-              className="group block min-w-0 break-words border border-pampa/30 bg-carbon"
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-mono text-base">03 — Cuatro maneras de entrar al barrio</p>
+            <h2
+              id="vivi-titulo"
+              className="mt-2 max-w-4xl font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
             >
-              <span className="relative block aspect-[3/4] overflow-hidden">
-                <PhotoFill src={tile.imageUrl} alt={tile.imageAlt} sizes="(max-width: 1024px) 50vw, 25vw" />
-              </span>
-              <span className="block p-4">
-                <span className="block font-display text-[clamp(1.75rem,2vw,2.25rem)] font-semibold uppercase leading-none group-hover:underline group-hover:underline-offset-4">
-                  {tile.title}
-                </span>
-                <span className="mt-3 block text-lg leading-snug">{tile.line}</span>
-              </span>
-            </a>
+              Viví Mataderos
+            </h2>
+          </div>
+          <div className="lg:hidden">
+            <SnapButtons
+              dark
+              prevLabel="Lugares anteriores"
+              nextLabel="Lugares siguientes"
+              onPrev={() => scrollSnap(scroller.current, -1)}
+              onNext={() => scrollSnap(scroller.current, 1)}
+            />
+          </div>
+        </div>
+
+        <div
+          ref={scroller}
+          role="region"
+          aria-label="Feria, La Recova, El Plata y corredores"
+          tabIndex={0}
+          className="snap-row -mx-[var(--gutter)] mt-8 flex gap-3 overflow-x-auto px-[var(--gutter)] lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {VIVI_TILES.map((tile) => (
+            <div key={tile.id} data-snap-card className="w-[85vw] max-w-[28rem] shrink-0 snap-start">
+              <ViviTile tile={tile} imageClass="aspect-[4/3]" />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-8 hidden gap-3 lg:grid lg:grid-cols-4">
+          {VIVI_TILES.map((tile) => (
+            <ViviTile key={tile.id} tile={tile} imageClass="aspect-[3/4]" />
           ))}
         </div>
       </div>
@@ -841,170 +879,204 @@ function Notices() {
   );
 }
 
-function ShopShowcase({ businesses }: { businesses: Business[] }) {
+const CATEGORY_ORDER: BusinessCategory[] = [
+  'Mascotas',
+  'Gastronomía',
+  'Salud y Estética',
+  'Hogar y Ferretería'
+];
+
+function ShopCard({ business, open }: { business: Business; open: boolean }) {
+  const maps = mapsHref(`${business.address}, Mataderos, CABA`);
+  return (
+    <article className="flex h-full min-w-0 flex-col border border-carbon bg-pampa-surface">
+      <div className="relative aspect-[4/3] w-full overflow-hidden">
+        <PhotoFill
+          src={business.heroImage}
+          alt={`Foto de referencia junto a la ficha de ${business.name}. No es la fachada del local.`}
+          sizes="(max-width: 1024px) 85vw, 30vw"
+        />
+      </div>
+      <div className="flex flex-1 flex-col p-4">
+        <p className="font-mono text-base text-chicago">{business.category}</p>
+        <h3 className="mt-1 font-serif text-2xl font-semibold leading-tight">{business.name}</h3>
+        <p className="mt-2 text-base leading-snug">{business.address}</p>
+        <p className="mt-2 font-mono text-base">{open ? 'Abierto ahora' : 'Cerrado ahora'}</p>
+        {business.hasSubdomain && (
+          <p className="mt-2 font-mono text-base text-chicago">
+            Web oficial · {business.slug}
+            <wbr />
+            .mataderos.ar
+          </p>
+        )}
+        <div className="mt-auto grid gap-2 pt-4">
+          {business.whatsapp ? (
+            <a
+              href={`https://wa.me/${business.whatsapp}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-3 font-semibold text-pampa color-field hover:bg-chicago-dark"
+            >
+              WhatsApp
+              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </a>
+          ) : (
+            <a
+              href={maps}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-3 font-semibold color-field hover:bg-carbon hover:text-pampa"
+            >
+              Cómo llegar
+              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </a>
+          )}
+          {business.hasSubdomain && (
+            <Link
+              href={`/comercio/${business.slug}`}
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-3 font-semibold color-field hover:bg-carbon hover:text-pampa"
+            >
+              Ver web
+              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ShopDirectory({ businesses }: { businesses: Business[] }) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const [category, setCategory] = useState<BusinessCategory | null>(null);
+  const [openOnly, setOpenOnly] = useState(false);
   const [shopName, setShopName] = useState('Veterinaria Flavio');
-  const featured =
-    businesses.find((business) => business.featured && business.hasSubdomain) ??
-    businesses.find((business) => business.hasSubdomain) ??
-    businesses[0];
+  const [now, setNow] = useState<number | null>(null);
 
-  if (!featured) return null;
+  useEffect(() => {
+    const tick = () => setNow(Date.now());
+    tick();
+    const id = window.setInterval(tick, 60000);
+    return () => window.clearInterval(id);
+  }, []);
 
-  const supporters = businesses
-    .filter((business) => business.id !== featured.id)
+  const categories = CATEGORY_ORDER.filter((item) => businesses.some((business) => business.category === item));
+  const openOf = (business: Business) => (now === null ? business.isOpenNow : isShopOpen(business, now));
+  const visible = businesses
+    .filter((business) => (category ? business.category === category : true))
+    .filter((business) => (openOnly ? openOf(business) : true))
     .slice()
-    .sort((a, b) => Number(b.hasSubdomain) - Number(a.hasSubdomain));
+    .sort((a, b) => Number(b.hasSubdomain) - Number(a.hasSubdomain) || a.name.localeCompare(b.name, 'es'));
+
+  const clearFilters = () => {
+    setCategory(null);
+    setOpenOnly(false);
+    scroller.current?.scrollTo({ left: 0 });
+  };
+
   const simulated = slugifyShopName(shopName);
-  const collage = [
-    {
-      src: featured.heroImage,
-      alt: `Foto de referencia junto a la ficha de ${featured.name}. No es la fachada del local.`
-    },
-    {
-      src: REFERENCE_STILLS.cafe,
-      alt: 'Interior de un café. Fotografía de referencia, no pertenece al comercio destacado.'
-    },
-    {
-      src: REFERENCE_STILLS.counter,
-      alt: 'Mostrador de un comercio. Fotografía de referencia, no pertenece al comercio destacado.'
-    }
-  ];
+  const emptyMessage =
+    openOnly && category
+      ? 'No hay comercios abiertos en este rubro ahora'
+      : openOnly
+        ? 'No hay comercios abiertos ahora'
+        : 'No hay comercios en este rubro';
 
   return (
     <section id="directorio" aria-labelledby="directorio-titulo" className="relative z-10 bg-pampa text-carbon">
       <div className="editorial-container section-pad">
-        <p className="font-mono text-base">06 — Web Oficial</p>
-        <div className="mt-4 grid items-start gap-8 lg:grid-cols-12 lg:gap-10">
-          <div className="lg:col-span-5">
-            <div className="mb-5 h-1 w-16 bg-ladrillo" aria-hidden="true" />
-            <p className="font-mono text-base text-chicago">{featured.category} · {featured.zone}</p>
-            <h2
-              id="directorio-titulo"
-              className="mt-3 font-serif text-[clamp(2.75rem,6vw,5rem)] font-semibold leading-[0.95]"
-            >
-              {featured.name}
-            </h2>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed sm:text-xl">{featured.longDescription}</p>
-            <p className="mt-5 font-mono text-base text-chicago break-words">
-              Web Oficial · {featured.slug}.mataderos.ar
-            </p>
-            <p className="mt-3 text-base leading-relaxed">
-              {featured.address} · {featured.hoursSummary}
-            </p>
-            <Link
-              href={`/comercio/${featured.slug}`}
-              className="mt-6 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
-            >
-              Entrar al sitio
-              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-            </Link>
-          </div>
+        <p className="font-mono text-base">06 — Guía del barrio</p>
+        <h2
+          id="directorio-titulo"
+          className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
+        >
+          Comercios del barrio
+        </h2>
+        <p className="mt-4 max-w-3xl text-lg leading-relaxed">
+          Los locales con Web oficial aparecen primero. La ficha sigue siendo gratuita para el resto del barrio.
+        </p>
 
-          <div className="lg:col-span-7">
-            <div className="grid grid-cols-6 gap-2 sm:grid-rows-2">
-              <div className="relative col-span-6 min-h-[240px] overflow-hidden sm:col-span-4 sm:row-span-2 sm:min-h-[440px]">
-                <PhotoFill src={collage[0].src} alt={collage[0].alt} sizes="(max-width: 640px) 100vw, 40vw" />
-              </div>
-              <div className="relative col-span-3 min-h-[140px] overflow-hidden sm:col-span-2 sm:min-h-[214px]">
-                <PhotoFill src={collage[1].src} alt={collage[1].alt} sizes="(max-width: 640px) 50vw, 20vw" />
-              </div>
-              <div className="relative col-span-3 min-h-[140px] overflow-hidden sm:col-span-2 sm:min-h-[214px]">
-                <PhotoFill src={collage[2].src} alt={collage[2].alt} sizes="(max-width: 640px) 50vw, 20vw" />
-              </div>
-            </div>
-            <p className="mt-3 font-mono text-base">
-              Collage de fotos de referencia. Ninguna muestra el local real.
-            </p>
-          </div>
+        <div className="mt-6 flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            type="button"
+            aria-pressed={category === null}
+            onClick={() => setCategory(null)}
+            className={`inline-flex min-h-[48px] shrink-0 items-center rounded-[4px] border px-4 text-base font-semibold color-field ${
+              category === null ? 'border-carbon bg-carbon text-pampa' : 'border-carbon/40 bg-pampa text-carbon'
+            }`}
+          >
+            Todos
+          </button>
+          {categories.map((item) => (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={category === item}
+              onClick={() => setCategory(item)}
+              className={`inline-flex min-h-[48px] shrink-0 items-center rounded-[4px] border px-4 text-base font-semibold color-field ${
+                category === item ? 'border-carbon bg-carbon text-pampa' : 'border-carbon/40 bg-pampa text-carbon'
+              }`}
+            >
+              {item}
+            </button>
+          ))}
+          <button
+            type="button"
+            aria-pressed={openOnly}
+            onClick={() => setOpenOnly((value) => !value)}
+            className={`inline-flex min-h-[48px] shrink-0 items-center rounded-[4px] border px-4 text-base font-semibold color-field ${
+              openOnly ? 'border-chicago bg-chicago text-pampa' : 'border-carbon/40 bg-pampa text-carbon'
+            }`}
+          >
+            Abierto ahora
+          </button>
         </div>
 
-        <div className="mt-16 border-t border-carbon/25 pt-10">
-          <h2 className="font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold uppercase leading-[0.95]">
-            Comercios que sostienen el portal
-          </h2>
-          <p className="mt-4 max-w-3xl text-lg leading-relaxed sm:text-xl">
-            Cada ficha de la guía es gratuita. Los locales con sello Web Oficial sostienen Mataderos.ar con su subdominio.
+        {visible.length === 0 ? (
+          <p className="mt-8 border border-carbon p-6 text-lg" role="status">
+            {emptyMessage}
           </p>
+        ) : (
+          <>
+            <div className="mt-6 flex justify-end lg:hidden">
+              <SnapButtons
+                prevLabel="Comercios anteriores"
+                nextLabel="Comercios siguientes"
+                onPrev={() => scrollSnap(scroller.current, -1)}
+                onNext={() => scrollSnap(scroller.current, 1)}
+              />
+            </div>
+            <div
+              ref={scroller}
+              role="region"
+              aria-label="Comercios filtrados"
+              tabIndex={0}
+              className="snap-row -mx-[var(--gutter)] mt-4 flex items-stretch gap-3 overflow-x-auto px-[var(--gutter)] lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            >
+              {visible.map((business) => (
+                <div key={business.id} data-snap-card className="flex w-[85vw] shrink-0 snap-start lg:w-auto">
+                  <ShopCard business={business} open={openOf(business)} />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
 
-          <div className="mt-8 grid min-w-0 grid-cols-1 border-l border-t border-carbon sm:grid-cols-2">
-            {supporters.map((business, index) => {
-              const lastOdd = supporters.length % 2 === 1 && index === supporters.length - 1;
-              const href = business.hasSubdomain
-                ? `/comercio/${business.slug}`
-                : business.whatsapp
-                  ? `https://wa.me/${business.whatsapp}`
-                  : mapsHref(`${business.address}, Mataderos, CABA`);
-              const external = !business.hasSubdomain;
-              const action = business.hasSubdomain
-                ? 'Entrar al sitio'
-                : business.whatsapp
-                  ? 'Escribir por WhatsApp'
-                  : 'Cómo llegar';
-              return (
-                <article
-                  key={business.id}
-                  className={`flex min-w-0 flex-col border-b border-r border-carbon bg-pampa-surface ${
-                    lastOdd ? 'sm:col-span-2 sm:grid sm:grid-cols-2' : ''
-                  }`}
-                >
-                  <div className="relative aspect-[4/3] w-full min-w-0 overflow-hidden">
-                    <PhotoFill
-                      src={business.heroImage}
-                      alt={`Foto de referencia junto a la ficha de ${business.name}. No es la fachada del local.`}
-                      sizes="(max-width: 640px) 100vw, 50vw"
-                    />
-                  </div>
-                  <div className="flex flex-1 flex-col p-6">
-                    <p className="font-mono text-base text-chicago">
-                      {business.category} · {business.zone}
-                    </p>
-                    <h3 className="mt-2 font-serif text-[clamp(1.5rem,2vw,2rem)] font-semibold leading-tight">
-                      {business.name}
-                    </h3>
-                    <p className="mt-3 text-lg leading-relaxed">{business.description}</p>
-                    <p className="mt-3 text-base">
-                      {business.address} · {business.isOpenNow ? 'Abierto ahora' : 'Cerrado ahora'} · {business.hoursSummary}
-                    </p>
-                    {business.hasSubdomain && (
-                      <p className="mt-3 break-words font-mono text-base text-chicago">
-                        Web Oficial · {business.slug}.mataderos.ar
-                      </p>
-                    )}
-                    <div className="mt-auto pt-5">
-                      {external ? (
-                        <a
-                          href={href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago underline underline-offset-4"
-                        >
-                          {action}
-                          <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                        </a>
-                      ) : (
-                        <Link
-                          href={href}
-                          className="inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago underline underline-offset-4"
-                        >
-                          {action}
-                          <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={clearFilters}
+          className="mt-8 inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago underline underline-offset-4"
+        >
+          Ver todos los comercios
+          <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+        </button>
 
-        <div id="sumar-comercio" className="mt-16 border border-carbon p-6 sm:p-8">
-          <p className="font-mono text-base text-chicago">Para locales de la Comuna 9</p>
-          <h2 className="mt-2 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
-            Sumá tu comercio
+        <div id="sumar-comercio" className="mt-12 border border-carbon p-6 sm:p-8">
+          <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
+            ¿Tenés un comercio en Mataderos? Sumate
           </h2>
-          <p className="mt-4 max-w-3xl text-lg leading-relaxed sm:text-xl">
-            La ficha con dirección, horario y WhatsApp es gratuita. Si querés el sitio del local, activamos la Web Oficial dentro de Mataderos.ar.
+          <p className="mt-4 max-w-3xl text-lg leading-relaxed">
+            La ficha con dirección, horario y WhatsApp es gratuita. Si querés el sitio del local, activamos la Web oficial dentro de Mataderos.ar.
           </p>
           <label htmlFor="b2b-slug-input" className="mt-6 block text-base font-semibold">
             Nombre del negocio
@@ -1017,28 +1089,19 @@ function ShopShowcase({ businesses }: { businesses: Business[] }) {
             className="mt-2 min-h-[48px] w-full border border-carbon/40 bg-pampa-surface px-4 text-lg text-carbon"
           />
           <p className="mt-4 break-words border border-carbon/25 bg-pampa-surface px-4 py-3 font-mono text-base">
-            Web Oficial · {simulated}.mataderos.ar
+            Web oficial · {simulated}.mataderos.ar
           </p>
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-            <a
-              href={`https://wa.me/5491100000000?text=${encodeURIComponent(
-                `Hola! Quiero consultar por la ficha o Web Oficial (${simulated}.mataderos.ar) para mi comercio.`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
-            >
-              Pedir la Web Oficial
-              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-            </a>
-            <Link
-              href="/comercio/veterinariaflavio"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-5 font-semibold color-field hover:bg-carbon hover:text-pampa"
-            >
-              Ver un ejemplo
-              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-            </Link>
-          </div>
+          <a
+            href={`https://wa.me/5491100000000?text=${encodeURIComponent(
+              `Hola! Quiero sumar mi comercio a Mataderos.ar (${simulated}.mataderos.ar).`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+          >
+            Sumate por WhatsApp
+            <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </a>
         </div>
       </div>
     </section>
@@ -1311,7 +1374,7 @@ export default function PortalClient({ businesses, articles, events }: PortalCli
           <ViviBand />
           <ArchiveCarousel />
           <Notices />
-          <ShopShowcase businesses={businesses} />
+          <ShopDirectory businesses={businesses} />
         </div>
       </main>
       <SiteFooter />

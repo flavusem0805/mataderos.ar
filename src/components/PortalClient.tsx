@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useId, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
@@ -15,7 +15,6 @@ import {
 import {
   AGENDA_VENUES,
   ARCHIVE_NOTES,
-  HERO_MEDIA,
   NOTICES,
   VIVI_TILES,
   type AgendaVenue,
@@ -305,7 +304,6 @@ function SiteHeader() {
               alt=""
               width={40}
               height={40}
-              priority
               className="shrink-0 border border-pampa/40"
             />
             <span>Mataderos.ar</span>
@@ -375,22 +373,131 @@ function SiteHeader() {
   );
 }
 
+const HERO_POSTER = '/hero/hero-poster.jpg';
+const HERO_LOGO_KEY = 'mataderos.heroLogo';
+
 function Hero() {
+  const logoRef = useRef<HTMLDivElement>(null);
+  const [playVideo, setPlayVideo] = useState(false);
+
+  useLayoutEffect(() => {
+    const logo = logoRef.current;
+    const hero = logo?.closest('section');
+    if (!logo || !hero) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const seen = window.sessionStorage.getItem(HERO_LOGO_KEY) === '1';
+    const headerBottom = document.querySelector('header')?.getBoundingClientRect().bottom ?? 128;
+    const heroBox = hero.getBoundingClientRect();
+    const top = Math.max(12, headerBottom - heroBox.top + 12);
+    logo.style.top = `${top}px`;
+
+    const place = () => logo.getBoundingClientRect();
+    const box = place();
+    const mobile = window.innerWidth < 768;
+    const overlap = Math.max(0, window.innerHeight - (mobile ? 36 : 42) * 16);
+    const visibleTop = headerBottom;
+    const visibleBottom = heroBox.bottom - overlap;
+    const centerX = heroBox.left + heroBox.width / 2;
+    const centerY = visibleTop + Math.max(0, visibleBottom - visibleTop) * (mobile ? 0.42 : 0.46);
+    const dx = centerX - (box.left + box.width / 2);
+    const dy = centerY - (box.top + box.height / 2);
+    const scale = Math.min(mobile ? 1.85 : 2.35, (heroBox.width * 0.9) / box.width);
+    const travel = mobile ? 900 : 1200;
+
+    if (reduce || seen) {
+      logo.style.transform = 'translate3d(0, 0, 0) scale(1)';
+      logo.style.opacity = '1';
+      hero.setAttribute('data-settled', 'true');
+      return;
+    }
+
+    logo.style.opacity = '1';
+    const animation = logo.animate(
+      [
+        { transform: `translate3d(${dx}px, ${dy}px, 0) scale(${scale})` },
+        { transform: 'translate3d(0, 0, 0) scale(1)' }
+      ],
+      {
+        duration: travel,
+        delay: 800,
+        easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        fill: 'both'
+      }
+    );
+    const remember = () => window.sessionStorage.setItem(HERO_LOGO_KEY, '1');
+    animation.onfinish = remember;
+    return () => {
+      animation.onfinish = null;
+      animation.cancel();
+    };
+  }, []);
+
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData === true;
+    if (reduce || saveData) return;
+
+    const start = () => setPlayVideo(true);
+    const arm = () => {
+      window.requestIdleCallback(start, { timeout: 1200 });
+    };
+    if (document.readyState === 'complete') arm();
+    else window.addEventListener('load', arm, { once: true });
+  }, []);
+
   return (
-    <section id="inicio" className="hero-pin relative bg-carbon">
-      <div className="absolute inset-0 overflow-hidden">
-        <Image
-          src={HERO_MEDIA.src}
-          alt={HERO_MEDIA.alt}
-          fill
-          priority
-          quality={70}
-          sizes="(max-width: 768px) 160vw, 100vw"
-          className="object-cover"
-        />
+    <section id="inicio" className="hero-pin relative overflow-hidden bg-carbon">
+      <img
+        src={HERO_POSTER}
+        alt="Pareja bailando en la Feria de Mataderos, con el público y el edificio de piedra de La Recova."
+        width={1920}
+        height={1080}
+        fetchPriority="high"
+        decoding="async"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      {playVideo && (
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={HERO_POSTER}
+          aria-hidden="true"
+        >
+          <source src="/hero/hero-1080.webm" type="video/webm" media="(min-width: 768px)" />
+          <source src="/hero/hero-720.webm" type="video/webm" media="(max-width: 767px)" />
+          <source src="/hero/hero-720.mp4" type="video/mp4" />
+        </video>
+      )}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(180deg, rgb(28 28 28 / 0.5) 0%, rgb(28 28 28 / 0.18) 24%, rgb(28 28 28 / 0.05) 48%, rgb(28 28 28 / 0.62) 100%)'
+        }}
+      />
+
+      <div
+        ref={logoRef}
+        className="absolute right-[var(--gutter)] z-20 opacity-0"
+        style={{ top: '8.5rem', transform: 'translate3d(0, 0, 0) scale(1)' }}
+      >
+        <a
+          href="#inicio"
+          className="pointer-events-auto inline-flex items-center gap-2 whitespace-nowrap border border-pampa/50 bg-carbon/80 px-2 py-1 text-pampa"
+        >
+          <img src="/logo-emblem.png" alt="" width={40} height={40} className="h-10 w-10 shrink-0 border border-pampa/40" />
+          <span className="font-display text-2xl font-semibold uppercase leading-none tracking-tight">Mataderos.ar</span>
+        </a>
       </div>
-      <div className="relative z-10 flex min-h-[100svh] flex-col px-[var(--gutter)] pb-28 pt-56 sm:pt-44">
-        <div className="max-w-[18rem] border-t-4 border-celeste bg-carbon p-5 text-pampa sm:max-w-xl sm:p-8">
+
+      <div className="relative z-20 flex min-h-[100svh] flex-col justify-end px-[var(--gutter)] pb-[calc(max(0px,100svh-36rem)+1.5rem)] pt-36 sm:pb-[calc(max(0px,100svh-42rem)+1.75rem)]">
+        <div className="hero-title max-w-[18rem] border-t-4 border-celeste bg-carbon/90 p-5 text-pampa sm:max-w-xl sm:p-8">
           <p className="font-mono text-base">Comuna 9 · CABA</p>
           <h1 className="mt-3 font-display text-[clamp(3rem,8vw,6.5rem)] font-semibold uppercase leading-[0.9] tracking-tight text-pampa">
             Mataderos
@@ -399,7 +506,7 @@ function Hero() {
             Portal del barrio: oficios, feria y memoria entre La Recova, Alberdi y Emilio Castro.
           </p>
           <p className="mt-5 border-t border-pampa/30 pt-3 font-mono text-base text-pampa">
-            {HERO_MEDIA.credit}
+            Feria de Mataderos · baile, público y La Recova
           </p>
         </div>
       </div>

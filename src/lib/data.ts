@@ -658,6 +658,7 @@ export interface ArchiveNote {
   category: string;
   title: string;
   summary: string;
+  href: string;
 }
 
 export interface ViviTile {
@@ -667,11 +668,13 @@ export interface ViviTile {
   href: string;
   imageUrl: string;
   imageAlt: string;
+  imageCredit: string;
 }
 
 export const HERO_MEDIA = {
-  src: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=2000&q=70',
-  alt: 'Multitud en un festival al aire libre. Fotografía de referencia: no es un registro de Mataderos.'
+  src: '/notas/baile-feria.jpg',
+  alt: 'Pareja bailando en la Feria de Mataderos, en Lisandro de la Torre y avenida de los Corrales. Foto de Roberto Fiadone, noviembre de 2007.',
+  credit: 'Foto: Roberto Fiadone, noviembre de 2007. CC BY-SA 3.0. Copia reducida.'
 };
 
 export const AGENDA_VENUES: AgendaVenue[] = [
@@ -761,41 +764,46 @@ export const ARCHIVE_NOTES: ArchiveNote[] = [
     id: 'archivo-1889',
     dateLabel: '1889',
     category: 'Origen',
-    title: 'Los mataderos nuevos y el Mercado de Hacienda',
+    title: 'La piedra fundamental y Nueva Chicago',
     summary:
-      'El oeste porteño pasa a ser el puente entre la pampa y la ciudad. De ese traslado salen el barrio y su nombre.'
+      'El 14 de abril queda como aniversario del barrio. El nombre industrial y el nombre popular convivieron décadas.',
+    href: '/notas/historia-de-mataderos'
   },
   {
     id: 'archivo-1901',
     dateLabel: '1901',
-    category: 'Obra',
-    title: 'La Recova cierra en forma de U',
+    category: 'Mercado',
+    title: 'Empieza el Mercado Nacional de Hacienda',
     summary:
-      'La antigua administración del mercado y sus recovas quedan como el casco que la feria sigue usando cada domingo.'
+      'El 1 de mayo de 1901 el archivo toma como inicio oficial del mercado. La faena de vacunos había empezado en 1900.',
+    href: '/notas/mercado-nacional-de-hacienda'
   },
   {
-    id: 'archivo-1919',
-    dateLabel: '1919',
+    id: 'archivo-1911',
+    dateLabel: '1911',
     category: 'Club',
-    title: 'Nueva Chicago y el verde del barrio',
+    title: 'Nueva Chicago se funda en el puente',
     summary:
-      'El club se suma a la identidad del barrio. El verde y el negro siguen siendo una seña de la Comuna 9.'
+      'El 1 de julio, sobre el Cildáñez, un grupo de vecinos crea el club que conservó el nombre viejo del barrio.',
+    href: '/notas/club-atletico-nueva-chicago'
   },
   {
-    id: 'archivo-1932',
-    dateLabel: '1932',
+    id: 'archivo-1934',
+    dateLabel: '1934',
     category: 'Monumento',
-    title: 'El Resero, de Emilio Jacinto Sarniguet',
+    title: 'El Resero se inaugura en la plazoleta',
     summary:
-      'El jinete que arrea el ganado se inaugura frente a la antigua administración y queda como emblema del trabajo rural.'
+      'La obra de Sarniguet, premiada en 1932, llega a Mataderos y se inaugura el 26 de mayo de 1934.',
+    href: '/notas/el-resero-de-mataderos'
   },
   {
     id: 'archivo-torito',
-    dateLabel: '1930',
-    category: 'Barrio',
+    dateLabel: '1909',
+    category: 'Personaje',
     title: 'Justo Suárez, El Torito de Mataderos',
     summary:
-      'El boxeador del barrio entra en la leyenda local, junto con los carros fileteados y los bodegones del casco.'
+      'Nació en Guaminí 2740. Antes del ring fue mucanguero y cargador de medias reses en el barrio.',
+    href: '/notas/justo-suarez-el-torito-de-mataderos'
   }
 ];
 
@@ -804,37 +812,37 @@ export const VIVI_TILES: ViviTile[] = [
     id: 'vivi-feria',
     title: 'Feria',
     line: 'Domingos de artesanía, cocina regional y música criolla.',
-    href: '#agenda',
-    imageUrl:
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=900&q=70',
-    imageAlt: 'Concierto con público. Fotografía de referencia, no es la Feria de Mataderos.'
+    href: '/notas/feria-de-mataderos',
+    imageUrl: '/notas/sortija.jpg',
+    imageAlt: 'Corrida de sortija en la Feria de Mataderos, sobre Lisandro de la Torre.',
+    imageCredit: 'Roberto Fiadone, noviembre de 2007 · CC BY-SA 3.0'
   },
   {
     id: 'vivi-recova',
     title: 'La Recova',
     line: 'La antigua administración del mercado, todavía en pie.',
-    href: '#historia',
-    imageUrl:
-      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=70',
-    imageAlt: 'Interior de un local con mesas. Fotografía de referencia, no es La Recova.'
+    href: '/notas/la-recova-de-mataderos',
+    imageUrl: '/notas/frente-recova.jpg',
+    imageAlt: 'Frente de la antigua administración del Mercado Nacional de Hacienda, en Mataderos.',
+    imageCredit: 'Camila Mazza, 2015 · CC BY-SA 4.0'
   },
   {
     id: 'vivi-plata',
     title: 'El Plata',
     line: 'Cine y teatro en la sala de Av. Alberdi 5765.',
-    href: '#agenda',
-    imageUrl:
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=70',
-    imageAlt: 'Sala con mesas y luces cálidas. Fotografía de referencia, no es el Cine Teatro El Plata.'
+    href: '/notas/cine-teatro-el-plata',
+    imageUrl: '/notas/vista-corrales.jpg',
+    imageAlt: 'Avenida de los Corrales un domingo de feria. No es la fachada del Cine Teatro El Plata.',
+    imageCredit: 'Ch nch, 2011 · CC BY-SA 3.0. No es la sala.'
   },
   {
     id: 'vivi-corredores',
     title: 'Corredores',
     line: 'Emilio Castro, Alberdi, el casco y Eva Perón.',
-    href: '#directorio',
-    imageUrl:
-      'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=900&q=70',
-    imageAlt: 'Interior de un comercio. Fotografía de referencia, no es un local de Mataderos.'
+    href: '/notas/avenida-alberdi-y-emilio-castro',
+    imageUrl: '/notas/torre-mercado.jpg',
+    imageAlt: 'Torre del ex Mercado Nacional de Hacienda, en el casco de Mataderos.',
+    imageCredit: 'Roberto Fiadone, 2007 · CC BY-SA 3.0'
   }
 ];
 

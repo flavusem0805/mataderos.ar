@@ -587,7 +587,7 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
 
   return (
     <section id="noticias" aria-labelledby="noticias-titulo" className="relative z-10 border-t-8 border-chicago bg-pampa text-carbon">
-      <div className="editorial-container pb-4 pt-10 sm:pt-16">
+      <div className="editorial-container pb-10 pt-10 sm:pb-16 sm:pt-16">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-carbon/20 pb-5">
           <div className="min-w-0">
             <p className="font-mono text-base text-chicago">Guías y crónicas</p>
@@ -645,39 +645,21 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
               </Link>
             </article>
           ))}
-        </div>
-      </div>
-
-      <div id="todas-las-notas" className="bg-pampa text-carbon">
-        <div className="editorial-container py-12 sm:py-16">
-          <p className="font-mono text-base">Índice</p>
-          <h2 className="mt-2 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-none">
-            Para seguir leyendo
-          </h2>
-          <div className="mt-8 divide-y divide-carbon/25 border-y border-carbon/25">
-            {notes.map((note) => (
-              <article key={note.slug}>
-                <Link
-                  href={`/notas/${note.slug}`}
-                  className="grid w-full gap-2 py-5 sm:grid-cols-12 sm:items-baseline sm:gap-4"
-                >
-                  <span className="font-mono text-base text-chicago sm:col-span-3">
-                    {note.fecha} · {note.category}
-                  </span>
-                  <h3 className="font-serif text-[clamp(1.35rem,2vw,1.75rem)] font-medium leading-snug sm:col-span-7">
-                    {note.title}
-                  </h3>
-                  <span className="inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago sm:col-span-2 sm:justify-end">
-                    Leer nota
-                    <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                  </span>
-                </Link>
-              </article>
-            ))}
-          </div>
-          <Link href="/notas" className="mt-6 inline-flex min-h-[48px] items-center font-semibold text-chicago underline underline-offset-4">
-            Ver las guías y todas las notas
-          </Link>
+          <article data-snap-card className="flex w-[84%] min-w-0 shrink-0 snap-start sm:w-[40%] lg:w-[28%]">
+            <Link
+              href="/notas"
+              className="flex h-full min-h-[18rem] w-full flex-col justify-between bg-chicago p-5 text-pampa"
+            >
+              <span className="font-mono text-base">Archivo</span>
+              <span className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-semibold uppercase leading-[0.95]">
+                Ver todas las noticias
+              </span>
+              <span className="inline-flex min-h-[48px] items-center gap-2 font-semibold">
+                Ir a /notas
+                <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              </span>
+            </Link>
+          </article>
         </div>
       </div>
     </section>

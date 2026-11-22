@@ -16,7 +16,6 @@ import {
 import {
   AGENDA_VENUES,
   ARCHIVE_NOTES,
-  NOTICES,
   VIVI_TILES,
   type AgendaVenue,
   type Business,
@@ -872,13 +871,6 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
             {active.place}
             {activeEvent ? ` · ${activeEvent.timeLabel} · ${activeEvent.highlightTag}` : ''}
           </p>
-          <a
-            href={`#${active.noticeId}`}
-            className="mt-4 inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago underline underline-offset-4"
-          >
-            Ver el aviso práctico
-            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-          </a>
           {active.id === 'el-plata' && (
             <div className="mt-4 max-w-md">
               <ElPlataInstagramLink />
@@ -1073,36 +1065,6 @@ function ArchiveCarousel() {
   );
 }
 
-function Notices() {
-  if (NOTICES.length === 0) return null;
-  return (
-    <section id="avisos" aria-labelledby="avisos-titulo" className="relative z-10 bg-pampa-deep text-carbon">
-      <div className="editorial-container section-pad">
-        <p className="font-mono text-base">Para moverse y atender</p>
-        <h2
-          id="avisos-titulo"
-          className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
-        >
-          Avisos prácticos
-        </h2>
-          <div className="mt-8 grid grid-cols-1 border-l border-t border-carbon/30 md:grid-cols-2">
-          {NOTICES.map((notice) => (
-            <article key={notice.id} id={notice.id} className="border-b border-r border-carbon/30 p-6 sm:p-8">
-              <p className="font-mono text-base text-chicago">
-                {notice.dateLabel} · {notice.category}
-              </p>
-              <h3 className="mt-3 font-serif text-[clamp(1.5rem,2vw,2rem)] font-semibold leading-tight">
-                {notice.title}
-              </h3>
-              <p className="mt-3 text-lg leading-relaxed sm:text-xl">{notice.body}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 const CATEGORY_ORDER: BusinessCategory[] = [
   'Mascotas',
   'Gastronomía',
@@ -1208,7 +1170,7 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
         : 'No hay comercios en este rubro';
 
   return (
-    <section id="directorio" aria-labelledby="directorio-titulo" className="relative z-10 bg-pampa text-carbon">
+    <section id="directorio" aria-labelledby="directorio-titulo" className="relative z-10 border-t border-carbon/15 bg-pampa text-carbon">
       <div className="editorial-container section-pad">
         <p className="font-mono text-base">Guía del barrio</p>
         <h2
@@ -1406,9 +1368,6 @@ function SiteFooter() {
                 <a href="#historia" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
                   Historia
                 </a>
-                <a href="#avisos" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
-                  Avisos
-                </a>
               </div>
             </FooterColumn>
             <FooterColumn title="Web Oficial" panelId="footer-web">
@@ -1487,7 +1446,6 @@ export default function PortalClient({ businesses, notes, events }: PortalClient
           <AgendaStrip events={events} />
           <ViviBand />
           <ArchiveCarousel />
-          <Notices />
           <ShopDirectory businesses={businesses} />
         </div>
       </main>

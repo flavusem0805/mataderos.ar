@@ -19,7 +19,6 @@ import {
   NOTICES,
   VIVI_TILES,
   type AgendaVenue,
-  type Article,
   type Business,
   type BusinessCategory,
   type NeighborhoodEvent
@@ -33,9 +32,19 @@ import {
 } from '@/lib/agenda';
 import { isShopOpen } from '@/lib/hours';
 
+export interface HomeNote {
+  slug: string;
+  title: string;
+  category: string;
+  fecha: string;
+  imageSrc: string;
+  imageAlt: string;
+  credit: string;
+}
+
 interface PortalClientProps {
   businesses: Business[];
-  articles: Article[];
+  notes: HomeNote[];
   events: NeighborhoodEvent[];
 }
 
@@ -90,12 +99,14 @@ function PhotoFill({
   src,
   alt,
   sizes,
-  priority = false
+  priority = false,
+  reference = false
 }: {
   src: string;
   alt: string;
   sizes: string;
   priority?: boolean;
+  reference?: boolean;
 }) {
   return (
     <>
@@ -107,12 +118,14 @@ function PhotoFill({
         priority={priority}
         className="object-cover"
       />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 z-10 whitespace-nowrap bg-carbon px-2 py-1 font-mono text-base text-pampa"
-      >
-        Referencia
-      </span>
+      {reference && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 top-0 z-10 whitespace-nowrap bg-carbon px-2 py-1 font-mono text-base text-pampa"
+        >
+          Referencia
+        </span>
+      )}
     </>
   );
 }
@@ -269,7 +282,8 @@ function SiteHeader() {
   }, [open]);
 
   const links = [
-    { href: '#noticias', label: 'Noticias' },
+    { href: '/notas', label: 'Notas' },
+    { href: '#noticias', label: 'Portada' },
     { href: '#agenda', label: 'Agenda' },
     { href: '#vivi', label: 'Viví' },
     { href: '#historia', label: 'Historia' },
@@ -384,7 +398,7 @@ function Hero() {
             Portal del barrio: oficios, feria y memoria entre La Recova, Alberdi y Emilio Castro.
           </p>
           <p className="mt-5 border-t border-pampa/30 pt-3 font-mono text-base text-pampa">
-            Foto de referencia. No es un registro del barrio.
+            {HERO_MEDIA.credit}
           </p>
         </div>
       </div>
@@ -392,22 +406,16 @@ function Hero() {
   );
 }
 
-function NewsCarousel({
-  articles,
-  onOpen
-}: {
-  articles: Article[];
-  onOpen: (article: Article) => void;
-}) {
+function NewsCarousel({ notes }: { notes: HomeNote[] }) {
   const scroller = useRef<HTMLDivElement>(null);
-  if (articles.length === 0) return null;
+  if (notes.length === 0) return null;
 
   return (
     <section id="noticias" aria-labelledby="noticias-titulo" className="news-overlap relative z-10">
       <div className="editorial-container pt-2">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div className="basis-full bg-carbon px-4 py-3 text-pampa sm:basis-auto sm:max-w-[70%]">
-            <p className="font-mono text-base">01 — Crónicas y aperturas</p>
+            <p className="font-mono text-base">01 — Guías y crónicas</p>
             <h2
               id="noticias-titulo"
               className="font-display text-[clamp(2rem,4vw,3.25rem)] font-semibold uppercase leading-[0.95]"
@@ -416,12 +424,12 @@ function NewsCarousel({
             </h2>
           </div>
           <div className="flex flex-wrap items-center gap-2" data-surface="dark">
-            <a
-              href="#todas-las-notas"
+            <Link
+              href="/notas"
               className="inline-flex min-h-[48px] items-center rounded-[4px] bg-carbon px-4 font-semibold text-pampa"
             >
               Ver todas
-            </a>
+            </Link>
             <SnapButtons
               dark
               prevLabel="Notas anteriores"
@@ -435,42 +443,32 @@ function NewsCarousel({
         <div
           ref={scroller}
           role="region"
-          aria-label="Noticias y aperturas"
+          aria-label="Notas del barrio"
           tabIndex={0}
           className="snap-row -mx-[var(--gutter)] flex items-stretch gap-2 overflow-x-auto px-[var(--gutter)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {articles.map((article, index) => (
+          {notes.map((note, index) => (
             <article
-              key={article.id}
+              key={note.slug}
               data-snap-card
               className={`${NEWS_WIDTHS[index % NEWS_WIDTHS.length]} flex min-w-0 shrink-0 snap-start`}
             >
-              <button
-                type="button"
-                onClick={() => onOpen(article)}
-                aria-label={`Leer nota: ${article.title}`}
-                className="flex h-full w-full flex-col bg-carbon text-left"
-              >
+              <Link href={`/notas/${note.slug}`} className="flex h-full w-full flex-col bg-carbon text-pampa">
                 <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden">
-                  <PhotoFill
-                    src={article.imageUrl}
-                    alt=""
-                    sizes="(max-width: 640px) 86vw, 40vw"
-                  />
+                  <PhotoFill src={note.imageSrc} alt={note.imageAlt} sizes="(max-width: 640px) 86vw, 40vw" />
                 </span>
-                <span className="flex flex-1 flex-col p-4 text-pampa">
+                <span className="flex flex-1 flex-col p-4">
                   <span className="font-mono text-base">
-                    {article.category} · {article.publishedLabel}
+                    {note.category} · {note.fecha}
                   </span>
-                  <h3 className="mt-2 line-clamp-3 font-serif text-xl font-semibold leading-snug">
-                    {article.title}
-                  </h3>
+                  <h3 className="mt-2 line-clamp-3 font-serif text-xl font-semibold leading-snug">{note.title}</h3>
+                  <span className="mt-2 font-mono text-base leading-snug text-pampa/80">{note.credit}</span>
                   <span className="mt-auto inline-flex min-h-[48px] items-center gap-2 pt-3 font-semibold">
                     Leer nota
                     <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                   </span>
                 </span>
-              </button>
+              </Link>
             </article>
           ))}
         </div>
@@ -480,30 +478,32 @@ function NewsCarousel({
         <div className="editorial-container py-12 sm:py-16">
           <p className="font-mono text-base">Índice</p>
           <h2 className="mt-2 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-none">
-            Todas las notas
+            Para seguir leyendo
           </h2>
           <div className="mt-8 divide-y divide-carbon/25 border-y border-carbon/25">
-            {articles.map((article) => (
-              <article key={article.id}>
-                <button
-                  type="button"
-                  onClick={() => onOpen(article)}
-                  className="grid w-full gap-2 py-5 text-left sm:grid-cols-12 sm:items-baseline sm:gap-4"
+            {notes.map((note) => (
+              <article key={note.slug}>
+                <Link
+                  href={`/notas/${note.slug}`}
+                  className="grid w-full gap-2 py-5 sm:grid-cols-12 sm:items-baseline sm:gap-4"
                 >
                   <span className="font-mono text-base text-chicago sm:col-span-3">
-                    {article.publishedLabel} · {article.category}
+                    {note.fecha} · {note.category}
                   </span>
                   <h3 className="font-serif text-[clamp(1.35rem,2vw,1.75rem)] font-medium leading-snug sm:col-span-7">
-                    {article.title}
+                    {note.title}
                   </h3>
                   <span className="inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago sm:col-span-2 sm:justify-end">
                     Leer nota
                     <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                   </span>
-                </button>
+                </Link>
               </article>
             ))}
           </div>
+          <Link href="/notas" className="mt-6 inline-flex min-h-[48px] items-center font-semibold text-chicago underline underline-offset-4">
+            Ver las guías y todas las notas
+          </Link>
         </div>
       </div>
     </section>
@@ -728,6 +728,7 @@ function ViviTile({
         <span className="mt-3 block text-lg leading-snug [hyphens:manual] [overflow-wrap:normal] [word-break:normal]">
           {tile.line}
         </span>
+        <span className="mt-3 block font-mono text-base leading-snug text-pampa/80">{tile.imageCredit}</span>
       </span>
     </a>
   );
@@ -838,9 +839,14 @@ function ArchiveCarousel() {
               </p>
               <p className="mt-4 font-mono text-base">{note.category}</p>
               <h3 className="mt-2 font-serif text-[clamp(1.5rem,2vw,1.85rem)] font-semibold leading-snug">
-                {note.title}
+                <Link href={note.href} className="underline decoration-pampa/40 underline-offset-4">
+                  {note.title}
+                </Link>
               </h3>
               <p className="mt-4 text-lg leading-relaxed">{note.summary}</p>
+              <Link href={note.href} className="mt-4 inline-flex min-h-[48px] items-center font-semibold underline underline-offset-4">
+                Leer la nota
+              </Link>
             </article>
           ))}
         </div>
@@ -895,6 +901,7 @@ function ShopCard({ business, open }: { business: Business; open: boolean }) {
           src={business.heroImage}
           alt={`Foto de referencia junto a la ficha de ${business.name}. No es la fachada del local.`}
           sizes="(max-width: 1024px) 85vw, 30vw"
+          reference
         />
       </div>
       <div className="flex flex-1 flex-col p-4">
@@ -1166,6 +1173,9 @@ function SiteFooter() {
           <div className="md:col-span-8 grid md:grid-cols-3 md:gap-8">
             <FooterColumn title="Recorrido" panelId="footer-recorrido">
               <div className="flex flex-col">
+                <Link href="/notas" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+                  Notas
+                </Link>
                 <a href="#noticias" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
                   Noticias
                 </a>
@@ -1244,122 +1254,7 @@ function SiteFooter() {
   );
 }
 
-function ArticleDialog({
-  article,
-  onClose
-}: {
-  article: Article;
-  onClose: () => void;
-}) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-  const titleId = useId();
-
-  useEffect(() => {
-    const previouslyFocused = document.activeElement as HTMLElement | null;
-    closeRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      previouslyFocused?.focus?.();
-    };
-  }, []);
-
-  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Escape') {
-      event.stopPropagation();
-      onClose();
-      return;
-    }
-    if (event.key !== 'Tab' || !panelRef.current) return;
-    const focusable = [
-      ...panelRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input, textarea, select, [tabindex]:not([tabindex="-1"])')
-    ];
-    if (focusable.length === 0) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  };
-
-  return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-carbon/80 p-4 sm:p-6"
-      onClick={onClose}
-      onKeyDown={onKeyDown}
-    >
-      <div
-        ref={panelRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-carbon bg-pampa-surface text-carbon"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="relative aspect-[16/9] w-full border-b border-carbon/20">
-          <PhotoFill
-            src={article.imageUrl}
-            alt={`Foto de referencia de la nota «${article.title}».`}
-            sizes="(max-width: 768px) 100vw, 680px"
-          />
-        </div>
-        <div className="p-6 sm:p-10">
-          <p className="font-mono text-base">
-            {article.category} · {article.zone} · {article.publishedLabel} · Lectura {article.readTime}
-          </p>
-          <h2 id={titleId} className="mt-3 font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-semibold leading-tight">
-            {article.title}
-          </h2>
-          <div className="mt-6 space-y-5 text-lg leading-relaxed sm:text-xl">
-            {article.content.map((paragraph, index) => (
-              <p key={index}>{paragraph}</p>
-            ))}
-          </div>
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-carbon/20 pt-6">
-            {article.mentionedBusinessSlug ? (
-              <Link
-                href={`/comercio/${article.mentionedBusinessSlug}`}
-                className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
-              >
-                Web Oficial · {article.mentionedBusinessSlug}.mataderos.ar
-                <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              </Link>
-            ) : (
-              <span />
-            )}
-            <button
-              ref={closeRef}
-              type="button"
-              onClick={onClose}
-              className="inline-flex min-h-[48px] items-center rounded-[4px] border border-carbon px-5 font-semibold color-field hover:bg-carbon hover:text-pampa"
-            >
-              Cerrar nota
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function PortalClient({ businesses, articles, events }: PortalClientProps) {
-  const [activeArticle, setActiveArticle] = useState<Article | null>(null);
-
-  useEffect(() => {
-    if (!activeArticle) return;
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setActiveArticle(null);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [activeArticle]);
-
+export default function PortalClient({ businesses, notes, events }: PortalClientProps) {
   return (
     <div className="relative min-h-screen bg-pampa text-carbon">
       <a href="#contenido" className="skip-link">
@@ -1369,7 +1264,7 @@ export default function PortalClient({ businesses, articles, events }: PortalCli
       <main id="contenido" className="min-w-0">
         <Hero />
         <div className="relative z-10">
-          <NewsCarousel articles={articles} onOpen={setActiveArticle} />
+          <NewsCarousel notes={notes} />
           <AgendaStrip events={events} />
           <ViviBand />
           <ArchiveCarousel />
@@ -1378,9 +1273,6 @@ export default function PortalClient({ businesses, articles, events }: PortalCli
         </div>
       </main>
       <SiteFooter />
-      {activeArticle && (
-        <ArticleDialog article={activeArticle} onClose={() => setActiveArticle(null)} />
-      )}
     </div>
   );
 }

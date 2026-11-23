@@ -11,6 +11,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1
     },
     {
+      url: 'https://mataderos.ar/agenda',
+      lastModified: newest,
+      changeFrequency: 'weekly',
+      priority: 0.9
+    },
+    {
       url: 'https://mataderos.ar/sumate',
       lastModified: newest,
       changeFrequency: 'weekly',

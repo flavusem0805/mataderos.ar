@@ -6,6 +6,7 @@ import { NotaNav } from '@/components/notas/NotaNav';
 const LINKS = [
   { href: '/', label: 'Inicio' },
   { href: '/notas', label: 'Notas' },
+  { href: '/agenda', label: 'Agenda' },
   { href: '/emprendedores', label: 'Emprendedores' },
   { href: '/#directorio', label: 'Comercios' },
   { href: '/sumate', label: 'Sumate' }

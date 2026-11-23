@@ -793,15 +793,23 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
             </h2>
           </div>
 
-          <button
-            type="button"
-            aria-expanded={expanded}
-            onClick={() => setExpanded((value) => !value)}
-            className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-4 text-base font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
-          >
-            {expanded ? 'Ver por sede' : 'Ver agenda ampliada'}
-            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              aria-expanded={expanded}
+              onClick={() => setExpanded((value) => !value)}
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-4 text-base font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+            >
+              {expanded ? 'Ver por sede' : 'Vista rápida'}
+            </button>
+            <Link
+              href="/agenda"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] bg-chicago px-4 text-base font-semibold text-pampa hover:bg-chicago-dark color-field"
+            >
+              Ver agenda completa
+              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
 
         {!expanded ? (

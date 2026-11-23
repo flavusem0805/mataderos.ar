@@ -149,7 +149,7 @@ export default function SumateComerciosPage() {
               <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
             </a>
             <Link
-              href="/comercio/veterinariaflavio"
+              href="/comercio/veterinariaalberdi"
               className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-6 font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
             >
               Ver una Web Oficial en vivo
@@ -186,16 +186,16 @@ export default function SumateComerciosPage() {
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             <div className="border border-carbon/20 bg-pampa-surface p-6 sm:p-8">
               <p className="font-mono text-sm uppercase text-chicago">Web Oficial activa</p>
-              <h3 className="mt-2 font-serif text-2xl font-semibold">Veterinaria Flavio</h3>
+              <h3 className="mt-2 font-serif text-2xl font-semibold">Veterinaria Alberdi</h3>
               <p className="mt-2 font-mono text-base text-carbon/75">
-                veterinariaflavio.mataderos.ar
+                veterinariaalberdi.mataderos.ar
               </p>
               <p className="mt-4 text-base leading-relaxed text-carbon/85">
                 Página propia con servicios, horarios, dirección en el barrio y botón directo a WhatsApp.
               </p>
               <div className="mt-6">
                 <Link
-                  href="/comercio/veterinariaflavio"
+                  href="/comercio/veterinariaalberdi"
                   className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-5 font-semibold hover:bg-carbon hover:text-pampa color-field"
                 >
                   Abrir ejemplo de Web Oficial

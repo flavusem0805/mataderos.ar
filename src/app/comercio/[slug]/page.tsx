@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight, MapPin, Phone, Star } from 'lucide-react';
-import { BUSINESSES } from '@/lib/data';
 import { fetchBusinessBySlug } from '@/lib/supabase';
 
 interface CommercePageProps {
@@ -29,7 +28,6 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
     notFound();
   }
 
-  const demoSubdomains = BUSINESSES.filter((b) => b.hasSubdomain);
   const mapsQuery = encodeURIComponent(
     `${business.address}, Mataderos, Ciudad Autónoma de Buenos Aires`
   );
@@ -62,22 +60,6 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
           <p className="font-mono type-meta text-pampa">
             Web Oficial · {business.slug}.mataderos.ar
           </p>
-
-          <div className="hidden lg:flex items-center gap-2">
-            {demoSubdomains.map((item) => (
-              <Link
-                key={item.slug}
-                href={`/comercio/${item.slug}`}
-                className={`min-h-[48px] px-3 inline-flex items-center font-mono text-[0.95rem] border color-field ${
-                  item.slug === business.slug
-                    ? 'bg-pampa text-carbon border-pampa font-semibold'
-                    : 'border-pampa/25 text-pampa/85 hover:border-pampa'
-                }`}
-              >
-                {item.slug}
-              </Link>
-            ))}
-          </div>
         </div>
       </div>
 

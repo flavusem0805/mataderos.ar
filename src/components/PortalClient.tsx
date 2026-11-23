@@ -23,6 +23,7 @@ import {
   type NeighborhoodEvent
 } from '@/lib/data';
 import { whatsappUrl } from '@/lib/contact';
+import { getEmprendedores, LOCATION_TYPE_LABELS } from '@/lib/emprendedores';
 import {
   formatBaDate,
   formatBaTime,
@@ -450,16 +451,22 @@ function Hero() {
           <div className="mt-4 flex flex-wrap gap-2">
             <a
               href="#agenda"
-              className="inline-flex min-h-[48px] items-center border border-pampa px-4 text-base font-semibold text-pampa"
+              className="inline-flex min-h-[48px] items-center border border-pampa px-4 text-base font-semibold text-pampa hover:bg-pampa hover:text-carbon color-field"
             >
               Agenda de la semana
             </a>
             <a
               href="#directorio"
-              className="inline-flex min-h-[48px] items-center bg-pampa px-4 text-base font-semibold text-carbon"
+              className="inline-flex min-h-[48px] items-center bg-pampa px-4 text-base font-semibold text-carbon hover:bg-pampa-surface color-field"
             >
               Comercios
             </a>
+            <Link
+              href="/sumate"
+              className="inline-flex min-h-[48px] items-center border border-pampa/60 px-4 text-base font-semibold text-pampa hover:bg-pampa hover:text-carbon color-field"
+            >
+              Sumate
+            </Link>
           </div>
         </div>
       </div>
@@ -1139,7 +1146,7 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
   const scroller = useRef<HTMLDivElement>(null);
   const [category, setCategory] = useState<BusinessCategory | null>(null);
   const [openOnly, setOpenOnly] = useState(false);
-  const [shopName, setShopName] = useState('Veterinaria Flavio');
+  const [shopName, setShopName] = useState('Veterinaria Alberdi');
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -1251,14 +1258,16 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
           </>
         )}
 
-        <button
-          type="button"
-          onClick={clearFilters}
-          className="mt-8 inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago underline underline-offset-4"
-        >
-          Ver todos los comercios
-          <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-        </button>
+        {(category !== null || openOnly) && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="mt-8 inline-flex min-h-[48px] items-center gap-2 font-semibold text-chicago underline underline-offset-4"
+          >
+            Limpiar filtros y ver todos los comercios
+            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </button>
+        )}
 
         <div id="sumar-comercio" className="mt-12 border border-carbon p-6 sm:p-8">
           <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
@@ -1280,17 +1289,124 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
           <p className="mt-4 break-words border border-carbon/25 bg-pampa-surface px-4 py-3 font-mono text-base">
             Web oficial · {simulated}.mataderos.ar
           </p>
-          <a
-            href={whatsappUrl(
-              `Hola! Quiero sumar mi comercio a Mataderos.ar (${simulated}.mataderos.ar).`
-            )}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <a
+              href={whatsappUrl(
+                `Hola! Quiero sumar mi comercio a Mataderos.ar (${simulated}.mataderos.ar).`
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+            >
+              Sumate por WhatsApp
+              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </a>
+            <Link
+              href="/sumate/emprendedores"
+              className="inline-flex min-h-[48px] items-center gap-1.5 text-base font-medium text-chicago underline underline-offset-4"
+            >
+              ¿Tenés un puesto en la Feria o un emprendimiento? Entrá por acá
+              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EmprendedoresBand() {
+  const emprendedores = getEmprendedores();
+
+  return (
+    <section
+      id="emprendedores"
+      aria-labelledby="emprendedores-heading"
+      className="section-pad border-t border-carbon/15 bg-pampa-surface text-carbon"
+    >
+      <div className="editorial-container">
+        <p className="font-mono text-base text-chicago">Feria de Mataderos · La Recova · Oficios</p>
+        <h2
+          id="emprendedores-heading"
+          className="mt-2 font-display text-[clamp(2.5rem,6vw,4.5rem)] font-semibold uppercase leading-[0.92]"
+        >
+          Emprendedores del barrio verificados
+        </h2>
+        <p className="mt-3 max-w-2xl text-lg leading-relaxed text-carbon/85">
+          Puestos de la Feria y proyectos locales con revisión humana de Mataderos.ar. La ficha básica es gratuita para siempre.
+        </p>
+
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
+          {emprendedores.map((item) => (
+            <article key={item.slug} className="flex flex-col border border-carbon/25 bg-pampa">
+              <div className="relative aspect-[16/10] w-full border-b border-carbon/15">
+                <Image
+                  src={item.heroImage}
+                  alt={item.heroAlt}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                />
+              </div>
+              <div className="flex flex-1 flex-col justify-between p-6">
+                <div>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-xs uppercase tracking-wide text-chicago">
+                    <span>Verificado por Mataderos.ar</span>
+                    {item.isFounder && (
+                      <>
+                        <span>·</span>
+                        <span>Fundador</span>
+                      </>
+                    )}
+                    {item.isDemo && (
+                      <>
+                        <span>·</span>
+                        <span className="text-carbon/70">Ejemplo</span>
+                      </>
+                    )}
+                  </div>
+                  <h3 className="mt-2 font-serif text-2xl font-semibold">
+                    <Link
+                      href={`/emprendedores/${item.slug}`}
+                      className="hover:text-chicago hover:underline hover:underline-offset-4"
+                    >
+                      {item.displayName}
+                    </Link>
+                  </h3>
+                  <p className="mt-1 font-mono text-sm text-carbon/70">
+                    {item.category} · {LOCATION_TYPE_LABELS[item.locationType]}
+                  </p>
+                  <p className="mt-3 text-base leading-relaxed text-carbon/85">{item.tagline}</p>
+                </div>
+                <div className="mt-5 border-t border-carbon/15 pt-4">
+                  <Link
+                    href={`/emprendedores/${item.slug}`}
+                    className="inline-flex min-h-[48px] items-center gap-2 font-mono text-sm font-semibold uppercase text-chicago hover:underline hover:underline-offset-4"
+                  >
+                    Ver ficha
+                    <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                  </Link>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-8 flex flex-wrap gap-4">
+          <Link
+            href="/sumate/emprendedores"
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] bg-chicago px-6 font-semibold text-pampa hover:bg-chicago-dark color-field"
           >
-            Sumate por WhatsApp
-            <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-          </a>
+            Sumá tu emprendimiento
+            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </Link>
+          <Link
+            href="/emprendedores"
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-6 font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+          >
+            Ver todos los emprendedores
+            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </Link>
         </div>
       </div>
     </section>
@@ -1375,10 +1491,10 @@ function SiteFooter() {
             <FooterColumn title="Web Oficial" panelId="footer-web">
               <div className="flex flex-col">
                 <Link
-                  href="/comercio/veterinariaflavio"
+                  href="/comercio/veterinariaalberdi"
                   className="inline-flex min-h-[48px] items-center break-words font-mono text-base hover:underline hover:underline-offset-4"
                 >
-                  veterinariaflavio.mataderos.ar
+                  veterinariaalberdi.mataderos.ar
                 </Link>
                 <Link
                   href="/comercio/tostadorescastro"
@@ -1462,6 +1578,7 @@ export default function PortalClient({ businesses, notes, events }: PortalClient
           <ViviBand />
           <ArchiveCarousel />
           <ShopDirectory businesses={businesses} />
+          <EmprendedoresBand />
         </div>
       </main>
       <SiteFooter />

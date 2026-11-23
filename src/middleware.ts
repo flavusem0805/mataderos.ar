@@ -11,8 +11,8 @@ const ROOT_HOSTS = new Set([
 
 /**
  * Enrutamiento multi-tenant para subdominios en producción y desarrollo:
- * Ej. `veterinariaflavio.mataderos.ar` o `veterinariaflavio.localhost:3000`
- * se reescriben internamente a `/comercio/veterinariaflavio`.
+ * Ej. `veterinariaalberdi.mataderos.ar` o `veterinariaalberdi.localhost:3000`
+ * se reescriben internamente a `/comercio/veterinariaalberdi`.
  */
 export function middleware(request: NextRequest) {
   const url = request.nextUrl;

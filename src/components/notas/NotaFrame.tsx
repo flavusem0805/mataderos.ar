@@ -1,5 +1,7 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { NotaNav } from '@/components/notas/NotaNav';
 
 const LINKS = [
   { href: '/', label: 'Inicio' },
@@ -17,36 +19,20 @@ export function NotaFrame({ children }: { children: ReactNode }) {
       </a>
       <header className="sticky top-0 z-40 border-b border-pampa/20 bg-chicago text-pampa" data-surface="dark">
         <div className="editorial-container flex min-h-[64px] items-center justify-between gap-3">
-          <Link href="/" className="inline-flex min-h-[48px] items-center font-display text-2xl font-semibold uppercase">
-            Mataderos.ar
+          <Link
+            href="/"
+            className="inline-flex min-h-[48px] items-center gap-3 font-display text-2xl font-semibold uppercase tracking-tight"
+          >
+            <Image
+              src="/logo-emblem.png"
+              alt=""
+              width={36}
+              height={36}
+              className="h-9 w-9 shrink-0 border border-pampa/40"
+            />
+            <span>Mataderos.ar</span>
           </Link>
-          <nav aria-label="Secciones" className="hidden items-center gap-1 lg:flex">
-            {LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={
-                  link.href === '/sumate'
-                    ? 'ml-2 inline-flex min-h-[48px] items-center rounded-[4px] border border-pampa/50 px-4 text-base font-semibold hover:bg-pampa hover:text-chicago color-field'
-                    : 'inline-flex min-h-[48px] items-center px-3 text-base font-medium hover:underline hover:underline-offset-4'
-                }
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-          <details className="relative lg:hidden">
-            <summary className="flex min-h-[48px] cursor-pointer list-none items-center px-3 font-semibold [&::-webkit-details-marker]:hidden">
-              Menú
-            </summary>
-            <nav aria-label="Secciones" className="absolute right-0 z-50 mt-1 w-[min(18rem,80vw)] border border-pampa/30 bg-chicago-dark">
-              {LINKS.map((link) => (
-                <Link key={link.href} href={link.href} className="flex min-h-[48px] items-center border-t border-pampa/15 px-4">
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
-          </details>
+          <NotaNav links={LINKS} />
         </div>
       </header>
       <main id="contenido" className="min-w-0">

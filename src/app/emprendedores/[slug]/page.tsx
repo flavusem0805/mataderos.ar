@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight, FileText, MapPin } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
+import { CopyLinkButton } from '@/components/emprendedores/CopyLinkButton';
 import {
   canonicalEmprendedor,
   getEmprendedorBySlug,
@@ -158,6 +159,7 @@ export default async function EmprendedorDetailPage({ params }: PageProps) {
                       <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                     </a>
                   )}
+                  <CopyLinkButton url={url} title={`${item.displayName} · Mataderos.ar`} />
                 </div>
               </div>
 
@@ -267,6 +269,18 @@ export default async function EmprendedorDetailPage({ params }: PageProps) {
               </p>
             </section>
           </aside>
+        </div>
+
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-carbon/20 bg-pampa/95 p-3 backdrop-blur-sm lg:hidden">
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa hover:bg-chicago-dark color-field"
+          >
+            Escribir por WhatsApp a {item.displayName}
+            <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </a>
         </div>
       </article>
     </NotaFrame>

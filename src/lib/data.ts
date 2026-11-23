@@ -103,14 +103,14 @@ export const TICKER_ITEMS: string[] = [
   'Nueva apertura en Polo Emilio Castro: Tostadores de la Castro ya atiende hasta las 20:30 hs',
   'Cine Teatro El Plata (Av. Alberdi 5765): programación cultural toda la semana',
   '¿Tenés local en Mataderos? Sumá tu ficha gratuita o activá tuweb.mataderos.ar',
-  'Veterinaria Flavio: envíos sin cargo en el día en Mataderos y Liniers'
+  'Veterinaria Alberdi: envíos sin cargo en el día en Mataderos y Liniers'
 ];
 
 export const BUSINESSES: Business[] = [
   {
     id: '1',
-    slug: 'veterinariaflavio',
-    name: 'Veterinaria Flavio',
+    slug: 'veterinariaalberdi',
+    name: 'Veterinaria Alberdi',
     category: 'Mascotas',
     zone: 'Av. Alberdi',
     address: 'Av. Juan B. Alberdi 6200',
@@ -448,7 +448,7 @@ export const ARTICLES: Article[] = [
       'Desde veterinarias ampliadas y centros kinesiológicos hasta ópticas y casas de indumentaria, el centro comercial a cielo abierto sigue latiendo fuerte.',
     content: [
       'El tramo central de Av. Juan B. Alberdi continúa siendo el corazón económico de Mataderos. Comerciantes de la cuadra destacan que el movimiento peatonal de lunes a sábado creció gracias a la combinación de bancos, cercanía con el Cine Teatro El Plata y comercios históricos que modernizaron su atención.',
-      'Entre los cambios más valorados por los vecinos está la incorporación de turnos y pedidos directos por WhatsApp, algo que comercios consolidados como Veterinaria Flavio implementaron con envíos sin cargo dentro del barrio.',
+      'Entre los cambios más valorados por los vecinos está la incorporación de turnos y pedidos directos por WhatsApp, algo que comercios consolidados como Veterinaria Alberdi implementaron con envíos sin cargo dentro del barrio.',
       'Desde Mataderos.ar seguimos relevando cada nueva vidriera para que los vecinos conozcan de primera mano qué abre cerca de casa.'
     ],
     category: 'Comercio Local',
@@ -457,7 +457,7 @@ export const ARTICLES: Article[] = [
     publishedLabel: 'Hace 2 días',
     imageUrl:
       'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
-    mentionedBusinessSlug: 'veterinariaflavio'
+    mentionedBusinessSlug: 'veterinariaalberdi'
   },
   {
     id: 'art-3',
@@ -502,10 +502,10 @@ export const ARTICLES: Article[] = [
     slug: 'subdominios-comercios-que-sostienen-el-portal',
     title: 'Tres comercios ya tienen casa propia en un subdominio del barrio',
     excerpt:
-      'Veterinaria Flavio, Tostadores de la Castro y Cantina Los Corrales estrenan su Web Oficial dentro de Mataderos.ar, sin salir a un dominio aparte.',
+      'Veterinaria Alberdi, Tostadores de la Castro y Cantina Los Corrales estrenan su Web Oficial dentro de Mataderos.ar, sin salir a un dominio aparte.',
     content: [
       'La ficha de la guía sigue siendo gratuita para cualquier local de la Comuna 9. El paso siguiente, el que sostiene este portal, es la Web Oficial: un sitio en slug.mataderos.ar con servicios, horarios y reseñas de vecinos.',
-      'Hoy ese subdominio ya está activo para Veterinaria Flavio, Tostadores de la Castro y Cantina Los Corrales. Cada uno conserva su nombre en la dirección y aparece enlazado desde la guía.',
+      'Hoy ese subdominio ya está activo para Veterinaria Alberdi, Tostadores de la Castro y Cantina Los Corrales. Cada uno conserva su nombre en la dirección y aparece enlazado desde la guía.',
       'No hace falta una agencia ni un hosting aparte. El portal arma la página, la deja lista para que un vecino la encuentre y la marca con el sello Web Oficial.'
     ],
     category: 'Comercios',
@@ -514,7 +514,7 @@ export const ARTICLES: Article[] = [
     publishedLabel: 'Reciente',
     imageUrl:
       'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=70',
-    mentionedBusinessSlug: 'veterinariaflavio'
+    mentionedBusinessSlug: 'veterinariaalberdi'
   }
 ];
 

@@ -693,12 +693,56 @@ function venueMoments(venue: AgendaVenue, now: number) {
   return { clock, lastInstant, nextInstant };
 }
 
+const VENUE_PHOTOS: Record<
+  string,
+  { src: string; alt: string; credit?: { label: string; href: string } }
+> = {
+  feria: {
+    src: '/notas/baile-feria.jpg',
+    alt: 'Baile folklórico y puestos de la Feria de Mataderos.'
+  },
+  recova: {
+    src: '/notas/frente-recova.jpg',
+    alt: 'Fachada histórica de La Recova en Mataderos.'
+  },
+  'el-plata': {
+    src: '/notas/el-plata.jpg',
+    alt: 'Fachada del Cine Teatro El Plata sobre la avenida Juan B. Alberdi, con el nombre EL PLATA en el frente.',
+    credit: {
+      label: 'Foto: Gobierno de la Ciudad de Buenos Aires',
+      href: 'https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos'
+    }
+  }
+};
+
+function formatBaDayMonth(ts: number): { day: string; month: string; weekdayShort: string } {
+  const date = new Date(ts);
+  const day = new Intl.DateTimeFormat('es-AR', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    day: '2-digit'
+  }).format(date);
+  const month = new Intl.DateTimeFormat('es-AR', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    month: 'short'
+  })
+    .format(date)
+    .replace('.', '')
+    .toUpperCase();
+  const weekdayShort = new Intl.DateTimeFormat('es-AR', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    weekday: 'short'
+  })
+    .format(date)
+    .replace('.', '')
+    .toUpperCase();
+  return { day, month, weekdayShort };
+}
+
 function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
-  const scroller = useRef<HTMLDivElement>(null);
-  const detailRef = useRef<HTMLDivElement>(null);
   const picked = useRef(false);
   const [now, setNow] = useState<number | null>(null);
   const [activeId, setActiveId] = useState(AGENDA_VENUES[0]?.id ?? '');
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setNow(Date.now());
@@ -717,6 +761,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
 
   const active = AGENDA_VENUES.find((venue) => venue.id === activeId) ?? AGENDA_VENUES[0];
   const activeEvent = active ? events.find((event) => event.id === active.eventId) : undefined;
+  const activeMoments = active && now !== null ? venueMoments(active, now) : null;
 
   const soonestId =
     now === null
@@ -725,24 +770,19 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
           .filter((item) => !item.clock.inProgress)
           .sort((a, b) => a.nextInstant - b.nextInstant)[0]?.venue.id ?? null;
 
-  const openInfo = (id: string) => {
-    picked.current = true;
-    setActiveId(id);
-    window.requestAnimationFrame(() => {
-      detailRef.current?.focus();
-      detailRef.current?.scrollIntoView({
-        behavior: prefersReducedMotion() ? 'auto' : 'smooth',
-        block: 'start'
-      });
-    });
-  };
-
   if (!active) return null;
 
+  const activePhoto = VENUE_PHOTOS[active.id];
+  const activeIsSoonest = soonestId === active.id;
+
   return (
-    <section id="agenda" aria-labelledby="agenda-titulo" className="relative z-10 border-t border-carbon/20 bg-pampa-deep text-carbon">
+    <section
+      id="agenda"
+      aria-labelledby="agenda-titulo"
+      className="relative z-10 border-t border-carbon/20 bg-pampa-deep text-carbon"
+    >
       <div className="editorial-container section-pad">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-carbon/25 pb-6">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-carbon/25 pb-5">
           <div className="min-w-0">
             <p className="font-mono text-base">Feria, La Recova y El Plata</p>
             <h2
@@ -752,146 +792,228 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
               Agenda
             </h2>
           </div>
-          <SnapButtons
-            prevLabel="Agenda anterior"
-            nextLabel="Agenda siguiente"
-            onPrev={() => scrollSnap(scroller.current, -1)}
-            onNext={() => scrollSnap(scroller.current, 1)}
-          />
+
+          <button
+            type="button"
+            aria-expanded={expanded}
+            onClick={() => setExpanded((value) => !value)}
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-4 text-base font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+          >
+            {expanded ? 'Ver por sede' : 'Ver agenda ampliada'}
+            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </button>
         </div>
 
-        <div
-          ref={scroller}
-          role="region"
-          aria-label="Próximos encuentros de la feria, La Recova y El Plata"
-          tabIndex={0}
-          className="snap-row -mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {AGENDA_VENUES.map((venue) => {
-            const moments = now === null ? null : venueMoments(venue, now);
-            const isSoonest = soonestId === venue.id;
-            return (
-              <article
-                key={venue.id}
-                id={`agenda-${venue.id}`}
-                data-snap-card
-                className={`relative flex w-[88%] min-w-0 shrink-0 snap-start flex-col border bg-pampa-surface [hyphens:manual] [overflow-wrap:normal] sm:w-[70%] lg:w-[calc((100%-1rem)/3)] ${
-                  isSoonest ? 'border-2 border-carbon' : 'border-carbon/30'
-                }`}
-              >
-                {venue.id === 'el-plata' && (
-                  <figure className="min-w-0">
-                    <span className="relative block aspect-[16/9] overflow-hidden">
-                      <PhotoFill
-                        src="/notas/el-plata.jpg"
-                        alt="Fachada del Cine Teatro El Plata sobre la avenida Juan B. Alberdi, con el nombre EL PLATA en el frente."
-                        sizes="(max-width: 1024px) 88vw, 33vw"
-                      />
-                    </span>
-                    <figcaption className="px-5 pt-3 font-mono text-base leading-snug">
+        {!expanded ? (
+          <div>
+            <div
+              role="tablist"
+              aria-label="Sedes culturales de Mataderos"
+              className="flex flex-wrap gap-2"
+            >
+              {AGENDA_VENUES.map((venue) => {
+                const selected = venue.id === active.id;
+                const isSoonest = soonestId === venue.id;
+                return (
+                  <button
+                    key={venue.id}
+                    id={`agenda-${venue.id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    onClick={() => {
+                      picked.current = true;
+                      setActiveId(venue.id);
+                    }}
+                    className={`inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border px-4 text-base font-semibold color-field ${
+                      selected
+                        ? 'border-carbon bg-carbon text-pampa'
+                        : 'border-carbon/35 bg-pampa-surface text-carbon hover:border-carbon'
+                    }`}
+                  >
+                    <span>{venue.venue}</span>
+                    {isSoonest && (
+                      <span
+                        className={`font-mono text-xs uppercase ${
+                          selected ? 'text-pampa/80' : 'text-chicago'
+                        }`}
+                      >
+                        · Próximo
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            <article
+              role="tabpanel"
+              aria-labelledby={`agenda-${active.id}`}
+              className="mt-5 grid border border-carbon/30 bg-pampa-surface lg:grid-cols-12"
+            >
+              {activePhoto && (
+                <figure className="flex flex-col border-b border-carbon/20 lg:col-span-5 lg:border-b-0 lg:border-r">
+                  <span className="relative block aspect-[16/10] w-full flex-1 overflow-hidden lg:min-h-[320px]">
+                    <PhotoFill
+                      src={activePhoto.src}
+                      alt={activePhoto.alt}
+                      sizes="(max-width: 1024px) 100vw, 42vw"
+                    />
+                  </span>
+                  {activePhoto.credit && (
+                    <figcaption className="border-t border-carbon/15 px-4 py-2.5 font-mono text-xs text-carbon/75">
                       <a
-                        href="https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos"
+                        href={activePhoto.credit.href}
                         className="underline underline-offset-4"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Foto: Gobierno de la Ciudad de Buenos Aires
+                        {activePhoto.credit.label}
                       </a>
                     </figcaption>
-                  </figure>
-                )}
-                <div className="p-5">
-                <p className="font-mono text-base">{isSoonest ? 'El más cercano' : 'Cartelera'}</p>
-                <h3 className="mt-2 font-display text-[clamp(1.75rem,2.5vw,2.25rem)] font-semibold uppercase leading-none">
-                  {venue.venue}
-                </h3>
-                <p className="mt-2 font-mono text-base">{venue.place}</p>
+                  )}
+                </figure>
+              )}
 
-                <div className="mt-5 grid grid-cols-1 gap-4 border-t border-carbon/20 pt-4 sm:grid-cols-2">
-                  <div className="min-w-0">
-                    <p className="font-mono text-base">Último</p>
-                    <p className="mt-2 font-serif text-xl leading-tight">
-                      {moments ? formatBaDate(moments.lastInstant) : '—'}
-                    </p>
-                    <p className="mt-1 font-mono text-base">
-                      {moments ? formatBaTime(moments.lastInstant) : venue.lastTitle}
-                    </p>
-                    <p className="mt-2 text-base leading-snug">{venue.lastTitle}</p>
+              <div className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-7">
+                <div>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-sm uppercase tracking-wide text-chicago">
+                    <span>{activeIsSoonest ? 'El más cercano' : 'Cartelera'}</span>
+                    <span>·</span>
+                    <span className="text-carbon/75">{active.place}</span>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-mono text-base">Próximo</p>
-                    <p className="mt-2 font-serif text-xl leading-tight">
-                      {moments?.clock.inProgress
-                        ? 'En curso'
-                        : moments
-                          ? formatBaDate(moments.nextInstant)
+
+                  <h3 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
+                    {active.venue}
+                  </h3>
+
+                  <p className="mt-2 font-serif text-xl font-semibold leading-snug sm:text-2xl">
+                    {active.nextTitle}
+                  </p>
+
+                  <div className="mt-5 border-y border-carbon/20 py-4">
+                    <p className="font-mono text-xs uppercase tracking-wider text-carbon/70">
+                      Próximo encuentro
+                    </p>
+                    <p className="mt-1 font-serif text-xl font-semibold">
+                      {activeMoments?.clock.inProgress
+                        ? 'En curso ahora'
+                        : activeMoments
+                          ? `${formatBaDate(activeMoments.nextInstant)} · ${formatBaTime(activeMoments.nextInstant)} hs`
                           : '—'}
                     </p>
-                    <p className="mt-1 font-mono text-base">
-                      {moments ? formatBaTime(moments.nextInstant) : ''}
-                    </p>
-                    <p className="mt-2 text-base leading-snug">{venue.nextTitle}</p>
+
+                    {activeMoments && !activeMoments.clock.inProgress && (
+                      <Countdown target={activeMoments.nextInstant} />
+                    )}
+                    {activeMoments?.clock.inProgress && (
+                      <p className="mt-3 inline-block border border-chicago px-3 py-1.5 font-display text-xl uppercase text-chicago">
+                        En curso
+                      </p>
+                    )}
                   </div>
-                </div>
 
-                {isSoonest && moments && !moments.clock.inProgress && (
-                  <Countdown target={moments.nextInstant} />
-                )}
-                {moments?.clock.inProgress && (
-                  <p className="mt-4 border border-carbon px-3 py-3 font-display text-2xl uppercase">
-                    En curso
+                  <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-carbon/85 sm:text-lg">
+                    {activeEvent?.description ?? active.description}
                   </p>
-                )}
-
-                <div className="mt-4 grid gap-2">
-                  <a
-                    href={mapsHref(venue.mapsQuery)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-4 text-center font-semibold text-pampa color-field hover:bg-chicago-dark"
-                  >
-                    Entradas / Cómo llegar
-                    <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                  </a>
-                  {venue.id === 'el-plata' && <ElPlataInstagramLink />}
-                  <button
-                    type="button"
-                    onClick={() => openInfo(venue.id)}
-                    className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 font-semibold color-field hover:bg-carbon hover:text-pampa"
-                  >
-                    Más info
-                    <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                  </button>
                 </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
 
-        <div
-          id="agenda-detalle"
-          ref={detailRef}
-          tabIndex={-1}
-          className="mt-8 border border-carbon/30 bg-pampa-surface p-6 sm:p-8"
-        >
-          <p className="font-mono text-base">Más info · {active.venue}</p>
-          <h3 className="mt-2 font-serif text-[clamp(1.5rem,2.4vw,2.25rem)] font-semibold leading-tight">
-            {active.nextTitle}
-          </h3>
-          <p className="mt-4 max-w-3xl text-lg leading-relaxed sm:text-xl">
-            {activeEvent?.description ?? active.description}
-          </p>
-          <p className="mt-4 font-mono text-base">
-            {active.place}
-            {activeEvent ? ` · ${activeEvent.timeLabel} · ${activeEvent.highlightTag}` : ''}
-          </p>
-          {active.id === 'el-plata' && (
-            <div className="mt-4 max-w-md">
-              <ElPlataInstagramLink />
-            </div>
-          )}
-        </div>
+                <div className="mt-6 space-y-4">
+                  <div className="flex flex-wrap gap-3">
+                    <a
+                      href={mapsHref(active.mapsQuery)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+                    >
+                      Entradas / Cómo llegar
+                      <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    </a>
+                    {active.id === 'el-plata' && <ElPlataInstagramLink />}
+                  </div>
+
+                  {activeMoments && (
+                    <p className="border-t border-carbon/15 pt-3 font-mono text-sm text-carbon/65">
+                      Último encuentro: {formatBaDate(activeMoments.lastInstant)} · {active.lastTitle}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </article>
+          </div>
+        ) : (
+          <div className="divide-y divide-carbon/25 border-y border-carbon/25 bg-pampa-surface">
+            {AGENDA_VENUES.map((venue) => {
+              const moments = now === null ? null : venueMoments(venue, now);
+              const isSoonest = soonestId === venue.id;
+              const dm = moments ? formatBaDayMonth(moments.nextInstant) : null;
+              const eventMatch = events.find((e) => e.id === venue.eventId);
+
+              return (
+                <article
+                  key={venue.id}
+                  id={`agenda-${venue.id}`}
+                  className="grid gap-5 p-5 sm:p-6 lg:grid-cols-12 lg:items-center"
+                >
+                  <div className="flex items-baseline gap-4 lg:col-span-3 lg:flex-col lg:gap-1">
+                    {moments?.clock.inProgress ? (
+                      <p className="font-display text-3xl font-semibold uppercase text-chicago">
+                        En curso
+                      </p>
+                    ) : dm ? (
+                      <>
+                        <p className="font-display text-[clamp(2.25rem,4vw,3.25rem)] font-semibold uppercase leading-none">
+                          {dm.day} {dm.month}
+                        </p>
+                        <p className="font-mono text-sm uppercase text-carbon/75">
+                          {dm.weekdayShort} · {moments ? formatBaTime(moments.nextInstant) : ''} hs
+                        </p>
+                      </>
+                    ) : (
+                      <p className="font-display text-3xl">—</p>
+                    )}
+                  </div>
+
+                  <div className="lg:col-span-6">
+                    <p className="font-mono text-xs uppercase tracking-wider text-chicago">
+                      {isSoonest ? 'El más cercano' : 'Cartelera'} · {venue.place}
+                    </p>
+                    <h3 className="mt-1 font-display text-2xl font-semibold uppercase leading-tight sm:text-3xl">
+                      {venue.venue}
+                    </h3>
+                    <p className="mt-1 font-serif text-lg font-semibold">{venue.nextTitle}</p>
+                    <p className="mt-1.5 text-base leading-relaxed text-carbon/80">
+                      {eventMatch?.description ?? venue.description}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 lg:col-span-3 lg:flex-col lg:items-stretch">
+                    <a
+                      href={mapsHref(venue.mapsQuery)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-4 text-sm font-semibold text-pampa color-field hover:bg-chicago-dark"
+                    >
+                      Cómo llegar
+                      <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        picked.current = true;
+                        setActiveId(venue.id);
+                        setExpanded(false);
+                      }}
+                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 text-sm font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+                    >
+                      Ver ficha completa
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );

@@ -94,7 +94,10 @@ export const FOTOS = {
 
 export type FotoId = keyof typeof FOTOS;
 
-/** Archivo presente en el repo cuya ficha exacta no pudo confirmarse. No se publica en las notas. */
+/**
+ * Nota interna. No se publica en /notas ni en /notas/creditos.
+ * Archivo presente en el repo cuya ficha exacta no pudo confirmarse.
+ */
 export const FOTO_SIN_FICHA = {
   file: 'public/notas/feria-puestos.jpg',
   what: 'Primer plano de pastelitos fritos, 1200×800 px, sin metadatos de autor.',

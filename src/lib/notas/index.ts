@@ -98,6 +98,44 @@ export function hermanos(nota: NotaResuelta, limit = 3): NotaResuelta[] {
     .slice(0, limit);
 }
 
+export const GUIAS = [
+  { slug: 'historia', label: 'Historia', pillarSlug: 'historia-de-mataderos' },
+  { slug: 'feria', label: 'Feria', pillarSlug: 'feria-de-mataderos' },
+  { slug: 'que-hacer', label: 'Qué hacer', pillarSlug: 'que-hacer-en-mataderos' },
+  { slug: 'patrimonio', label: 'Patrimonio', pillarSlug: 'patrimonio-de-mataderos' },
+  { slug: 'cultura', label: 'Cultura', pillarSlug: 'cultura-folklore-y-bares-de-mataderos' }
+] as const;
+
+export type GuiaFiltro = (typeof GUIAS)[number];
+
+export function guiaPorParam(value: string | undefined): GuiaFiltro | undefined {
+  if (!value) return undefined;
+  return GUIAS.find((guia) => guia.slug === value || guia.pillarSlug === value);
+}
+
+export function guiaDe(nota: NotaResuelta): GuiaFiltro | undefined {
+  const pillarSlug = nota.type === 'pilar' ? nota.slug : nota.pillarSlug;
+  return GUIAS.find((guia) => guia.pillarSlug === pillarSlug);
+}
+
+/** Notas de una guía, guía incluida, de la más reciente a la más antigua. */
+export function notasDeGuia(pillarSlug: string): NotaResuelta[] {
+  return NOTAS.filter((nota) => nota.slug === pillarSlug || nota.pillarSlug === pillarSlug);
+}
+
+function textoPlano(text: string): string {
+  return text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\s+/g, ' ').trim();
+}
+
+/** Bajada de la nota. Si no hay extracto, el primer párrafo. */
+export function extractoDe(nota: NotaResuelta): string {
+  const dek = nota.dek.trim();
+  if (dek) return dek;
+  const primero = nota.blocks.find((block) => block.kind === 'p');
+  if (primero) return textoPlano(primero.text);
+  return nota.description;
+}
+
 export function formatFecha(iso: string): string {
   return new Intl.DateTimeFormat('es-AR', {
     day: 'numeric',

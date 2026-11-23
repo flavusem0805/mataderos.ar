@@ -446,7 +446,7 @@ function Hero() {
             El domingo se baila en la feria
           </h1>
           <p className="mt-3 max-w-[28ch] font-serif text-lg italic leading-snug sm:max-w-none sm:text-2xl">
-            Noticias, comercios, agenda y memoria del barrio.
+            Noticias, comercios, emprendedores, agenda y memoria del barrio.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             <a
@@ -460,6 +460,12 @@ function Hero() {
               className="inline-flex min-h-[48px] items-center bg-pampa px-4 text-base font-semibold text-carbon hover:bg-pampa-surface color-field"
             >
               Comercios
+            </a>
+            <a
+              href="#emprendedores"
+              className="inline-flex min-h-[48px] items-center border border-pampa px-4 text-base font-semibold text-pampa hover:bg-pampa hover:text-carbon color-field"
+            >
+              Emprendedores
             </a>
             <Link
               href="/sumate"

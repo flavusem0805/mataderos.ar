@@ -4,10 +4,9 @@ import type { ReactNode } from 'react';
 const LINKS = [
   { href: '/', label: 'Inicio' },
   { href: '/notas', label: 'Notas' },
-  { href: '/notas/feria-de-mataderos', label: 'Feria' },
-  { href: '/notas/que-hacer-en-mataderos', label: 'Qué hacer' },
-  { href: '/notas/historia-de-mataderos', label: 'Historia' },
-  { href: '/#directorio', label: 'Comercios' }
+  { href: '/emprendedores', label: 'Emprendedores' },
+  { href: '/#directorio', label: 'Comercios' },
+  { href: '/sumate', label: 'Sumate' }
 ];
 
 export function NotaFrame({ children }: { children: ReactNode }) {
@@ -23,7 +22,15 @@ export function NotaFrame({ children }: { children: ReactNode }) {
           </Link>
           <nav aria-label="Secciones" className="hidden items-center gap-1 lg:flex">
             {LINKS.map((link) => (
-              <Link key={link.href} href={link.href} className="inline-flex min-h-[48px] items-center px-3 text-base font-medium">
+              <Link
+                key={link.href}
+                href={link.href}
+                className={
+                  link.href === '/sumate'
+                    ? 'ml-2 inline-flex min-h-[48px] items-center rounded-[4px] border border-pampa/50 px-4 text-base font-semibold hover:bg-pampa hover:text-chicago color-field'
+                    : 'inline-flex min-h-[48px] items-center px-3 text-base font-medium hover:underline hover:underline-offset-4'
+                }
+              >
                 {link.label}
               </Link>
             ))}
@@ -46,10 +53,21 @@ export function NotaFrame({ children }: { children: ReactNode }) {
         {children}
       </main>
       <footer className="border-t border-carbon/20 bg-carbon text-pampa" data-surface="dark">
-        <div className="editorial-container flex min-h-[48px] flex-wrap items-center justify-between gap-3 py-4 font-mono text-base">
-          <Link href="/" className="inline-flex min-h-[48px] items-center">
-            Volver al portal
-          </Link>
+        <div className="editorial-container flex min-h-[48px] flex-wrap items-center justify-between gap-4 py-4 font-mono text-sm sm:text-base">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+            <Link href="/" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Volver al portal
+            </Link>
+            <Link href="/sumate" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Sumate
+            </Link>
+            <Link href="/terminos" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Términos
+            </Link>
+            <Link href="/privacidad" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Privacidad
+            </Link>
+          </div>
           <span>Comuna 9 · CABA</span>
         </div>
       </footer>

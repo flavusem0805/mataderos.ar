@@ -11,6 +11,42 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1
     },
     {
+      url: 'https://mataderos.ar/sumate',
+      lastModified: newest,
+      changeFrequency: 'weekly',
+      priority: 0.8
+    },
+    {
+      url: 'https://mataderos.ar/sumate/emprendedores',
+      lastModified: newest,
+      changeFrequency: 'weekly',
+      priority: 0.8
+    },
+    {
+      url: 'https://mataderos.ar/sumate/comercios',
+      lastModified: newest,
+      changeFrequency: 'weekly',
+      priority: 0.8
+    },
+    {
+      url: 'https://mataderos.ar/emprendedores',
+      lastModified: newest,
+      changeFrequency: 'weekly',
+      priority: 0.7
+    },
+    {
+      url: 'https://mataderos.ar/terminos',
+      lastModified: newest,
+      changeFrequency: 'yearly',
+      priority: 0.2
+    },
+    {
+      url: 'https://mataderos.ar/privacidad',
+      lastModified: newest,
+      changeFrequency: 'yearly',
+      priority: 0.2
+    },
+    {
       url: 'https://mataderos.ar/notas',
       lastModified: newest,
       changeFrequency: 'weekly',

@@ -22,6 +22,7 @@ import {
   type BusinessCategory,
   type NeighborhoodEvent
 } from '@/lib/data';
+import { whatsappUrl } from '@/lib/contact';
 import {
   formatBaDate,
   formatBaTime,
@@ -305,7 +306,8 @@ function SiteHeader() {
     { href: '#agenda', label: 'Agenda' },
     { href: '#vivi', label: 'Viví' },
     { href: '#historia', label: 'Historia' },
-    { href: '#directorio', label: 'Comercios' }
+    { href: '#directorio', label: 'Comercios' },
+    { href: '/emprendedores', label: 'Emprendedores' }
   ];
 
   return (
@@ -327,12 +329,12 @@ function SiteHeader() {
                 {link.label}
               </a>
             ))}
-            <a
-              href="#sumar-comercio"
+            <Link
+              href="/sumate"
               className="inline-flex min-h-[48px] items-center rounded-[4px] border border-pampa/50 px-4 font-semibold hover:bg-pampa hover:text-chicago color-field"
             >
-              Sumá tu comercio
-            </a>
+              Sumate
+            </Link>
           </nav>
 
           <button
@@ -365,14 +367,14 @@ function SiteHeader() {
                   <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 </a>
               ))}
-              <a
-                href="#sumar-comercio"
+              <Link
+                href="/sumate"
                 onClick={() => setOpen(false)}
                 className="flex min-h-[48px] items-center justify-between text-base font-semibold"
               >
-                Sumá tu comercio
+                Sumate
                 <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              </a>
+              </Link>
             </div>
           </nav>
         )}
@@ -1279,9 +1281,9 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
             Web oficial · {simulated}.mataderos.ar
           </p>
           <a
-            href={`https://wa.me/5491100000000?text=${encodeURIComponent(
+            href={whatsappUrl(
               `Hola! Quiero sumar mi comercio a Mataderos.ar (${simulated}.mataderos.ar).`
-            )}`}
+            )}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
@@ -1395,7 +1397,7 @@ function SiteFooter() {
             <FooterColumn title="Contacto" panelId="footer-contacto">
               <div className="flex flex-col">
                 <a
-                  href="https://wa.me/5491100000000"
+                  href={whatsappUrl('Hola, te escribo desde Mataderos.ar')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex min-h-[48px] items-center gap-2 hover:underline hover:underline-offset-4"
@@ -1403,13 +1405,19 @@ function SiteFooter() {
                   WhatsApp del portal
                   <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 </a>
-                <a
-                  href="#sumar-comercio"
+                <Link
+                  href="/sumate"
                   className="inline-flex min-h-[48px] items-center gap-2 hover:underline hover:underline-offset-4"
                 >
-                  Sumar mi comercio
+                  Sumate a Mataderos.ar
                   <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                </a>
+                </Link>
+                <Link
+                  href="/emprendedores"
+                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
+                >
+                  Emprendedores verificados
+                </Link>
                 <a
                   href="#directorio"
                   className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
@@ -1423,8 +1431,15 @@ function SiteFooter() {
       </div>
       <div className="border-t border-pampa/20">
         <div className="editorial-container flex min-h-[48px] flex-wrap items-center justify-between gap-3 py-3 font-mono text-base">
-          <span>Hecho en Mataderos</span>
-          <span>Comuna 9 · CABA</span>
+          <span>Hecho en Mataderos · Comuna 9</span>
+          <div className="flex flex-wrap items-center gap-x-5">
+            <Link href="/terminos" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Términos
+            </Link>
+            <Link href="/privacidad" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Privacidad
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

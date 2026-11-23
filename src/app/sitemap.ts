@@ -16,6 +16,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'weekly',
       priority: 0.9
     },
+    {
+      url: 'https://mataderos.ar/notas/creditos',
+      lastModified: newest,
+      changeFrequency: 'yearly',
+      priority: 0.2
+    },
     ...NOTAS.map((nota) => ({
       url: canonicalNota(nota.slug),
       lastModified: nota.publishedAt,

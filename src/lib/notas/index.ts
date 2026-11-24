@@ -85,7 +85,9 @@ const RAW: Nota[] = [...ACTUALIDAD, ...HISTORIA, ...FERIA, ...QUE_HACER, ...PATR
 const RESUELTAS = RAW.map(resolve);
 assertEditorial(RESUELTAS);
 
-export const NOTAS: NotaResuelta[] = [...RESUELTAS].sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
+export const NOTAS: NotaResuelta[] = [...RESUELTAS].sort((a, b) =>
+  b.publishedAt.localeCompare(a.publishedAt)
+);
 
 export const PILARES: NotaResuelta[] = ORDER.map((slug) => {
   const nota = RESUELTAS.find((item) => item.slug === slug);
@@ -95,7 +97,7 @@ export const PILARES: NotaResuelta[] = ORDER.map((slug) => {
 
 export function satelitesDe(pillarSlug: string): NotaResuelta[] {
   return RESUELTAS.filter((nota) => nota.type === 'satelite' && nota.pillarSlug === pillarSlug).sort((a, b) =>
-    a.publishedAt < b.publishedAt ? -1 : 1
+    a.publishedAt.localeCompare(b.publishedAt)
   );
 }
 

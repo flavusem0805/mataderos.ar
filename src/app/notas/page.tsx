@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import { NotasPortada } from '@/components/notas/NotasPortada';
-import { NOTAS, canonicalNota, getNota, guiaPorParam, notasDeGuia } from '@/lib/notas';
+import { NOTAS, canonicalNota, getNota, guiaPorParam, notasDeFiltro } from '@/lib/notas';
 
 interface NotasPageProps {
   searchParams: Promise<{ guia?: string | string[] }>;
@@ -14,19 +14,21 @@ function leerGuia(value: string | string[] | undefined): string | undefined {
 async function seleccion(searchParams: NotasPageProps['searchParams']) {
   const params = await searchParams;
   const guia = guiaPorParam(leerGuia(params.guia));
-  const lista = guia ? notasDeGuia(guia.pillarSlug) : NOTAS;
+  const lista = guia ? notasDeFiltro(guia) : NOTAS;
   return { guia, lista, destacada: lista[0], resto: lista.slice(1) };
 }
 
 export async function generateMetadata({ searchParams }: NotasPageProps): Promise<Metadata> {
   const { guia, destacada } = await seleccion(searchParams);
-  const pilar = guia ? getNota(guia.pillarSlug) : undefined;
-  const title = guia ? `${guia.label} · Notas de Mataderos` : 'Notas de Mataderos · historia, feria, patrimonio y cultura';
+  const pilar = guia?.pillarSlug ? getNota(guia.pillarSlug) : undefined;
+  const title = guia ? `${guia.label} · Notas de Mataderos` : 'Notas de Mataderos · actualidad, historia, feria y cultura';
   const description = guia
-    ? `Notas de ${guia.label}. ${pilar?.dek ?? ''}`.trim()
-    : 'Historia, feria, patrimonio y cultura de Mataderos, Comuna 9. Guías del barrio y notas, de la más reciente a la más antigua.';
+    ? guia.slug === 'actualidad'
+      ? 'Actualidad y agenda con fuente de Mataderos y la Comuna 9: El Plata, Feria, centros culturales y comercio barrial.'
+      : `Notas de ${guia.label}. ${pilar?.dek ?? ''}`.trim()
+    : 'Actualidad, historia, feria, patrimonio y cultura de Mataderos, Comuna 9. Guías del barrio y notas, de la más reciente a la más antigua.';
   const url = guia ? `https://mataderos.ar/notas?guia=${guia.slug}` : 'https://mataderos.ar/notas';
-  const image = destacada
+  const image = destacada?.image
     ? [{ url: destacada.image.src, alt: destacada.image.alt }]
     : undefined;
 
@@ -58,7 +60,7 @@ export default async function NotasIndexPage({ searchParams }: NotasPageProps) {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: guia ? `${guia.label} · Notas de Mataderos` : 'Notas de Mataderos',
-    description: 'Historia, feria, patrimonio y cultura de Mataderos.',
+    description: 'Actualidad, historia, feria, patrimonio y cultura de Mataderos.',
     inLanguage: 'es-AR',
     url,
     mainEntity: {

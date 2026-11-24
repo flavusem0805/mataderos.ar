@@ -1,3 +1,4 @@
+import { ACTUALIDAD } from './clusters/actualidad';
 import { CULTURA } from './clusters/cultura';
 import { FERIA } from './clusters/feria';
 import { HISTORIA } from './clusters/historia';
@@ -27,7 +28,7 @@ function resolve(nota: Nota): NotaResuelta {
   const words = countWords(nota.blocks);
   return {
     ...nota,
-    image: FOTOS[nota.image],
+    image: nota.image ? FOTOS[nota.image] : undefined,
     words,
     readMinutes: Math.max(1, Math.round(words / 200))
   };
@@ -38,15 +39,30 @@ function assertEditorial(list: NotaResuelta[]) {
   const bySlug = new Map(list.map((nota) => [nota.slug, nota]));
 
   for (const nota of list) {
-    const min = nota.type === 'pilar' ? 1500 : 600;
+    const min = nota.type === 'pilar' ? 1500 : nota.type === 'satelite' ? 600 : 200;
     const max = nota.type === 'pilar' ? 2500 : 1000;
     if (nota.words < min || nota.words > max) {
       throw new Error(`Extensión fuera de rango en ${nota.slug}: ${nota.words} palabras (esperado ${min}-${max}).`);
+    }
+    if (nota.fuentes.length === 0) {
+      throw new Error(`La nota ${nota.slug} debe incluir al menos una fuente verificada.`);
+    }
+    if ((nota.type === 'pilar' || nota.type === 'satelite') && !nota.image) {
+      throw new Error(`La nota ${nota.slug} requiere una imagen verificada.`);
     }
     if (nota.type === 'satelite') {
       if (!nota.pillarSlug || !slugs.has(nota.pillarSlug)) {
         throw new Error(`Satélite sin pilar válido: ${nota.slug}`);
       }
+      const pilar = bySlug.get(nota.pillarSlug);
+      if (!pilar || pilar.type !== 'pilar') {
+        throw new Error(`Pilar inválido para ${nota.slug}`);
+      }
+      if (nota.publishedAt <= pilar.publishedAt) {
+        throw new Error(`La fecha de ${nota.slug} tiene que ser posterior a la de su guía.`);
+      }
+    }
+    if (nota.type === 'actualidad' && nota.pillarSlug) {
       const pilar = bySlug.get(nota.pillarSlug);
       if (!pilar || pilar.type !== 'pilar') {
         throw new Error(`Pilar inválido para ${nota.slug}`);
@@ -65,11 +81,13 @@ function assertEditorial(list: NotaResuelta[]) {
   }
 }
 
-const RAW: Nota[] = [...HISTORIA, ...FERIA, ...QUE_HACER, ...PATRIMONIO, ...CULTURA];
+const RAW: Nota[] = [...ACTUALIDAD, ...HISTORIA, ...FERIA, ...QUE_HACER, ...PATRIMONIO, ...CULTURA];
 const RESUELTAS = RAW.map(resolve);
 assertEditorial(RESUELTAS);
 
-export const NOTAS: NotaResuelta[] = [...RESUELTAS].sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1));
+export const NOTAS: NotaResuelta[] = [...RESUELTAS].sort((a, b) =>
+  b.publishedAt.localeCompare(a.publishedAt)
+);
 
 export const PILARES: NotaResuelta[] = ORDER.map((slug) => {
   const nota = RESUELTAS.find((item) => item.slug === slug);
@@ -78,8 +96,8 @@ export const PILARES: NotaResuelta[] = ORDER.map((slug) => {
 });
 
 export function satelitesDe(pillarSlug: string): NotaResuelta[] {
-  return RESUELTAS.filter((nota) => nota.pillarSlug === pillarSlug).sort((a, b) =>
-    a.publishedAt < b.publishedAt ? -1 : 1
+  return RESUELTAS.filter((nota) => nota.type === 'satelite' && nota.pillarSlug === pillarSlug).sort((a, b) =>
+    a.publishedAt.localeCompare(b.publishedAt)
   );
 }
 
@@ -92,6 +110,9 @@ export function notasRecientes(limit = 8): NotaResuelta[] {
 }
 
 export function hermanos(nota: NotaResuelta, limit = 3): NotaResuelta[] {
+  if (nota.type === 'actualidad') {
+    return NOTAS.filter((item) => item.type === 'actualidad' && item.slug !== nota.slug).slice(0, limit);
+  }
   if (!nota.pillarSlug) return [];
   return satelitesDe(nota.pillarSlug)
     .filter((item) => item.slug !== nota.slug)
@@ -108,8 +129,18 @@ export const GUIAS = [
 
 export type GuiaFiltro = (typeof GUIAS)[number];
 
-export function guiaPorParam(value: string | undefined): GuiaFiltro | undefined {
+export type PortadaFiltro =
+  | GuiaFiltro
+  | { readonly slug: 'actualidad'; readonly label: 'Actualidad'; readonly pillarSlug?: undefined };
+
+export const ACTUALIDAD_FILTRO: PortadaFiltro = {
+  slug: 'actualidad',
+  label: 'Actualidad'
+};
+
+export function guiaPorParam(value: string | undefined): PortadaFiltro | undefined {
   if (!value) return undefined;
+  if (value === 'actualidad') return ACTUALIDAD_FILTRO;
   return GUIAS.find((guia) => guia.slug === value || guia.pillarSlug === value);
 }
 
@@ -121,6 +152,13 @@ export function guiaDe(nota: NotaResuelta): GuiaFiltro | undefined {
 /** Notas de una guía, guía incluida, de la más reciente a la más antigua. */
 export function notasDeGuia(pillarSlug: string): NotaResuelta[] {
   return NOTAS.filter((nota) => nota.slug === pillarSlug || nota.pillarSlug === pillarSlug);
+}
+
+export function notasDeFiltro(filtro: PortadaFiltro): NotaResuelta[] {
+  if (filtro.slug === 'actualidad') {
+    return NOTAS.filter((nota) => nota.type === 'actualidad');
+  }
+  return notasDeGuia(filtro.pillarSlug);
 }
 
 function textoPlano(text: string): string {

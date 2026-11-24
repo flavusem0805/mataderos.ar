@@ -1,35 +1,38 @@
 'use client';
 
-import React, { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import {
+  AlertCircle,
   ArrowRight,
   ArrowUpRight,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
   Menu,
   X
 } from 'lucide-react';
 import {
-  AGENDA_VENUES,
   ARCHIVE_NOTES,
   VIVI_TILES,
-  type AgendaVenue,
   type Business,
-  type BusinessCategory,
-  type NeighborhoodEvent
+  type BusinessCategory
 } from '@/lib/data';
+import { AGENDA_SPOTS, type AgendaItem } from '@/lib/agenda-data';
+import { FOTOS } from '@/lib/notas/media';
 import { whatsappUrl } from '@/lib/contact';
 import { getEmprendedores, LOCATION_TYPE_LABELS } from '@/lib/emprendedores';
 import {
+  agendaStatus,
+  agendaTimestamps,
   formatBaDate,
+  formatBaDayMonth,
+  formatBaShortDate,
   formatBaTime,
-  splitRemaining,
-  venueClock,
-  type VenueClock
+  splitRemaining
 } from '@/lib/agenda';
 import { isShopOpen } from '@/lib/hours';
 import { ElPlataInstagramLink } from '@/components/ElPlataInstagramLink';
@@ -39,18 +42,18 @@ export interface HomeNote {
   title: string;
   category: string;
   fecha: string;
-  imageSrc: string;
-  imageAlt: string;
-  credit: string;
+  imageSrc?: string;
+  imageAlt?: string;
+  credit?: string;
+  placeLabel?: string;
 }
 
 interface PortalClientProps {
   businesses: Business[];
   notes: HomeNote[];
-  events: NeighborhoodEvent[];
+  agendaItems: AgendaItem[];
+  serverNow: number;
 }
-
-const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 const NEWS_WIDTHS = [
   'w-[84%] sm:w-[58%] lg:w-[42%]',
@@ -211,32 +214,49 @@ function Countdown({ target }: { target: number }) {
   );
 }
 
-function TopRail() {
+function TopRail({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; serverNow: number }) {
   const [held, setHeld] = useState(false);
-  const [labels, setLabels] = useState<string[] | null>(null);
+  const [now, setNow] = useState<number>(serverNow);
 
   useEffect(() => {
-    const now = Date.now();
-    setLabels(
-      AGENDA_VENUES.map((venue) => {
-        const moments = venueMoments(venue, now);
-        const when = moments.clock.inProgress
-          ? 'En curso'
-          : `${formatBaDate(moments.nextInstant)} · ${formatBaTime(moments.nextInstant)}`;
-        return `${venue.venue} · ${when}`;
-      })
-    );
+    setNow(Date.now());
   }, []);
 
-  const items = AGENDA_VENUES.map((venue, index) => ({
-    href: `#agenda-${venue.id}`,
-    label: labels?.[index] ?? `${venue.venue} · ${venue.nextTitle}`
-  }));
+  const items = useMemo(() => {
+    const active = agendaItems.filter((item) => agendaStatus(item, now) !== 'past');
+    const source = active.length > 0 ? active : agendaItems;
+    const seen = new Set<string>();
+    const picked: AgendaItem[] = [];
+
+    for (const item of source) {
+      const dedupeKey = `${item.venueId}-${item.title}`;
+      if (seen.has(dedupeKey)) continue;
+      seen.add(dedupeKey);
+      picked.push(item);
+      if (picked.length >= 7) break;
+    }
+
+    return picked.map((item) => {
+      const status = agendaStatus(item, now);
+      const { startTs } = agendaTimestamps(item);
+      const when =
+        status === 'in-progress'
+          ? item.isMultiDay && item.dateBadge
+            ? `En curso · ${item.dateBadge}`
+            : 'En curso'
+          : `${formatBaShortDate(startTs)} · ${formatBaTime(startTs)} hs`;
+      const barrioSuffix = item.ambito === 'Comuna 9' ? ` (${item.barrio} · Comuna 9)` : '';
+      return {
+        href: `/agenda#${item.id}`,
+        label: `${item.title}${barrioSuffix} · ${when}`
+      };
+    });
+  }, [agendaItems, now]);
 
   const renderSet = (hidden: boolean) => (
     <div className="rail-ticker-set flex" aria-hidden={hidden || undefined}>
       {items.map((item) => (
-        <a
+        <Link
           key={`${hidden ? 'copy' : 'live'}-${item.href}`}
           href={item.href}
           tabIndex={hidden ? -1 : undefined}
@@ -246,7 +266,7 @@ function TopRail() {
           <span className="ml-4" aria-hidden="true">
             ·
           </span>
-        </a>
+        </Link>
       ))}
     </div>
   );
@@ -288,7 +308,7 @@ function BrandLockup() {
   );
 }
 
-function SiteHeader() {
+function SiteHeader({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; serverNow: number }) {
   const [open, setOpen] = useState(false);
   const menuId = useId();
 
@@ -313,7 +333,7 @@ function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 w-full max-w-full" data-surface="dark">
-      <TopRail />
+      <TopRail agendaItems={agendaItems} serverNow={serverNow} />
       <div className="border-b border-pampa/20 bg-chicago text-pampa">
         <div className="editorial-container flex min-h-[64px] items-center justify-between gap-4">
           <a href="#inicio" data-brand className={BRAND_CLASS}>
@@ -642,15 +662,37 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
               className={`${NEWS_WIDTHS[index % NEWS_WIDTHS.length]} flex min-w-0 shrink-0 snap-start`}
             >
               <Link href={`/notas/${note.slug}`} className="flex h-full w-full flex-col bg-carbon text-pampa">
-                <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden">
-                  <PhotoFill src={note.imageSrc} alt={note.imageAlt} sizes="(max-width: 640px) 86vw, 40vw" />
-                </span>
+                {note.imageSrc ? (
+                  <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden">
+                    <PhotoFill
+                      src={note.imageSrc}
+                      alt={note.imageAlt ?? note.title}
+                      sizes="(max-width: 640px) 86vw, 40vw"
+                    />
+                  </span>
+                ) : (
+                  <span
+                    aria-hidden="true"
+                    className="flex aspect-[4/3] w-full shrink-0 flex-col justify-between bg-cuero p-4 text-pampa"
+                  >
+                    <span className="font-mono text-sm uppercase tracking-wider text-pampa/85">
+                      {note.placeLabel ?? note.category}
+                    </span>
+                    <span className="font-display text-3xl font-semibold uppercase leading-[0.95]">
+                      {note.category}
+                    </span>
+                  </span>
+                )}
                 <span className="flex flex-1 flex-col p-4">
                   <span className="font-mono text-base">
                     {note.category} · {note.fecha}
                   </span>
                   <h3 className="mt-2 line-clamp-3 font-serif text-xl font-semibold leading-snug">{note.title}</h3>
-                  <span className="mt-2 font-mono text-base leading-snug text-pampa/80">{note.credit}</span>
+                  {note.credit ? (
+                    <span className="mt-2 font-mono text-base leading-snug text-pampa/80">{note.credit}</span>
+                  ) : note.placeLabel ? (
+                    <span className="mt-2 font-mono text-base leading-snug text-pampa/80">{note.placeLabel}</span>
+                  ) : null}
                   <span className="mt-auto inline-flex min-h-[48px] items-center gap-2 pt-3 font-semibold">
                     Leer nota
                     <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
@@ -680,100 +722,54 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
   );
 }
 
-function venueMoments(venue: AgendaVenue, now: number) {
-  const clock: VenueClock = venueClock(
-    venue.weekday,
-    venue.hour,
-    venue.minute,
-    venue.durationHours,
-    now
-  );
-  const lastInstant = clock.inProgress ? clock.previousStart - WEEK_MS : clock.previousStart;
-  const nextInstant = clock.inProgress ? clock.previousStart : clock.nextStart;
-  return { clock, lastInstant, nextInstant };
-}
-
-const VENUE_PHOTOS: Record<
-  string,
-  { src: string; alt: string; credit?: { label: string; href: string } }
-> = {
-  feria: {
-    src: '/notas/baile-feria.jpg',
-    alt: 'Baile folklórico y puestos de la Feria de Mataderos.'
-  },
-  recova: {
-    src: '/notas/frente-recova.jpg',
-    alt: 'Fachada histórica de La Recova en Mataderos.'
-  },
-  'el-plata': {
-    src: '/notas/el-plata.jpg',
-    alt: 'Fachada del Cine Teatro El Plata sobre la avenida Juan B. Alberdi, con el nombre EL PLATA en el frente.',
-    credit: {
-      label: 'Foto: Gobierno de la Ciudad de Buenos Aires',
-      href: 'https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos'
-    }
-  }
-};
-
-function formatBaDayMonth(ts: number): { day: string; month: string; weekdayShort: string } {
-  const date = new Date(ts);
-  const day = new Intl.DateTimeFormat('es-AR', {
-    timeZone: 'America/Argentina/Buenos_Aires',
-    day: '2-digit'
-  }).format(date);
-  const month = new Intl.DateTimeFormat('es-AR', {
-    timeZone: 'America/Argentina/Buenos_Aires',
-    month: 'short'
-  })
-    .format(date)
-    .replace('.', '')
-    .toUpperCase();
-  const weekdayShort = new Intl.DateTimeFormat('es-AR', {
-    timeZone: 'America/Argentina/Buenos_Aires',
-    weekday: 'short'
-  })
-    .format(date)
-    .replace('.', '')
-    .toUpperCase();
-  return { day, month, weekdayShort };
-}
-
-function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
-  const picked = useRef(false);
-  const [now, setNow] = useState<number | null>(null);
-  const [activeId, setActiveId] = useState(AGENDA_VENUES[0]?.id ?? '');
+function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; serverNow: number }) {
+  const [now, setNow] = useState<number>(serverNow);
+  const [activeId, setActiveId] = useState<string>(AGENDA_SPOTS[0]?.id ?? 'el-plata');
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     setNow(Date.now());
   }, []);
 
-  useEffect(() => {
-    if (now === null || picked.current) return;
-    const ranked = AGENDA_VENUES.map((venue) => ({
-      id: venue.id,
-      ...venueMoments(venue, now)
-    }))
-      .filter((item) => !item.clock.inProgress)
-      .sort((a, b) => a.nextInstant - b.nextInstant);
-    if (ranked[0]) setActiveId(ranked[0].id);
-  }, [now]);
+  const spotsData = useMemo(() => {
+    return AGENDA_SPOTS.map((spot) => {
+      const matched = agendaItems
+        .filter(spot.match)
+        .sort((a, b) => agendaTimestamps(a).startTs - agendaTimestamps(b).startTs);
+      const activeOrUpcoming = matched.filter((item) => agendaStatus(item, now) !== 'past');
+      const visible = activeOrUpcoming.length > 0 ? activeOrUpcoming : matched;
+      const featured = visible[0];
+      const featuredStatus = featured ? agendaStatus(featured, now) : 'past';
+      const featuredStartTs = featured ? agendaTimestamps(featured).startTs : Infinity;
+      return { spot, items: visible, featured, featuredStatus, featuredStartTs };
+    }).filter((entry) => entry.featured !== undefined);
+  }, [agendaItems, now]);
 
-  const active = AGENDA_VENUES.find((venue) => venue.id === activeId) ?? AGENDA_VENUES[0];
-  const activeEvent = active ? events.find((event) => event.id === active.eventId) : undefined;
-  const activeMoments = active && now !== null ? venueMoments(active, now) : null;
+  const soonestMataderosSpotId = useMemo(() => {
+    const candidates = spotsData
+      .filter((entry) => entry.spot.ambito === 'Mataderos' && entry.featuredStatus === 'upcoming')
+      .sort((a, b) => a.featuredStartTs - b.featuredStartTs);
+    return candidates[0]?.spot.id ?? null;
+  }, [spotsData]);
 
-  const soonestId =
-    now === null
-      ? null
-      : AGENDA_VENUES.map((venue) => ({ venue, ...venueMoments(venue, now) }))
-          .filter((item) => !item.clock.inProgress)
-          .sort((a, b) => a.nextInstant - b.nextInstant)[0]?.venue.id ?? null;
+  const quickList = useMemo(() => {
+    const active = agendaItems.filter((item) => agendaStatus(item, now) !== 'past');
+    const source = active.length > 0 ? active : agendaItems;
+    return [...source].sort((a, b) => {
+      const sa = agendaStatus(a, now);
+      const sb = agendaStatus(b, now);
+      if (sa === 'in-progress' && sb !== 'in-progress') return -1;
+      if (sa !== 'in-progress' && sb === 'in-progress') return 1;
+      return agendaTimestamps(a).startTs - agendaTimestamps(b).startTs;
+    });
+  }, [agendaItems, now]);
 
-  if (!active) return null;
+  const currentSpot = spotsData.find((entry) => entry.spot.id === activeId) ?? spotsData[0];
+  if (!currentSpot || !currentSpot.featured) return null;
 
-  const activePhoto = VENUE_PHOTOS[active.id];
-  const activeIsSoonest = soonestId === active.id;
+  const { spot, items: spotItems, featured, featuredStatus, featuredStartTs } = currentSpot;
+  const spotPhoto = spot.photoId ? FOTOS[spot.photoId] : undefined;
+  const isComuna9Spot = spot.ambito === 'Comuna 9';
 
   return (
     <section
@@ -784,7 +780,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
       <div className="editorial-container section-pad">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-carbon/25 pb-5">
           <div className="min-w-0">
-            <p className="font-mono text-base">Feria, La Recova y El Plata</p>
+            <p className="font-mono text-base">Noviembre y diciembre 2026 · Con fuente</p>
             <h2
               id="agenda-titulo"
               className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
@@ -800,7 +796,7 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
               onClick={() => setExpanded((value) => !value)}
               className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-4 text-base font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
             >
-              {expanded ? 'Ver por sede' : 'Vista rápida'}
+              {expanded ? 'Ver por espacio' : 'Vista rápida'}
             </button>
             <Link
               href="/agenda"
@@ -816,31 +812,37 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
           <div>
             <div
               role="tablist"
-              aria-label="Sedes culturales de Mataderos"
+              aria-label="Espacios y ciclos de Mataderos y Comuna 9"
               className="flex flex-wrap gap-2"
             >
-              {AGENDA_VENUES.map((venue) => {
-                const selected = venue.id === active.id;
-                const isSoonest = soonestId === venue.id;
+              {spotsData.map((entry) => {
+                const selected = entry.spot.id === spot.id;
+                const isSoonest = soonestMataderosSpotId === entry.spot.id;
+                const isLive = entry.featuredStatus === 'in-progress';
                 return (
                   <button
-                    key={venue.id}
-                    id={`agenda-${venue.id}`}
+                    key={entry.spot.id}
+                    id={`agenda-${entry.spot.id}`}
                     type="button"
                     role="tab"
                     aria-selected={selected}
-                    onClick={() => {
-                      picked.current = true;
-                      setActiveId(venue.id);
-                    }}
+                    onClick={() => setActiveId(entry.spot.id)}
                     className={`inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border px-4 text-base font-semibold color-field ${
                       selected
                         ? 'border-carbon bg-carbon text-pampa'
                         : 'border-carbon/35 bg-pampa-surface text-carbon hover:border-carbon'
                     }`}
                   >
-                    <span>{venue.venue}</span>
-                    {isSoonest && (
+                    <span>{entry.spot.label}</span>
+                    {isLive ? (
+                      <span
+                        className={`font-mono text-xs uppercase ${
+                          selected ? 'text-pampa/85' : 'text-chicago'
+                        }`}
+                      >
+                        · En curso
+                      </span>
+                    ) : isSoonest ? (
                       <span
                         className={`font-mono text-xs uppercase ${
                           selected ? 'text-pampa/80' : 'text-chicago'
@@ -848,7 +850,15 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
                       >
                         · Próximo
                       </span>
-                    )}
+                    ) : entry.spot.ambito === 'Comuna 9' ? (
+                      <span
+                        className={`font-mono text-xs uppercase ${
+                          selected ? 'text-pampa/80' : 'text-cuero'
+                        }`}
+                      >
+                        · Liniers y P. Avellaneda
+                      </span>
+                    ) : null}
                   </button>
                 );
               })}
@@ -856,148 +866,250 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
 
             <article
               role="tabpanel"
-              aria-labelledby={`agenda-${active.id}`}
+              aria-labelledby={`agenda-${spot.id}`}
               className="mt-5 grid border border-carbon/30 bg-pampa-surface lg:grid-cols-12"
             >
-              {activePhoto && (
+              {spotPhoto ? (
                 <figure className="flex flex-col border-b border-carbon/20 lg:col-span-5 lg:border-b-0 lg:border-r">
                   <span className="relative block aspect-[16/10] w-full flex-1 overflow-hidden lg:min-h-[320px]">
                     <PhotoFill
-                      src={activePhoto.src}
-                      alt={activePhoto.alt}
+                      src={spotPhoto.src}
+                      alt={spotPhoto.alt}
                       sizes="(max-width: 1024px) 100vw, 42vw"
                     />
                   </span>
-                  {activePhoto.credit && (
-                    <figcaption className="border-t border-carbon/15 px-4 py-2.5 font-mono text-xs text-carbon/75">
-                      <a
-                        href={activePhoto.credit.href}
-                        className="underline underline-offset-4"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {activePhoto.credit.label}
-                      </a>
-                    </figcaption>
-                  )}
+                  <figcaption className="border-t border-carbon/15 px-4 py-2.5 font-mono text-xs text-carbon/75">
+                    <a
+                      href={spotPhoto.sourceUrl}
+                      className="underline underline-offset-4"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Foto: {spotPhoto.author} ({spotPhoto.taken}) · {spotPhoto.license}
+                    </a>
+                  </figcaption>
                 </figure>
+              ) : (
+                <div
+                  className={`flex flex-col justify-between border-b border-carbon/20 p-6 text-pampa sm:p-8 lg:col-span-5 lg:min-h-[320px] lg:border-b-0 lg:border-r ${
+                    isComuna9Spot ? 'bg-cuero' : 'bg-chicago-dark'
+                  }`}
+                >
+                  <div>
+                    <p className="font-mono text-xs uppercase tracking-wider text-pampa/80">
+                      {spot.barrioNote}
+                    </p>
+                    <p className="mt-3 font-display text-[clamp(2.25rem,4.5vw,3.75rem)] font-semibold uppercase leading-[0.92]">
+                      {spot.label}
+                    </p>
+                  </div>
+                  <div className="mt-8 border-t border-pampa/25 pt-4 font-mono text-sm text-pampa/90">
+                    <p>{spot.kicker}</p>
+                    <p className="mt-1">
+                      {spotItems.length} {spotItems.length === 1 ? 'fecha programada' : 'fechas programadas'}
+                    </p>
+                  </div>
+                </div>
               )}
 
               <div className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-7">
                 <div>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-sm uppercase tracking-wide text-chicago">
-                    <span>{activeIsSoonest ? 'El más cercano' : 'Cartelera'}</span>
-                    <span>·</span>
-                    <span className="text-carbon/75">{active.place}</span>
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs uppercase tracking-wide">
+                    <span className={isComuna9Spot ? 'font-semibold text-cuero' : 'font-semibold text-chicago'}>
+                      {isComuna9Spot ? 'Fuera de Mataderos · Comuna 9' : featured.highlightTag}
+                    </span>
+                    <span className="text-carbon/40" aria-hidden="true">
+                      ·
+                    </span>
+                    <span className="text-carbon/75">{featured.place}</span>
                   </div>
 
                   <h3 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
-                    {active.venue}
+                    {featured.title}
                   </h3>
 
-                  <p className="mt-2 font-serif text-xl font-semibold leading-snug sm:text-2xl">
-                    {active.nextTitle}
+                  <p className="mt-2 font-serif text-lg font-semibold text-carbon/90 sm:text-xl">
+                    {featured.venueName} · {featured.priceLabel}
                   </p>
 
                   <div className="mt-5 border-y border-carbon/20 py-4">
                     <p className="font-mono text-xs uppercase tracking-wider text-carbon/70">
-                      Próximo encuentro
+                      {featuredStatus === 'in-progress' ? 'En curso ahora' : 'Próxima fecha'}
                     </p>
                     <p className="mt-1 font-serif text-xl font-semibold">
-                      {activeMoments?.clock.inProgress
-                        ? 'En curso ahora'
-                        : activeMoments
-                          ? `${formatBaDate(activeMoments.nextInstant)} · ${formatBaTime(activeMoments.nextInstant)} hs`
-                          : '—'}
+                      {featuredStatus === 'in-progress'
+                        ? featured.isMultiDay && featured.dateBadge
+                          ? `${featured.dateBadge} · ${featured.timeLabel}`
+                          : `En curso · ${featured.timeLabel}`
+                        : `${formatBaDate(featuredStartTs)} · ${featured.timeLabel}`}
                     </p>
 
-                    {activeMoments && !activeMoments.clock.inProgress && (
-                      <Countdown target={activeMoments.nextInstant} />
-                    )}
-                    {activeMoments?.clock.inProgress && (
-                      <p className="mt-3 inline-block border border-chicago px-3 py-1.5 font-display text-xl uppercase text-chicago">
-                        En curso
+                    {featuredStatus === 'upcoming' && <Countdown target={featuredStartTs} />}
+                    {featuredStatus === 'in-progress' && (
+                      <p className="mt-3 inline-block border border-chicago bg-chicago/10 px-3 py-1.5 font-display text-xl uppercase text-chicago">
+                        En curso {featured.dateBadge ? `· ${featured.dateBadge}` : ''}
                       </p>
                     )}
                   </div>
 
                   <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-carbon/85 sm:text-lg">
-                    {activeEvent?.description ?? active.description}
+                    {featured.description}
                   </p>
-                </div>
 
-                <div className="mt-6 space-y-4">
-                  <div className="flex flex-wrap gap-3">
-                    <a
-                      href={mapsHref(active.mapsQuery)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
-                    >
-                      Entradas / Cómo llegar
-                      <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                    </a>
-                    {active.id === 'el-plata' && <ElPlataInstagramLink />}
-                  </div>
-
-                  {activeMoments && (
-                    <p className="border-t border-carbon/15 pt-3 font-mono text-sm text-carbon/65">
-                      Último encuentro: {formatBaDate(activeMoments.lastInstant)} · {active.lastTitle}
+                  {featured.source?.note && (
+                    <p className="mt-3 flex items-start gap-2 border-l-2 border-ladrillo bg-pampa px-3 py-2 font-mono text-xs text-carbon/85">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-ladrillo" strokeWidth={1.75} aria-hidden="true" />
+                      <span>{featured.source.note}</span>
                     </p>
                   )}
+
+                  {spotItems.length > 1 && (
+                    <div className="mt-5 border-t border-carbon/15 pt-4">
+                      <p className="font-mono text-xs uppercase tracking-wider text-carbon/70">
+                        Todas las fechas de {spot.label}
+                      </p>
+                      <ul className="mt-2.5 divide-y divide-carbon/15">
+                        {spotItems.map((item) => {
+                          const { startTs } = agendaTimestamps(item);
+                          return (
+                            <li
+                              key={item.id}
+                              className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-2 text-sm"
+                            >
+                              <span className="min-w-0">
+                                <span className="font-mono font-semibold text-chicago">
+                                  {formatBaShortDate(startTs)} · {item.timeLabel}
+                                </span>
+                                {' — '}
+                                <span className="font-semibold text-carbon">{item.title}</span>
+                                {item.ambito === 'Comuna 9' && (
+                                  <span className="ml-1.5 font-mono text-xs text-cuero">({item.barrio})</span>
+                                )}
+                                {item.source?.note && (
+                                  <span className="ml-1.5 font-mono text-xs text-ladrillo">· Fuente única (X)</span>
+                                )}
+                              </span>
+                              {item.source && (
+                                <a
+                                  href={item.source.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="shrink-0 font-mono text-xs text-carbon/75 underline underline-offset-4 hover:text-chicago"
+                                >
+                                  {item.source.label}
+                                </a>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <a
+                    href={mapsHref(featured.mapsQuery)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+                  >
+                    Cómo llegar
+                    <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                  </a>
+                  {featured.source && (
+                    <a
+                      href={featured.source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+                    >
+                      <ExternalLink className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                      Fuente: {featured.source.label}
+                    </a>
+                  )}
+                  {isComuna9Spot && (
+                    <Link
+                      href="/agenda?ambito=comuna-9"
+                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-cuero px-4 font-semibold text-cuero hover:bg-cuero hover:text-pampa color-field"
+                    >
+                      Ver Comuna 9 en /agenda
+                    </Link>
+                  )}
+                  {spot.id === 'el-plata' && <ElPlataInstagramLink />}
                 </div>
               </div>
             </article>
           </div>
         ) : (
           <div className="divide-y divide-carbon/25 border-y border-carbon/25 bg-pampa-surface">
-            {AGENDA_VENUES.map((venue) => {
-              const moments = now === null ? null : venueMoments(venue, now);
-              const isSoonest = soonestId === venue.id;
-              const dm = moments ? formatBaDayMonth(moments.nextInstant) : null;
-              const eventMatch = events.find((e) => e.id === venue.eventId);
+            {quickList.map((item) => {
+              const { startTs } = agendaTimestamps(item);
+              const status = agendaStatus(item, now);
+              const dm = formatBaDayMonth(startTs);
+              const isComuna9 = item.ambito === 'Comuna 9';
 
               return (
                 <article
-                  key={venue.id}
-                  id={`agenda-${venue.id}`}
+                  key={item.id}
+                  id={`agenda-${item.id}`}
                   className="grid gap-5 p-5 sm:p-6 lg:grid-cols-12 lg:items-center"
                 >
-                  <div className="flex items-baseline gap-4 lg:col-span-3 lg:flex-col lg:gap-1">
-                    {moments?.clock.inProgress ? (
-                      <p className="font-display text-3xl font-semibold uppercase text-chicago">
-                        En curso
-                      </p>
-                    ) : dm ? (
+                  <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1 lg:col-span-3 lg:flex-col lg:gap-1">
+                    {status === 'in-progress' ? (
+                      <>
+                        <p className="font-display text-3xl font-semibold uppercase text-chicago">
+                          En curso
+                        </p>
+                        <p className="font-mono text-sm uppercase text-carbon/75">
+                          {item.dateBadge ?? item.timeLabel}
+                        </p>
+                      </>
+                    ) : (
                       <>
                         <p className="font-display text-[clamp(2.25rem,4vw,3.25rem)] font-semibold uppercase leading-none">
                           {dm.day} {dm.month}
                         </p>
                         <p className="font-mono text-sm uppercase text-carbon/75">
-                          {dm.weekdayShort} · {moments ? formatBaTime(moments.nextInstant) : ''} hs
+                          {dm.weekdayShort} · {item.timeLabel}
                         </p>
                       </>
-                    ) : (
-                      <p className="font-display text-3xl">—</p>
                     )}
                   </div>
 
                   <div className="lg:col-span-6">
-                    <p className="font-mono text-xs uppercase tracking-wider text-chicago">
-                      {isSoonest ? 'El más cercano' : 'Cartelera'} · {venue.place}
-                    </p>
-                    <h3 className="mt-1 font-display text-2xl font-semibold uppercase leading-tight sm:text-3xl">
-                      {venue.venue}
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs uppercase tracking-wider">
+                      <span className="font-semibold text-chicago">{item.category}</span>
+                      <span className="text-carbon/40" aria-hidden="true">
+                        ·
+                      </span>
+                      {isComuna9 ? (
+                        <span className="border border-cuero/60 bg-pampa-deep px-2 py-0.5 font-semibold text-cuero">
+                          Comuna 9 · {item.barrio}
+                        </span>
+                      ) : (
+                        <span className="text-carbon/75">{item.barrio}</span>
+                      )}
+                      <span className="text-carbon/40" aria-hidden="true">
+                        ·
+                      </span>
+                      <span className={item.source?.note ? 'font-semibold text-ladrillo' : 'text-carbon/75'}>
+                        {item.priceLabel}
+                      </span>
+                    </div>
+                    <h3 className="mt-1.5 font-display text-2xl font-semibold uppercase leading-tight sm:text-3xl">
+                      {item.title}
                     </h3>
-                    <p className="mt-1 font-serif text-lg font-semibold">{venue.nextTitle}</p>
-                    <p className="mt-1.5 text-base leading-relaxed text-carbon/80">
-                      {eventMatch?.description ?? venue.description}
-                    </p>
+                    <p className="mt-1 font-serif text-lg font-semibold">{item.venueName}</p>
+                    <p className="mt-1.5 text-base leading-relaxed text-carbon/80">{item.description}</p>
+                    {item.source?.note && (
+                      <p className="mt-2 font-mono text-xs text-ladrillo">{item.source.note}</p>
+                    )}
                   </div>
 
                   <div className="flex flex-wrap gap-2 lg:col-span-3 lg:flex-col lg:items-stretch">
                     <a
-                      href={mapsHref(venue.mapsQuery)}
+                      href={mapsHref(item.mapsQuery)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-4 text-sm font-semibold text-pampa color-field hover:bg-chicago-dark"
@@ -1005,17 +1117,17 @@ function AgendaStrip({ events }: { events: NeighborhoodEvent[] }) {
                       Cómo llegar
                       <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                     </a>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        picked.current = true;
-                        setActiveId(venue.id);
-                        setExpanded(false);
-                      }}
-                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 text-sm font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
-                    >
-                      Ver ficha completa
-                    </button>
+                    {item.source && (
+                      <a
+                        href={item.source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 text-sm font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+                      >
+                        <ExternalLink className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                        Fuente: {item.source.label}
+                      </a>
+                    )}
                   </div>
                 </article>
               );
@@ -1698,19 +1810,24 @@ function SiteFooter() {
   );
 }
 
-export default function PortalClient({ businesses, notes, events }: PortalClientProps) {
+export default function PortalClient({
+  businesses,
+  notes,
+  agendaItems,
+  serverNow
+}: PortalClientProps) {
   return (
     <div className="relative min-h-screen bg-pampa text-carbon">
       <a href="#contenido" className="skip-link">
         Saltar al contenido
       </a>
-      <SiteHeader />
+      <SiteHeader agendaItems={agendaItems} serverNow={serverNow} />
       <HeroLogoFlight />
       <main id="contenido" className="min-w-0">
         <Hero />
         <div className="relative z-10">
           <NewsCarousel notes={notes} />
-          <AgendaStrip events={events} />
+          <AgendaStrip agendaItems={agendaItems} serverNow={serverNow} />
           <ViviBand />
           <ArchiveCarousel />
           <ShopDirectory businesses={businesses} />

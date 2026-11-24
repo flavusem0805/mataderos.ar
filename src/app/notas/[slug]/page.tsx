@@ -31,6 +31,9 @@ export async function generateMetadata({ params }: NotaPageProps): Promise<Metad
   const nota = getNota(slug);
   if (!nota) return { title: 'Nota no encontrada · Mataderos.ar' };
   const url = canonicalNota(nota.slug);
+  const ogImages = nota.image
+    ? [{ url: nota.image.src, alt: nota.image.alt }]
+    : [{ url: '/og-image.jpg', alt: nota.title }];
   return {
     title: `${nota.title} · Mataderos.ar`,
     description: nota.description,
@@ -42,7 +45,7 @@ export async function generateMetadata({ params }: NotaPageProps): Promise<Metad
       type: 'article',
       publishedTime: nota.publishedAt,
       locale: 'es_AR',
-      images: [{ url: nota.image.src, alt: nota.image.alt }]
+      images: ogImages
     }
   };
 }
@@ -74,7 +77,7 @@ function articleJson(nota: NotaResuelta) {
     datePublished: nota.publishedAt,
     dateModified: nota.publishedAt,
     mainEntityOfPage: canonicalNota(nota.slug),
-    image: [`https://mataderos.ar${nota.image.src}`],
+    image: [nota.image ? `https://mataderos.ar${nota.image.src}` : 'https://mataderos.ar/og-image.jpg'],
     articleSection: nota.category,
     author: { '@type': 'Organization', name: 'Mataderos.ar', url: 'https://mataderos.ar' },
     publisher: { '@type': 'Organization', name: 'Mataderos.ar', url: 'https://mataderos.ar' }
@@ -102,7 +105,7 @@ function GuiaIndex({ pilar }: { pilar: NotaResuelta }) {
 function ParteDe({ pilar }: { pilar: NotaResuelta }) {
   return (
     <p className="mt-4 font-mono text-base">
-      Parte de la guía:{' '}
+      Guía relacionada:{' '}
       <Link href={`/notas/${pilar.slug}`} className="text-chicago underline underline-offset-4">
         {pilar.title}
       </Link>
@@ -116,6 +119,8 @@ export default async function NotaPage({ params }: NotaPageProps) {
   if (!nota) notFound();
   const pilar = nota.pillarSlug ? getNota(nota.pillarSlug) : undefined;
   const siblings = hermanos(nota, 3);
+  const typeLabel =
+    nota.type === 'pilar' ? 'Guía troncal' : nota.type === 'actualidad' ? 'Actualidad' : 'Nota';
   const json = {
     '@context': 'https://schema.org',
     '@graph': [articleJson(nota), crumbJson(nota, pilar)]
@@ -129,18 +134,27 @@ export default async function NotaPage({ params }: NotaPageProps) {
           <Link href="/" className="underline underline-offset-4">Inicio</Link>
           <span aria-hidden="true"> / </span>
           <Link href="/notas" className="underline underline-offset-4">Notas</Link>
-          {pilar && (
+          {nota.type === 'actualidad' ? (
             <>
               <span aria-hidden="true"> / </span>
-              <Link href={`/notas/${pilar.slug}`} className="underline underline-offset-4">
-                Guía
+              <Link href="/notas?guia=actualidad" className="underline underline-offset-4">
+                Actualidad
               </Link>
             </>
+          ) : (
+            pilar && (
+              <>
+                <span aria-hidden="true"> / </span>
+                <Link href={`/notas/${pilar.slug}`} className="underline underline-offset-4">
+                  Guía
+                </Link>
+              </>
+            )
           )}
         </nav>
 
         <p className="mt-6 font-mono text-base">
-          {nota.type === 'pilar' ? 'Guía troncal' : 'Nota'} · {nota.category} · {formatFecha(nota.publishedAt)} · {nota.readMinutes} min
+          {typeLabel} · {nota.category} · {formatFecha(nota.publishedAt)} · {nota.readMinutes} min
         </p>
         <h1 className="mt-3 max-w-[22ch] font-serif text-[clamp(2rem,5vw,3.5rem)] font-semibold leading-[1.05]">
           {nota.title}
@@ -148,32 +162,38 @@ export default async function NotaPage({ params }: NotaPageProps) {
         <p className="mt-4 max-w-[68ch] font-serif text-xl italic leading-snug sm:text-2xl">{nota.dek}</p>
         {pilar && <ParteDe pilar={pilar} />}
 
-        <figure className="mt-8 min-w-0">
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-carbon">
-            <Image
-              src={nota.image.src}
-              alt={nota.image.alt}
-              fill
-              priority
-              sizes="(max-width: 768px) 100vw, 1100px"
-              className="object-cover"
-            />
+        {nota.image ? (
+          <figure className="mt-8 min-w-0">
+            <div className="relative aspect-[16/9] w-full overflow-hidden bg-carbon">
+              <Image
+                src={nota.image.src}
+                alt={nota.image.alt}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 1100px"
+                className="object-cover"
+              />
+            </div>
+            <figcaption className="mt-2 max-w-[75ch] font-mono text-base leading-relaxed">
+              Foto: {nota.image.author}, {nota.image.taken}. {nota.image.alt} {nota.image.changes}{' '}
+              <a href={nota.image.sourceUrl} className="underline underline-offset-4">
+                Fuente
+              </a>
+              {nota.image.license.startsWith('CC') && (
+                <>
+                  {' · '}
+                  <a href={nota.image.licenseUrl} className="underline underline-offset-4">
+                    {nota.image.license}
+                  </a>
+                </>
+              )}
+            </figcaption>
+          </figure>
+        ) : nota.placeLabel ? (
+          <div className="mt-8 max-w-[68ch] border-y border-carbon/25 bg-pampa-deep px-5 py-4 font-mono text-sm uppercase tracking-wider text-cuero">
+            {nota.placeLabel}
           </div>
-          <figcaption className="mt-2 max-w-[75ch] font-mono text-base leading-relaxed">
-            Foto: {nota.image.author}, {nota.image.taken}. {nota.image.alt} {nota.image.changes}{' '}
-            <a href={nota.image.sourceUrl} className="underline underline-offset-4">
-              Fuente
-            </a>
-            {nota.image.license.startsWith('CC') && (
-              <>
-                {' · '}
-                <a href={nota.image.licenseUrl} className="underline underline-offset-4">
-                  {nota.image.license}
-                </a>
-              </>
-            )}
-          </figcaption>
-        </figure>
+        ) : null}
 
         {nota.slug === 'cine-teatro-el-plata' && <ElPlataInstagram />}
 
@@ -217,18 +237,43 @@ export default async function NotaPage({ params }: NotaPageProps) {
           </aside>
         )}
 
+        {nota.type === 'actualidad' && (
+          <div className="mt-8 max-w-[68ch] border border-chicago/40 bg-pampa-surface p-5 sm:p-6">
+            <p className="font-mono text-sm uppercase tracking-wider text-chicago">Agenda actualizada</p>
+            <p className="mt-2 text-base leading-relaxed text-carbon/85">
+              Todas las fechas, horarios, direcciones, fuentes y descargas al calendario (.ics) están reunidas en la agenda interactiva.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href="/agenda"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-[4px] bg-chicago px-5 text-base font-semibold text-pampa hover:bg-chicago-dark color-field"
+              >
+                Abrir la agenda completa
+              </Link>
+              <Link
+                href="/agenda?ambito=comuna-9"
+                className="inline-flex min-h-[48px] items-center justify-center rounded-[4px] border border-carbon px-5 text-base font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+              >
+                Ver también Comuna 9
+              </Link>
+            </div>
+          </div>
+        )}
+
         {nota.type === 'pilar' && (
           <div className="mt-12">
             <GuiaIndex pilar={nota} />
           </div>
         )}
 
-        {pilar && (
+        {(pilar || siblings.length > 0) && (
           <div className="mt-12 max-w-[68ch] border-t border-carbon/25 pt-6">
-            <ParteDe pilar={pilar} />
+            {pilar && <ParteDe pilar={pilar} />}
             {siblings.length > 0 && (
               <>
-                <h2 className="mt-6 font-serif text-2xl font-semibold">En la misma guía</h2>
+                <h2 className="mt-6 font-serif text-2xl font-semibold">
+                  {nota.type === 'actualidad' ? 'Más actualidad del barrio' : 'En la misma guía'}
+                </h2>
                 <ul className="mt-3 space-y-3">
                   {siblings.map((item) => (
                     <li key={item.slug}>
@@ -250,7 +295,7 @@ export default async function NotaPage({ params }: NotaPageProps) {
           <ul className="mt-4 space-y-3 text-lg leading-snug">
             {nota.fuentes.map((fuente) => (
               <li key={fuente.url}>
-                <a href={fuente.url} className="underline underline-offset-4" rel="noopener noreferrer">
+                <a href={fuente.url} target="_blank" className="underline underline-offset-4" rel="noopener noreferrer">
                   {fuente.title}
                 </a>
                 <span className="mt-1 block font-mono text-base">{fuente.publisher}</span>

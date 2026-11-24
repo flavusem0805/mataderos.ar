@@ -41,19 +41,39 @@ create table if not exists public.articles (
 
 create table if not exists public.events (
   id uuid primary key default gen_random_uuid(),
+  venue_id text,
+  venue_name text,
   title text not null,
   date_label text not null,
+  time_label text,
   location text not null,
+  place text,
+  maps_query text,
+  barrio text not null default 'Mataderos',
+  ambito text not null default 'Mataderos',
   category text not null,
   description text not null,
   highlight_tag text not null default 'Gratis',
+  starts_at timestamptz,
+  ends_at timestamptz,
+  is_multiday boolean not null default false,
+  date_badge text,
+  price_label text,
+  is_free boolean not null default true,
+  source_label text,
+  source_url text,
+  source_note text,
+  related_nota_slug text,
+  photo_id text,
   created_at timestamptz not null default now()
 );
 
--- Índices útiles para búsquedas por subdominio y filtros barriales
+-- Índices útiles para búsquedas por subdominio, filtros barriales y agenda fechada
 create index if not exists idx_businesses_slug on public.businesses (slug);
 create index if not exists idx_businesses_category on public.businesses (category);
 create index if not exists idx_businesses_zone on public.businesses (zone);
+create index if not exists idx_events_starts_at on public.events (starts_at);
+create index if not exists idx_events_ambito_barrio on public.events (ambito, barrio);
 
 -- Habilitar Row Level Security con lectura pública
 alter table public.businesses enable row level security;

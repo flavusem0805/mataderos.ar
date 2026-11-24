@@ -1,20 +1,29 @@
 import PortalClient, { type HomeNote } from '@/components/PortalClient';
 import { formatFecha, notasRecientes } from '@/lib/notas';
-import { fetchBusinesses, fetchEvents } from '@/lib/supabase';
+import { fetchAgendaItems, fetchBusinesses } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [businesses, events] = await Promise.all([fetchBusinesses(), fetchEvents()]);
+  const [businesses, agendaItems] = await Promise.all([fetchBusinesses(), fetchAgendaItems()]);
+  const serverNow = Date.now();
   const notes: HomeNote[] = notasRecientes(8).map((nota) => ({
     slug: nota.slug,
     title: nota.title,
     category: nota.category,
     fecha: formatFecha(nota.publishedAt),
-    imageSrc: nota.image.src,
-    imageAlt: nota.image.alt,
-    credit: `${nota.image.author} · ${nota.image.license}`
+    imageSrc: nota.image?.src,
+    imageAlt: nota.image?.alt,
+    credit: nota.image ? `${nota.image.author} · ${nota.image.license}` : undefined,
+    placeLabel: nota.placeLabel
   }));
 
-  return <PortalClient businesses={businesses} notes={notes} events={events} />;
+  return (
+    <PortalClient
+      businesses={businesses}
+      notes={notes}
+      agendaItems={agendaItems}
+      serverNow={serverNow}
+    />
+  );
 }

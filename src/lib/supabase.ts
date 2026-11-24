@@ -1,5 +1,12 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import {
+  AGENDA_ITEMS,
+  type AgendaItem,
+  type EventAmbito,
+  type EventBarrio,
+  type EventCategory
+} from './agenda-data';
+import {
   ARTICLES,
   BUSINESSES,
   EVENTS,
@@ -7,6 +14,7 @@ import {
   type Business,
   type NeighborhoodEvent
 } from './data';
+import { FOTOS, type FotoId } from './notas/media';
 
 let cachedClient: SupabaseClient | null = null;
 
@@ -131,4 +139,63 @@ export async function fetchEvents(): Promise<NeighborhoodEvent[]> {
     description: String(row.description),
     highlightTag: String(row.highlight_tag ?? 'Comunidad')
   }));
+}
+
+function isFotoId(value: unknown): value is FotoId {
+  return typeof value === 'string' && value in FOTOS;
+}
+
+/**
+ * Devuelve la agenda fechada desde Supabase (`public.events`) cuando existen filas
+ * con `starts_at` y `ends_at`. Mientras la base no esté poblada, usa `AGENDA_ITEMS`.
+ */
+export async function fetchAgendaItems(): Promise<AgendaItem[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return AGENDA_ITEMS;
+
+  const { data, error } = await supabase
+    .from('events')
+    .select('*')
+    .not('starts_at', 'is', null)
+    .order('starts_at', { ascending: true });
+
+  if (error || !data || data.length === 0) {
+    return AGENDA_ITEMS;
+  }
+
+  return data.map((row) => {
+    const barrio = (row.barrio as EventBarrio) ?? 'Mataderos';
+    const ambito: EventAmbito =
+      (row.ambito as EventAmbito) ?? (barrio === 'Mataderos' ? 'Mataderos' : 'Comuna 9');
+    return {
+      id: String(row.id),
+      venueId: String(row.venue_id ?? row.id),
+      venueName: String(row.venue_name ?? row.location),
+      title: String(row.title),
+      description: String(row.description),
+      category: (row.category as EventCategory) ?? 'Cultura',
+      barrio,
+      ambito,
+      place: String(row.place ?? row.location),
+      mapsQuery: String(row.maps_query ?? `${row.location}, ${barrio}, CABA, Argentina`),
+      startsAt: String(row.starts_at),
+      endsAt: String(row.ends_at ?? row.starts_at),
+      isMultiDay: Boolean(row.is_multiday),
+      dateBadge: row.date_badge ? String(row.date_badge) : undefined,
+      timeLabel: String(row.time_label ?? row.date_label ?? 'Consultar horario'),
+      priceLabel: String(row.price_label ?? 'Consultar acceso'),
+      isFree: Boolean(row.is_free),
+      highlightTag: String(row.highlight_tag ?? 'Agenda'),
+      source:
+        row.source_url && row.source_label
+          ? {
+              label: String(row.source_label),
+              url: String(row.source_url),
+              note: row.source_note ? String(row.source_note) : undefined
+            }
+          : undefined,
+      relatedNotaSlug: row.related_nota_slug ? String(row.related_nota_slug) : undefined,
+      photoId: isFotoId(row.photo_id) ? row.photo_id : undefined
+    };
+  });
 }

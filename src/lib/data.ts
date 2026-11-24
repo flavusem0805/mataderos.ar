@@ -99,11 +99,11 @@ export interface HeritageMilestone {
 }
 
 export const TICKER_ITEMS: string[] = [
-  'Domingos en La Recova: Feria de Mataderos de 11 a 19 hs con entrada libre',
-  'Nueva apertura en Polo Emilio Castro: Tostadores de la Castro ya atiende hasta las 20:30 hs',
-  'Cine Teatro El Plata (Av. Alberdi 5765): programación cultural toda la semana',
-  '¿Tenés local en Mataderos? Sumá tu ficha gratuita o activá tuweb.mataderos.ar',
-  'Veterinaria Alberdi: envíos sin cargo en el día en Mataderos y Liniers'
+  'En curso hasta el dom 29/11: SALE MATADEROS con unos 30 locales en Alberdi, De los Corrales y Directorio',
+  'Viernes 27/11 a las 19 hs: Milonga con entrada libre en el hall del Cine Teatro El Plata',
+  'Sábado 28 y domingo 29/11 a las 19 hs: Paraíso en El Plata, con Luciano Cáceres (platea $22.500)',
+  'Domingos 29/11 y 6, 13 y 20/12: últimos cuatro domingos de temporada de la Feria de Mataderos',
+  'Diciembre en C.C. Macedonio Fernández: muestras gratuitas de fin de año los días 1, 9, 10 y 11 de 18 a 20:45 hs'
 ];
 
 export const BUSINESSES: Business[] = [
@@ -568,36 +568,36 @@ export const ZONES: ZoneSpot[] = [
 export const EVENTS: NeighborhoodEvent[] = [
   {
     id: 'ev-1',
-    title: 'Feria de Mataderos: Artesanías y Tradiciones',
-    dateLabel: 'Todos los Domingos',
-    timeLabel: '11:00 a 19:00 hs',
+    title: 'Feria de Mataderos: últimos domingos de la temporada 2026',
+    dateLabel: 'Domingos 29/11 y 6, 13 y 20/12',
+    timeLabel: '11:00 a 18:00 / 19:00 hs',
     location: 'Av. Lisandro de la Torre y Av. de los Corrales',
     category: 'Feria',
     description:
-      'Más de 300 puestos de talabartería, mates, platería y comidas regionales con escenario folclórico abierto frente a La Recova.',
-    highlightTag: 'Patrimonio Cultural'
+      'Artesanías, comidas regionales, folklore y sortija frente a La Recova. El 20 de diciembre es el último domingo de la temporada. Entrada libre; se suspende por lluvia.',
+    highlightTag: 'Cierre de temporada'
   },
   {
     id: 'ev-2',
-    title: 'Ciclo de Cine Nacional y Música en El Plata',
-    dateLabel: 'Viernes y Sábados',
-    timeLabel: '19:30 hs',
+    title: 'Milonga libre (27/11) y Paraíso (28 y 29/11) en El Plata',
+    dateLabel: 'Viernes 27, sábado 28 y domingo 29/11',
+    timeLabel: '19:00 hs',
     location: 'Cine Teatro El Plata · Av. Juan B. Alberdi 5765',
     category: 'Cultura',
     description:
-      'Funciones en la sala de Alberdi 5765. La cartelera de la semana está en el Instagram oficial, @cineteatroelplata.',
-    highlightTag: 'Entrada Libre'
+      'Viernes 27 milonga gratuita en el hall (Linda BA); sábado 28 y domingo 29 Paraíso con Luciano Cáceres (platea $22.500 · pullman $15.000, CTBA).',
+    highlightTag: 'El Plata'
   },
   {
     id: 'ev-3',
-    title: 'Peña Criolla y Clases Abiertas de Folclore',
-    dateLabel: 'Sábados por la tarde',
-    timeLabel: '17:00 hs',
-    location: 'Plazoleta El Resero y Centros Culturales del barrio',
+    title: 'Muestras gratuitas de fin de año en C.C. Macedonio Fernández',
+    dateLabel: '1, 9, 10 y 11 de diciembre',
+    timeLabel: '18:00 a 20:45 hs',
+    location: 'Martiniano Leguizamón 1470, Mataderos',
     category: 'Cultura',
     description:
-      'Encuentro de guitarras, bombos y parejas de baile abiertas para vecinos principiantes y familias.',
-    highlightTag: 'Actividad Abierta'
+      'Cierre anual de talleres de danza, grabado, música, canto y teatro del Programa Cultural en Barrios. Entrada libre y gratuita.',
+    highlightTag: 'Entrada Libre'
   }
 ];
 

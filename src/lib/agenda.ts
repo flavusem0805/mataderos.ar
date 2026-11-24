@@ -98,3 +98,103 @@ export function formatBaDay(ts: number): string {
   }).format(new Date(ts));
   return raw.charAt(0).toUpperCase() + raw.slice(1);
 }
+
+export interface BaDayMonth {
+  day: string;
+  month: string;
+  weekdayShort: string;
+}
+
+export function formatBaDayMonth(ts: number): BaDayMonth {
+  const date = new Date(ts);
+  const day = new Intl.DateTimeFormat('es-AR', { timeZone: BA_TZ, day: '2-digit' }).format(date);
+  const month = new Intl.DateTimeFormat('es-AR', { timeZone: BA_TZ, month: 'short' })
+    .format(date)
+    .replace('.', '')
+    .toUpperCase();
+  const weekdayShort = new Intl.DateTimeFormat('es-AR', { timeZone: BA_TZ, weekday: 'short' })
+    .format(date)
+    .replace('.', '')
+    .toUpperCase();
+  return { day, month, weekdayShort };
+}
+
+export function formatBaShortDate(ts: number): string {
+  const date = new Date(ts);
+  const parts = new Intl.DateTimeFormat('es-AR', {
+    timeZone: BA_TZ,
+    day: '2-digit',
+    month: '2-digit'
+  }).formatToParts(date);
+  const day = parts.find((p) => p.type === 'day')?.value ?? '';
+  const month = parts.find((p) => p.type === 'month')?.value ?? '';
+  return `${day}/${month}`;
+}
+
+export type AgendaStatus = 'in-progress' | 'upcoming' | 'past';
+
+export interface DatedAgendaWindow {
+  startsAt: string;
+  endsAt: string;
+}
+
+export function agendaTimestamps(item: DatedAgendaWindow): { startTs: number; endTs: number } {
+  return {
+    startTs: Date.parse(item.startsAt),
+    endTs: Date.parse(item.endsAt)
+  };
+}
+
+export function agendaStatus(item: DatedAgendaWindow, now: number): AgendaStatus {
+  const { startTs, endTs } = agendaTimestamps(item);
+  if (now >= startTs && now < endTs) return 'in-progress';
+  if (now < startTs) return 'upcoming';
+  return 'past';
+}
+
+function escapeIcsText(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/\r?\n/g, '\\n')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,');
+}
+
+export function buildIcsContent(item: {
+  id: string;
+  title: string;
+  venueName: string;
+  place: string;
+  barrio: string;
+  description: string;
+  startsAt: string;
+  endsAt: string;
+  source?: { label: string; url: string };
+}): string {
+  const { startTs, endTs } = agendaTimestamps(item);
+  const toIcsDate = (ts: number) =>
+    new Date(ts).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+  const fullDescription = item.source
+    ? `${item.description}\nFuente (${item.source.label}): ${item.source.url}`
+    : item.description;
+  const location = item.place.toLowerCase().includes(item.barrio.toLowerCase())
+    ? `${item.place}, CABA`
+    : `${item.place}, ${item.barrio}, CABA`;
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Mataderos.ar//Agenda//ES',
+    'BEGIN:VEVENT',
+    `UID:${item.id}@mataderos.ar`,
+    `DTSTART:${toIcsDate(startTs)}`,
+    `DTEND:${toIcsDate(endTs)}`,
+    `SUMMARY:${escapeIcsText(`${item.title} — ${item.venueName}`)}`,
+    `LOCATION:${escapeIcsText(location)}`,
+    `DESCRIPTION:${escapeIcsText(fullDescription)}`,
+    ...(item.source ? [`URL:${item.source.url}`] : []),
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+}
+

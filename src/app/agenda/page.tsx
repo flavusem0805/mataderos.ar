@@ -1,26 +1,41 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { NotaFrame } from '@/components/notas/NotaFrame';
-import { AgendaExplorer } from '@/components/agenda/AgendaExplorer';
-import { fetchEvents } from '@/lib/supabase';
+import { AgendaExplorer, type AmbitoFilter } from '@/components/agenda/AgendaExplorer';
+import { fetchAgendaItems } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Agenda cultural de Mataderos · Feria, La Recova y El Plata · Mataderos.ar',
+  title: 'Agenda de Mataderos y Comuna 9 · Cartelera con fuente · Mataderos.ar',
   description:
-    'Programación completa de Mataderos: Feria de Mataderos, peñas en La Recova y funciones del Cine Teatro El Plata. Filtrá por fecha, lugar o tipo de evento.',
+    'Agenda actualizada de Mataderos y la Comuna 9: Cine Teatro El Plata, Feria de Mataderos, Centro Cultural Macedonio Fernández, SALE MATADEROS, Liniers y Parque Avellaneda.',
   alternates: { canonical: 'https://mataderos.ar/agenda' },
   openGraph: {
-    title: 'Agenda cultural de Mataderos · Mataderos.ar',
+    title: 'Agenda de Mataderos y Comuna 9 · Mataderos.ar',
     description:
-      'Próximos encuentros en la Feria de Mataderos, La Recova y Cine Teatro El Plata.',
+      'Actividades con fecha y fuente en Mataderos, Liniers y Parque Avellaneda. Filtrá por barrio, sede o entrada libre y descargá la fecha (.ics).',
     url: 'https://mataderos.ar/agenda',
     locale: 'es_AR',
     type: 'website'
   }
 };
 
-export default async function AgendaPage() {
-  const events = await fetchEvents();
+interface AgendaPageProps {
+  searchParams: Promise<{ ambito?: string | string[] }>;
+}
+
+function parseAmbito(value: string | string[] | undefined): AmbitoFilter {
+  const raw = (Array.isArray(value) ? value[0] : value)?.toLowerCase().trim();
+  if (raw === 'mataderos') return 'Mataderos';
+  if (raw === 'comuna-9' || raw === 'comuna9') return 'Comuna 9';
+  return 'all';
+}
+
+export default async function AgendaPage({ searchParams }: AgendaPageProps) {
+  const [items, params] = await Promise.all([fetchAgendaItems(), searchParams]);
+  const initialAmbito = parseAmbito(params.ambito);
+  const serverNow = Date.now();
 
   return (
     <NotaFrame>
@@ -37,20 +52,20 @@ export default async function AgendaPage() {
           </nav>
 
           <p className="mt-4 font-mono text-sm uppercase tracking-wider text-chicago">
-            Cartelera · Comuna 9 · CABA
+            Cartelera con fuente · Noviembre y diciembre 2026 · Comuna 9
           </p>
           <h1 className="mt-2 max-w-[16ch] font-display text-[clamp(2.75rem,7.5vw,5rem)] font-semibold uppercase leading-[0.9]">
             Agenda de Mataderos
           </h1>
-          <p className="mt-4 max-w-[64ch] font-serif text-xl leading-relaxed text-carbon/90">
-            Feria de Mataderos, peñas en La Recova y funciones del Cine Teatro El Plata. Buscá, filtrá por sede o tipo de actividad y guardá la fecha en tu calendario.
+          <p className="mt-4 max-w-[66ch] font-serif text-xl leading-relaxed text-carbon/90">
+            Actividades con fecha y fuente publicada en Mataderos —El Plata, la Feria, el Centro Cultural Macedonio Fernández y comercios— más una sección aparte para encuentros de la Comuna 9 en Liniers y Parque Avellaneda.
           </p>
         </div>
       </section>
 
       <section className="section-pad bg-pampa-surface">
         <div className="editorial-container">
-          <AgendaExplorer events={events} />
+          <AgendaExplorer items={items} serverNow={serverNow} initialAmbito={initialAmbito} />
         </div>
       </section>
     </NotaFrame>

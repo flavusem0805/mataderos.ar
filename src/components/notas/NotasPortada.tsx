@@ -1,18 +1,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import {
+  ACTUALIDAD_FILTRO,
   GUIAS,
   extractoDe,
   formatFecha,
   getNota,
   guiaDe,
   notasDeGuia,
-  type GuiaFiltro,
-  type NotaResuelta
+  type NotaResuelta,
+  type PortadaFiltro
 } from '@/lib/notas';
 import type { Foto } from '@/lib/notas/media';
 
-const CAMPOS: Record<GuiaFiltro['slug'], string> = {
+const CAMPOS: Record<PortadaFiltro['slug'], string> = {
+  actualidad: 'bg-cuero',
   historia: 'bg-chicago',
   feria: 'bg-ladrillo',
   'que-hacer': 'bg-cuero',
@@ -20,11 +22,15 @@ const CAMPOS: Record<GuiaFiltro['slug'], string> = {
   cultura: 'bg-chicago-dark'
 };
 
-const FILTROS = [{ slug: '', label: 'Todas', href: '/notas' }, ...GUIAS.map((guia) => ({
-  slug: guia.slug,
-  label: guia.label,
-  href: `/notas?guia=${guia.slug}`
-}))];
+const FILTROS = [
+  { slug: '', label: 'Todas', href: '/notas' },
+  { slug: ACTUALIDAD_FILTRO.slug, label: ACTUALIDAD_FILTRO.label, href: '/notas?guia=actualidad' },
+  ...GUIAS.map((guia) => ({
+    slug: guia.slug,
+    label: guia.label,
+    href: `/notas?guia=${guia.slug}`
+  }))
+];
 
 function cantidadNotas(total: number): string {
   return total === 1 ? '1 nota' : `${total} notas`;
@@ -32,7 +38,7 @@ function cantidadNotas(total: number): string {
 
 function fotoDe(nota: NotaResuelta): Foto | undefined {
   if (nota.image?.src) return nota.image;
-  if (nota.pillarSlug) {
+  if (nota.type !== 'actualidad' && nota.pillarSlug) {
     const pilar = getNota(nota.pillarSlug);
     if (pilar?.image?.src) return pilar.image;
   }
@@ -43,11 +49,21 @@ function MarcaGuia({ nota }: { nota: NotaResuelta }) {
   const guia = guiaDe(nota);
   return (
     <p className="font-mono text-base text-chicago">
-      {guia?.label ?? nota.category}
-      {nota.type === 'pilar' && (
+      {nota.type === 'actualidad' ? (
         <>
+          <span className="border-b border-current">Actualidad</span>
           <span aria-hidden="true"> · </span>
-          <span className="border-b border-current">Guía</span>
+          {nota.category === 'Actualidad' ? (guia?.label ?? 'Agenda') : nota.category}
+        </>
+      ) : (
+        <>
+          {guia?.label ?? nota.category}
+          {nota.type === 'pilar' && (
+            <>
+              <span aria-hidden="true"> · </span>
+              <span className="border-b border-current">Guía</span>
+            </>
+          )}
         </>
       )}
     </p>
@@ -69,12 +85,19 @@ function FiguraNota({
   const guia = guiaDe(nota);
 
   if (!foto) {
+    const campoKey: PortadaFiltro['slug'] =
+      nota.type === 'actualidad' ? 'actualidad' : (guia?.slug ?? 'historia');
     return (
       <div
         aria-hidden="true"
-        className={`flex items-end p-4 text-pampa ${CAMPOS[guia?.slug ?? 'historia']} ${className}`}
+        className={`flex flex-col justify-between p-5 text-pampa ${CAMPOS[campoKey]} ${className}`}
       >
-        <span className="font-mono text-base">{guia?.label ?? 'Nota'}</span>
+        <span className="font-mono text-sm uppercase tracking-wider text-pampa/80">
+          {nota.placeLabel ?? guia?.label ?? nota.category}
+        </span>
+        <span className="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-semibold uppercase leading-[0.95]">
+          {nota.category}
+        </span>
       </div>
     );
   }
@@ -147,7 +170,7 @@ function TarjetaNota({ nota }: { nota: NotaResuelta }) {
   );
 }
 
-function FiltroGuias({ activa }: { activa?: GuiaFiltro['slug'] }) {
+function FiltroGuias({ activa }: { activa?: PortadaFiltro['slug'] }) {
   return (
     <nav aria-label="Filtrar por guía" className="border-b border-carbon/20">
       <ul className="flex flex-wrap">
@@ -225,7 +248,7 @@ export function NotasPortada({
   destacada,
   resto
 }: {
-  guia?: GuiaFiltro;
+  guia?: PortadaFiltro;
   destacada?: NotaResuelta;
   resto: NotaResuelta[];
 }) {
@@ -238,8 +261,8 @@ export function NotasPortada({
         <h1 className="mt-2 max-w-[11ch] text-balance font-display text-[clamp(2.75rem,9vw,6rem)] font-semibold uppercase leading-[0.9] sm:max-w-[14ch]">
           Notas del barrio
         </h1>
-        <p className="mt-4 max-w-[36ch] font-serif text-xl italic leading-snug sm:text-2xl">
-          Historia, feria, patrimonio y cultura del barrio.
+        <p className="mt-4 max-w-[38ch] font-serif text-xl italic leading-snug sm:text-2xl">
+          Actualidad, historia, feria, patrimonio y cultura de Mataderos y la Comuna 9.
         </p>
 
         <div className="mt-8">
@@ -278,14 +301,14 @@ export function NotasPortada({
             En el barrio
           </h2>
           <p className="mt-3 max-w-[36ch] font-serif text-xl italic leading-snug sm:text-2xl">
-            Agenda de la semana y comercios de la guía.
+            Agenda actualizada con fuente y comercios de la guía.
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/#agenda"
+              href="/agenda"
               className="inline-flex min-h-[48px] w-full items-center justify-center bg-pampa px-5 font-semibold text-carbon color-field hover:bg-pampa-surface sm:w-auto"
             >
-              Agenda
+              Ver agenda completa
             </Link>
             <Link
               href="/#directorio"

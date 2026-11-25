@@ -36,6 +36,7 @@ import {
 } from '@/lib/agenda';
 import { isShopOpen } from '@/lib/hours';
 import { ElPlataInstagramLink } from '@/components/ElPlataInstagramLink';
+import { MobileBottomBar } from '@/components/MobileBottomBar';
 
 export interface HomeNote {
   slug: string;
@@ -322,6 +323,7 @@ function SiteHeader({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; ser
   }, [open]);
 
   const links = [
+    { href: '/buscar', label: 'Buscar' },
     { href: '/notas', label: 'Notas' },
     { href: '#noticias', label: 'Portada' },
     { href: '#agenda', label: 'Agenda' },
@@ -335,7 +337,7 @@ function SiteHeader({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; ser
     <header className="fixed inset-x-0 top-0 z-50 w-full max-w-full" data-surface="dark">
       <TopRail agendaItems={agendaItems} serverNow={serverNow} />
       <div className="border-b border-pampa/20 bg-chicago text-pampa">
-        <div className="editorial-container flex min-h-[64px] items-center justify-between gap-4">
+        <div className="editorial-container flex min-h-[64px] items-center justify-between gap-3">
           <a href="#inicio" data-brand className={BRAND_CLASS}>
             <BrandLockup />
           </a>
@@ -358,20 +360,28 @@ function SiteHeader({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; ser
             </Link>
           </nav>
 
-          <button
-            type="button"
-            className="inline-flex min-h-[48px] min-w-[48px] items-center justify-center rounded-[4px] border border-pampa/40 xl:hidden"
-            aria-expanded={open}
-            aria-controls={menuId}
-            aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
-            onClick={() => setOpen((value) => !value)}
-          >
-            {open ? (
-              <X className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-            ) : (
-              <Menu className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
-            )}
-          </button>
+          <div className="flex items-center gap-2 xl:hidden">
+            <Link
+              href="/sumate"
+              className="inline-flex min-h-[44px] items-center rounded-[4px] border border-pampa/50 px-3 text-sm font-semibold text-pampa hover:bg-pampa hover:text-chicago color-field sm:min-h-[48px] sm:px-4 sm:text-base"
+            >
+              Sumate
+            </Link>
+            <button
+              type="button"
+              className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-[4px] border border-pampa/40 sm:min-h-[48px] sm:min-w-[48px]"
+              aria-expanded={open}
+              aria-controls={menuId}
+              aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+              onClick={() => setOpen((value) => !value)}
+            >
+              {open ? (
+                <X className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+              ) : (
+                <Menu className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+              )}
+            </button>
+          </div>
         </div>
 
         {open && (
@@ -1429,16 +1439,27 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
   return (
     <section id="directorio" aria-labelledby="directorio-titulo" className="relative z-10 border-t border-carbon/15 bg-pampa text-carbon">
       <div className="editorial-container section-pad">
-        <p className="font-mono text-base">Guía del barrio</p>
-        <h2
-          id="directorio-titulo"
-          className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
-        >
-          Comercios del barrio
-        </h2>
-        <p className="mt-4 max-w-3xl text-lg leading-relaxed">
-          Los locales con Web oficial aparecen primero. La ficha sigue siendo gratuita para el resto del barrio.
-        </p>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-base">Guía del barrio</p>
+            <h2
+              id="directorio-titulo"
+              className="mt-2 font-display text-[clamp(2rem,5vw,4rem)] font-semibold uppercase leading-[0.95]"
+            >
+              Comercios del barrio
+            </h2>
+            <p className="mt-4 max-w-3xl text-lg leading-relaxed">
+              Los locales con Web oficial aparecen primero. La ficha sigue siendo gratuita para el resto del barrio.
+            </p>
+          </div>
+          <Link
+            href="/buscar?tipo=comercios"
+            className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon bg-pampa-surface px-4 font-semibold text-carbon color-field hover:bg-carbon hover:text-pampa"
+          >
+            Buscar por calle, zona o rubro
+            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+          </Link>
+        </div>
 
         <div className="mt-6 flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <button
@@ -1777,6 +1798,12 @@ function SiteFooter() {
                   <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 </Link>
                 <Link
+                  href="/buscar"
+                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
+                >
+                  Buscar en la guía
+                </Link>
+                <Link
                   href="/emprendedores"
                   className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
                 >
@@ -1817,7 +1844,7 @@ export default function PortalClient({
   serverNow
 }: PortalClientProps) {
   return (
-    <div className="relative min-h-screen bg-pampa text-carbon">
+    <div className="relative min-h-screen bg-pampa pb-[64px] text-carbon lg:pb-0">
       <a href="#contenido" className="skip-link">
         Saltar al contenido
       </a>
@@ -1835,6 +1862,7 @@ export default function PortalClient({
         </div>
       </main>
       <SiteFooter />
+      <MobileBottomBar />
     </div>
   );
 }

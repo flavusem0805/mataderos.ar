@@ -323,7 +323,6 @@ function SiteHeader({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; ser
   }, [open]);
 
   const links = [
-    { href: '/buscar', label: 'Buscar' },
     { href: '/notas', label: 'Notas' },
     { href: '#noticias', label: 'Portada' },
     { href: '#agenda', label: 'Agenda' },
@@ -1453,10 +1452,10 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
             </p>
           </div>
           <Link
-            href="/buscar?tipo=comercios"
+            href="/directorio?tipo=comercios"
             className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon bg-pampa-surface px-4 font-semibold text-carbon color-field hover:bg-carbon hover:text-pampa"
           >
-            Buscar por calle, zona o rubro
+            Filtrar por zona o rubro
             <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </Link>
         </div>
@@ -1798,10 +1797,10 @@ function SiteFooter() {
                   <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 </Link>
                 <Link
-                  href="/buscar"
+                  href="/directorio"
                   className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
                 >
-                  Buscar en la guía
+                  Directorio completo
                 </Link>
                 <Link
                   href="/emprendedores"

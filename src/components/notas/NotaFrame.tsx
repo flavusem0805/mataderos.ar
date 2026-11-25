@@ -6,11 +6,10 @@ import { MobileBottomBar } from '@/components/MobileBottomBar';
 
 const LINKS = [
   { href: '/', label: 'Inicio' },
-  { href: '/buscar', label: 'Buscar' },
   { href: '/notas', label: 'Notas' },
   { href: '/agenda', label: 'Agenda' },
   { href: '/emprendedores', label: 'Emprendedores' },
-  { href: '/#directorio', label: 'Comercios' },
+  { href: '/directorio', label: 'Directorio' },
   { href: '/sumate', label: 'Sumate' }
 ];
 
@@ -47,8 +46,8 @@ export function NotaFrame({ children }: { children: ReactNode }) {
             <Link href="/" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
               Volver al portal
             </Link>
-            <Link href="/buscar" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
-              Buscar en la guía
+            <Link href="/directorio" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Directorio
             </Link>
             <Link href="/sumate" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
               Sumate

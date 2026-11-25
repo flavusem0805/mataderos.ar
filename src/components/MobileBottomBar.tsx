@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Calendar, Home, Newspaper, Search } from 'lucide-react';
+import { Calendar, Home, Newspaper, Store } from 'lucide-react';
 
 interface BottomNavItem {
   id: string;
@@ -21,13 +21,13 @@ const ITEMS: BottomNavItem[] = [
     match: (pathname) => pathname === '/'
   },
   {
-    id: 'nav-buscar',
-    href: '/buscar',
-    label: 'Buscar',
-    icon: Search,
+    id: 'nav-directorio',
+    href: '/directorio',
+    label: 'Directorio',
+    icon: Store,
     match: (pathname) =>
-      pathname === '/buscar' ||
-      pathname.startsWith('/buscar/') ||
+      pathname === '/directorio' ||
+      pathname.startsWith('/directorio/') ||
       pathname === '/emprendedores' ||
       pathname.startsWith('/emprendedores/')
   },
@@ -77,7 +77,7 @@ export function MobileBottomBar() {
                 strokeWidth={active ? 2 : 1.5}
                 aria-hidden="true"
               />
-              <span className="font-mono text-xs uppercase tracking-wider leading-none">
+              <span className="font-mono text-[11px] uppercase leading-none tracking-wide">
                 {item.label}
               </span>
             </Link>

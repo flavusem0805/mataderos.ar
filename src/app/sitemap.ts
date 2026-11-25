@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1
     },
     {
-      url: 'https://mataderos.ar/buscar',
+      url: 'https://mataderos.ar/directorio',
       lastModified: newest,
       changeFrequency: 'weekly',
       priority: 0.9

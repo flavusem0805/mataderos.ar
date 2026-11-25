@@ -77,16 +77,6 @@ const MODALITIES: { value: ModalityFilter; label: string }[] = [
   { value: 'web_oficial', label: 'Con Web Oficial (.mataderos.ar)' }
 ];
 
-const QUICK_SUGGESTIONS = [
-  'Café',
-  'Veterinaria',
-  'Cuero',
-  'Empanadas',
-  'Ferretería',
-  'Dulces',
-  'Alberdi'
-];
-
 function normalizeText(value: string): string {
   return value
     .toLowerCase()
@@ -353,7 +343,7 @@ export function DirectoryExplorer({
   const [modality, setModality] = useState<ModalityFilter>('todas');
   const [openOnly, setOpenOnly] = useState(initialOpenOnly);
   const [sortBy, setSortBy] = useState<SortOption>('destacados');
-  const [showFiltersMobile, setShowFiltersMobile] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -504,10 +494,8 @@ export function DirectoryExplorer({
   const totalComercios = filteredByCriteria.matchingBusinesses.length;
   const totalEmprendedores = filteredByCriteria.matchingEmprendedores.length;
 
-  const activeAdvancedCount =
-    (zone !== 'todas' ? 1 : 0) +
-    (modality !== 'todas' ? 1 : 0) +
-    (openOnly ? 1 : 0);
+  const sheetFilterCount =
+    (category !== null ? 1 : 0) + (zone !== 'todas' ? 1 : 0) + (modality !== 'todas' ? 1 : 0);
 
   const hasAnyFilter =
     query.trim().length > 0 ||
@@ -527,319 +515,326 @@ export function DirectoryExplorer({
     setSortBy('destacados');
   };
 
+  const clearSheetFilters = () => {
+    setCategory(null);
+    setZone('todas');
+    setModality('todas');
+  };
+
+  useEffect(() => {
+    if (!sheetOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setSheetOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    const previousOverflow = document.body.style.overflow;
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [sheetOpen]);
+
+  const chipClass = (selected: boolean) =>
+    `inline-flex min-h-[44px] items-center rounded-[4px] border px-3 text-sm font-semibold color-field ${
+      selected
+        ? 'border-carbon bg-carbon text-pampa'
+        : 'border-carbon/35 bg-pampa-surface text-carbon hover:border-carbon'
+    }`;
+
+  const zoneLabel = ZONES.find((z) => z.value === zone)?.label ?? '';
+  const modalityLabel = MODALITIES.find((m) => m.value === modality)?.label ?? '';
+
+  const activeChips: { key: string; label: string; onRemove: () => void }[] = [];
+  if (category) {
+    activeChips.push({ key: 'rubro', label: category, onRemove: () => setCategory(null) });
+  }
+  if (zone !== 'todas') {
+    activeChips.push({ key: 'zona', label: zoneLabel, onRemove: () => setZone('todas') });
+  }
+  if (modality !== 'todas') {
+    activeChips.push({ key: 'modalidad', label: modalityLabel, onRemove: () => setModality('todas') });
+  }
+
+  const tabs: { id: DirectoryKindFilter; label: string; count: number }[] = [
+    { id: 'todos', label: 'Todos', count: totalTodos },
+    { id: 'comercios', label: 'Comercios', count: totalComercios },
+    { id: 'emprendedores', label: 'Emprendedores', count: totalEmprendedores }
+  ];
+
   return (
     <div>
-      {/* 1. BARRA DE BÚSQUEDA PRINCIPAL */}
-      <div className="border border-carbon bg-pampa p-4 sm:p-6">
-        <label
-          htmlFor="buscador-guia-input"
-          className="block font-mono text-xs font-semibold uppercase tracking-wider text-chicago"
-        >
-          Buscar por nombre, rubro, producto, oficio o calle
-        </label>
-        <div className="relative mt-2 flex items-center">
+      {/* Fila 1: buscador + botón de filtros */}
+      <div className="flex items-stretch gap-2">
+        <div className="relative min-w-0 flex-1">
+          <label htmlFor="directorio-input" className="sr-only">
+            Buscar comercios y emprendimientos del barrio por nombre, rubro, producto o calle
+          </label>
           <Search
-            className="pointer-events-none absolute left-4 h-5 w-5 text-carbon/60"
+            className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-carbon/60"
             strokeWidth={1.75}
             aria-hidden="true"
           />
           <input
-            id="buscador-guia-input"
+            id="directorio-input"
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Ej: café, veterinaria, cuero, empanadas, Alberdi..."
-            className="min-h-[52px] w-full rounded-[4px] border border-carbon bg-pampa-surface pl-12 pr-12 text-lg text-carbon placeholder:text-carbon/50 focus:border-chicago focus:outline-none"
+            placeholder="Comercio, rubro, producto o calle"
+            className="min-h-[48px] w-full rounded-[4px] border border-carbon bg-pampa pl-11 pr-11 text-base text-carbon placeholder:text-carbon/55 focus:border-chicago focus:outline-none"
           />
           {query.length > 0 && (
             <button
               type="button"
               onClick={() => setQuery('')}
-              aria-label="Limpiar texto de búsqueda"
-              className="absolute right-2 inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-carbon/70 hover:text-carbon"
+              aria-label="Borrar texto"
+              className="absolute right-0.5 top-1/2 inline-flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center text-carbon/70 hover:text-carbon"
             >
               <X className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
             </button>
           )}
         </div>
 
-        {/* Sugerencias rápidas de un toque */}
-        <div className="mt-3 flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 font-mono text-xs uppercase text-carbon/65">
-            Búsquedas frecuentes:
-          </span>
-          {QUICK_SUGGESTIONS.map((item) => {
-            const selected = normalizeText(query.trim()) === normalizeText(item);
+        <button
+          id="directorio-filtros-btn"
+          type="button"
+          aria-expanded={sheetOpen}
+          aria-controls="directorio-filtros"
+          onClick={() => setSheetOpen((value) => !value)}
+          className={`inline-flex min-h-[48px] shrink-0 items-center gap-2 rounded-[4px] border px-3.5 text-base font-semibold color-field ${
+            sheetOpen || sheetFilterCount > 0
+              ? 'border-carbon bg-carbon text-pampa'
+              : 'border-carbon bg-pampa text-carbon hover:bg-carbon hover:text-pampa'
+          }`}
+        >
+          <SlidersHorizontal className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+          <span>Filtros</span>
+          {sheetFilterCount > 0 && (
+            <span className="font-mono text-sm leading-none text-pampa/90">{sheetFilterCount}</span>
+          )}
+        </button>
+      </div>
+
+      {/* Fila 2: tipo + abierto ahora (una sola línea, con scroll horizontal si no entra) */}
+      <div className="mt-3 flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div
+          role="tablist"
+          aria-label="Tipo de resultado"
+          className="inline-flex shrink-0 divide-x divide-carbon/30 overflow-hidden rounded-[4px] border border-carbon"
+        >
+          {tabs.map((tab) => {
+            const selected = kind === tab.id;
             return (
               <button
-                key={item}
+                key={tab.id}
+                id={`directorio-tab-${tab.id}`}
                 type="button"
-                onClick={() => setQuery(selected ? '' : item)}
-                className={`inline-flex min-h-[36px] items-center rounded-[4px] border px-2.5 font-mono text-xs color-field ${
-                  selected
-                    ? 'border-chicago bg-chicago text-pampa'
-                    : 'border-carbon/25 bg-pampa-surface text-carbon hover:border-carbon'
+                role="tab"
+                aria-selected={selected}
+                onClick={() => setKind(tab.id)}
+                className={`inline-flex min-h-[44px] items-center gap-1.5 px-3 text-sm font-semibold color-field ${
+                  selected ? 'bg-carbon text-pampa' : 'bg-pampa text-carbon hover:bg-pampa-deep'
                 }`}
               >
-                {item}
+                {tab.label}
+                <span className={`font-mono text-xs ${selected ? 'text-pampa/80' : 'text-carbon/60'}`}>
+                  {tab.count}
+                </span>
               </button>
             );
           })}
         </div>
-      </div>
-
-      {/* 2. PESTAÑAS PRINCIPALES: TODOS · COMERCIOS · EMPRENDEDORES */}
-      <div
-        role="tablist"
-        aria-label="Tipo de guía"
-        className="mt-6 grid grid-cols-3 gap-2"
-      >
-        <button
-          id="tab-tipo-todos"
-          type="button"
-          role="tab"
-          aria-selected={kind === 'todos'}
-          onClick={() => setKind('todos')}
-          className={`flex min-h-[52px] flex-col items-center justify-center rounded-[4px] border px-2 py-2 text-center color-field sm:flex-row sm:gap-2 ${
-            kind === 'todos'
-              ? 'border-carbon bg-carbon font-semibold text-pampa'
-              : 'border-carbon/40 bg-pampa text-carbon hover:border-carbon'
-          }`}
-        >
-          <span className="text-sm sm:text-base">Todos</span>
-          <span
-            className={`font-mono text-xs ${
-              kind === 'todos' ? 'text-pampa/80' : 'text-chicago'
-            }`}
-          >
-            ({totalTodos})
-          </span>
-        </button>
 
         <button
-          id="tab-tipo-comercios"
           type="button"
-          role="tab"
-          aria-selected={kind === 'comercios'}
-          onClick={() => setKind('comercios')}
-          className={`flex min-h-[52px] flex-col items-center justify-center rounded-[4px] border px-2 py-2 text-center color-field sm:flex-row sm:gap-2 ${
-            kind === 'comercios'
-              ? 'border-carbon bg-carbon font-semibold text-pampa'
-              : 'border-carbon/40 bg-pampa text-carbon hover:border-carbon'
+          aria-pressed={openOnly}
+          onClick={() => setOpenOnly((value) => !value)}
+          className={`inline-flex min-h-[44px] shrink-0 items-center rounded-[4px] border px-3 text-sm font-semibold color-field ${
+            openOnly
+              ? 'border-chicago bg-chicago text-pampa'
+              : 'border-carbon bg-pampa text-carbon hover:bg-pampa-deep'
           }`}
         >
-          <span className="text-sm sm:text-base">Comercios</span>
-          <span
-            className={`font-mono text-xs ${
-              kind === 'comercios' ? 'text-pampa/80' : 'text-chicago'
-            }`}
-          >
-            ({totalComercios})
-          </span>
-        </button>
-
-        <button
-          id="tab-tipo-emprendedores"
-          type="button"
-          role="tab"
-          aria-selected={kind === 'emprendedores'}
-          onClick={() => setKind('emprendedores')}
-          className={`flex min-h-[52px] flex-col items-center justify-center rounded-[4px] border px-2 py-2 text-center color-field sm:flex-row sm:gap-2 ${
-            kind === 'emprendedores'
-              ? 'border-cuero bg-cuero font-semibold text-pampa'
-              : 'border-carbon/40 bg-pampa text-carbon hover:border-carbon'
-          }`}
-        >
-          <span className="text-sm sm:text-base">Emprendedores</span>
-          <span
-            className={`font-mono text-xs ${
-              kind === 'emprendedores' ? 'text-pampa/85' : 'text-cuero'
-            }`}
-          >
-            ({totalEmprendedores})
-          </span>
+          Abierto ahora
         </button>
       </div>
 
-      {/* 3. TIRA DE RUBROS / CATEGORÍAS */}
-      <div className="mt-4">
-        <p className="mb-2 font-mono text-xs uppercase tracking-wider text-carbon/70">
-          Filtrar por rubro o categoría
-        </p>
-        <div
-          role="group"
-          aria-label="Filtrar por categoría"
-          className="flex min-w-0 max-w-full items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          <button
-            type="button"
-            aria-pressed={category === null}
-            onClick={() => setCategory(null)}
-            className={`inline-flex min-h-[48px] shrink-0 items-center rounded-[4px] border px-4 text-base font-semibold color-field ${
-              category === null
-                ? 'border-carbon bg-carbon text-pampa'
-                : 'border-carbon/40 bg-pampa text-carbon hover:border-carbon'
-            }`}
-          >
-            Todos los rubros
-          </button>
-          {availableCategories.map((cat) => (
+      {/* Filtros activos (solo ocupa lugar si hay alguno) */}
+      {activeChips.length > 0 && (
+        <div className="mt-3 flex flex-wrap items-center gap-2" aria-label="Filtros activos">
+          {activeChips.map((chip) => (
             <button
-              key={cat}
+              key={chip.key}
               type="button"
-              aria-pressed={category === cat}
-              onClick={() => setCategory(category === cat ? null : cat)}
-              className={`inline-flex min-h-[48px] shrink-0 items-center rounded-[4px] border px-4 text-base font-semibold color-field ${
-                category === cat
-                  ? 'border-carbon bg-carbon text-pampa'
-                  : 'border-carbon/40 bg-pampa text-carbon hover:border-carbon'
-              }`}
+              onClick={chip.onRemove}
+              aria-label={`Quitar filtro ${chip.label}`}
+              className="inline-flex min-h-[40px] items-center gap-1.5 rounded-[4px] border border-chicago bg-pampa-surface px-2.5 font-mono text-xs font-semibold text-chicago hover:bg-chicago hover:text-pampa color-field"
             >
-              {cat}
+              {chip.label}
+              <X className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
             </button>
           ))}
         </div>
-      </div>
+      )}
 
-      {/* 4. CONTROLES DE FILTROS AVANZADOS (ZONA, MODALIDAD, ABIERTO AHORA) Y ORDENAMIENTO */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-y border-carbon/20 py-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            aria-expanded={showFiltersMobile}
-            onClick={() => setShowFiltersMobile((v) => !v)}
-            className={`inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border px-4 text-sm font-semibold color-field lg:hidden ${
-              showFiltersMobile || activeAdvancedCount > 0
-                ? 'border-carbon bg-carbon text-pampa'
-                : 'border-carbon/40 bg-pampa text-carbon'
-            }`}
+      {/* Panel de filtros: bottom sheet en mobile, panel en línea en desktop */}
+      {sheetOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[65] bg-carbon/60 lg:hidden"
+            aria-hidden="true"
+            onClick={() => setSheetOpen(false)}
+          />
+          <div
+            id="directorio-filtros"
+            role="dialog"
+            aria-label="Filtros del directorio"
+            className="fixed inset-x-0 bottom-0 z-[70] flex max-h-[85svh] flex-col border-t-2 border-carbon bg-pampa lg:static lg:z-auto lg:mt-3 lg:max-h-none lg:border lg:border-carbon/40"
           >
-            <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
-            <span>
-              Zona y modalidad{activeAdvancedCount > 0 ? ` (${activeAdvancedCount})` : ''}
-            </span>
-          </button>
+            <div className="flex items-center justify-between border-b border-carbon/20 px-4 py-2">
+              <p className="font-display text-2xl font-semibold uppercase">Filtros</p>
+              <button
+                type="button"
+                onClick={() => setSheetOpen(false)}
+                aria-label="Cerrar filtros"
+                className="inline-flex min-h-[48px] min-w-[48px] items-center justify-center"
+              >
+                <X className="h-5 w-5" strokeWidth={1.75} aria-hidden="true" />
+              </button>
+            </div>
 
-          <button
-            type="button"
-            aria-pressed={openOnly}
-            onClick={() => setOpenOnly((v) => !v)}
-            className={`inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border px-4 text-sm font-semibold color-field ${
-              openOnly
-                ? 'border-chicago bg-chicago text-pampa'
-                : 'border-carbon/40 bg-pampa text-carbon hover:border-carbon'
-            }`}
-          >
-            <span>● Abierto ahora</span>
-          </button>
-        </div>
+            <div className="grid gap-5 overflow-y-auto px-4 py-4 lg:grid-cols-3">
+              <div>
+                <p className="mb-2 font-mono text-xs uppercase tracking-wider text-carbon/75">Rubro</p>
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por rubro">
+                  <button
+                    type="button"
+                    aria-pressed={category === null}
+                    onClick={() => setCategory(null)}
+                    className={chipClass(category === null)}
+                  >
+                    Todos
+                  </button>
+                  {availableCategories.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      aria-pressed={category === cat}
+                      onClick={() => setCategory(category === cat ? null : cat)}
+                      className={chipClass(category === cat)}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 font-mono text-xs uppercase tracking-wider text-carbon/75">Zona</p>
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por zona">
+                  {ZONES.map((z) => (
+                    <button
+                      key={z.value}
+                      type="button"
+                      aria-pressed={zone === z.value}
+                      onClick={() => setZone(z.value)}
+                      className={chipClass(zone === z.value)}
+                    >
+                      {z.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 font-mono text-xs uppercase tracking-wider text-carbon/75">Modalidad</p>
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por modalidad">
+                  {MODALITIES.map((m) => (
+                    <button
+                      key={m.value}
+                      type="button"
+                      aria-pressed={modality === m.value}
+                      onClick={() => setModality(m.value)}
+                      className={chipClass(modality === m.value)}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 border-t border-carbon/20 bg-pampa px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={clearSheetFilters}
+                disabled={sheetFilterCount === 0}
+                className="inline-flex min-h-[48px] items-center px-2 font-semibold text-chicago underline underline-offset-4 disabled:text-carbon/40 disabled:no-underline"
+              >
+                Limpiar
+              </button>
+              <button
+                type="button"
+                onClick={() => setSheetOpen(false)}
+                className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-[4px] bg-chicago px-4 font-semibold text-pampa color-field hover:bg-chicago-dark"
+              >
+                Ver {entries.length} {entries.length === 1 ? 'resultado' : 'resultados'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Resultados + orden */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t border-carbon/20 pt-3">
+        <p className="font-mono text-sm text-carbon/80" role="status" aria-live="polite">
+          <span className="font-semibold text-carbon">{entries.length}</span>{' '}
+          {entries.length === 1 ? 'resultado' : 'resultados'}
+          {hasAnyFilter && (
+            <>
+              {' · '}
+              <button
+                type="button"
+                onClick={clearAll}
+                className="inline-flex min-h-[40px] items-center font-semibold text-chicago underline underline-offset-4"
+              >
+                Limpiar todo
+              </button>
+            </>
+          )}
+        </p>
 
         <div className="flex items-center gap-2">
           <label
-            htmlFor="ordenar-guia-select"
+            htmlFor="directorio-orden"
             className="font-mono text-xs uppercase tracking-wider text-carbon/75"
           >
-            Ordenar:
+            Orden
           </label>
           <select
-            id="ordenar-guia-select"
+            id="directorio-orden"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="min-h-[48px] rounded-[4px] border border-carbon/40 bg-pampa px-3 font-mono text-sm font-medium text-carbon focus:border-chicago focus:outline-none"
+            className="min-h-[44px] rounded-[4px] border border-carbon/40 bg-pampa px-2 font-mono text-sm font-medium text-carbon focus:border-chicago focus:outline-none"
           >
-            <option value="destacados">Destacados y Web Oficial</option>
+            <option value="destacados">Destacados</option>
             <option value="abiertos">Abiertos primero</option>
-            <option value="az">Nombre (A–Z)</option>
+            <option value="az">A–Z</option>
             <option value="rubro">Por rubro</option>
           </select>
         </div>
       </div>
 
-      {/* PANEL DESPLEGABLE EN MOBILE / SIEMPRE VISIBLE EN DESKTOP: ZONA Y MODALIDAD */}
-      <div
-        className={`${
-          showFiltersMobile ? 'block' : 'hidden'
-        } border-b border-carbon/20 bg-pampa py-4 px-4 lg:block`}
-      >
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div>
-            <p className="mb-2 font-mono text-xs uppercase tracking-wider text-carbon/75">
-              Zona o corredor del barrio
-            </p>
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por zona">
-              {ZONES.map((z) => (
-                <button
-                  key={z.value}
-                  type="button"
-                  aria-pressed={zone === z.value}
-                  onClick={() => setZone(z.value)}
-                  className={`inline-flex min-h-[44px] items-center rounded-[4px] border px-3 text-sm font-semibold color-field ${
-                    zone === z.value
-                      ? 'border-carbon bg-carbon text-pampa'
-                      : 'border-carbon/35 bg-pampa-surface text-carbon hover:border-carbon'
-                  }`}
-                >
-                  {z.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <p className="mb-2 font-mono text-xs uppercase tracking-wider text-carbon/75">
-              Modalidad de atención
-            </p>
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por modalidad">
-              {MODALITIES.map((m) => (
-                <button
-                  key={m.value}
-                  type="button"
-                  aria-pressed={modality === m.value}
-                  onClick={() => setModality(m.value)}
-                  className={`inline-flex min-h-[44px] items-center rounded-[4px] border px-3 text-sm font-semibold color-field ${
-                    modality === m.value
-                      ? 'border-carbon bg-carbon text-pampa'
-                      : 'border-carbon/35 bg-pampa-surface text-carbon hover:border-carbon'
-                  }`}
-                >
-                  {m.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. RESUMEN DE RESULTADOS Y LIMPIEZA DE FILTROS */}
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <p className="font-mono text-sm text-carbon/80" role="status" aria-live="polite">
-          Mostrando <span className="font-semibold text-carbon">{entries.length}</span>{' '}
-          {entries.length === 1 ? 'resultado' : 'resultados'}
-          {query.trim() ? ` para “${query.trim()}”` : ''}
-          {category ? ` en ${category}` : ''}
-          {zone !== 'todas' ? ` · ${zone}` : ''}
-        </p>
-
-        {hasAnyFilter && (
-          <button
-            type="button"
-            onClick={clearAll}
-            className="inline-flex min-h-[44px] items-center gap-1.5 font-mono text-sm font-semibold text-chicago underline underline-offset-4"
-          >
-            Limpiar filtros
-            <X className="h-4 w-4" strokeWidth={1.75} aria-hidden="true" />
-          </button>
-        )}
-      </div>
-
-      {/* 6. GRILLA DE RESULTADOS */}
+      {/* Grilla de resultados */}
       {entries.length === 0 ? (
-        <div className="mt-6 border border-carbon bg-pampa p-6 sm:p-8" role="status">
+        <div className="mt-5 border border-carbon bg-pampa p-6 sm:p-8" role="status">
           <p className="font-serif text-2xl font-semibold text-carbon">
-            No encontramos comercios ni emprendimientos con esos filtros
+            No encontramos nada con esos filtros
           </p>
           <p className="mt-2 max-w-xl text-base leading-relaxed text-carbon/80">
-            Probá buscando otro término, cambiando el corredor del barrio o desactivando el filtro &ldquo;Abierto ahora&rdquo;.
+            Probá con otra palabra, cambiá la zona o sacá el filtro &ldquo;Abierto ahora&rdquo;.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <button
@@ -847,26 +842,22 @@ export function DirectoryExplorer({
               onClick={clearAll}
               className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
             >
-              Ver toda la guía
+              Ver todo el directorio
             </button>
             <Link
               href="/sumate"
               className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-5 font-semibold text-carbon color-field hover:bg-carbon hover:text-pampa"
             >
-              ¿Sos comerciante o feriante? Sumate gratis
+              ¿Tenés un comercio o puesto? Sumate gratis
               <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
             </Link>
           </div>
         </div>
       ) : (
-        <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-5 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry) =>
             entry.kind === 'comercio' ? (
-              <BusinessDirectoryCard
-                key={entry.id}
-                business={entry.business}
-                open={entry.isOpen}
-              />
+              <BusinessDirectoryCard key={entry.id} business={entry.business} open={entry.isOpen} />
             ) : (
               <EmprendedorDirectoryCard key={entry.id} item={entry.emprendedor} />
             )

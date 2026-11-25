@@ -84,52 +84,6 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     photoId: 'corrales'
   },
   {
-    id: 'consejo-consultivo-c9-2026-11-25',
-    venueId: 'club-larrazabal',
-    venueName: 'Club Larrazábal',
-    title: 'Asamblea mensual del Consejo Consultivo de la Comuna 9',
-    description:
-      'Reunión mensual del Consejo Consultivo Comunal 9 (Ley 1777), abierta a vecinos de Liniers, Mataderos y Parque Avellaneda. Se presentan y votan informes de las comisiones de trabajo para elevar recomendaciones a la Junta Comunal. Se requiere DNI o constancia laboral con domicilio en la Comuna 9.',
-    category: 'Comunidad',
-    barrio: 'Liniers',
-    ambito: 'Comuna 9',
-    place: 'Club Larrazábal · Av. Larrazábal 829, Liniers',
-    mapsQuery: 'Club Larrazabal, Av. Larrazabal 829, Liniers, CABA, Argentina',
-    startsAt: '2026-11-25T18:00:00-03:00',
-    endsAt: '2026-11-25T20:30:00-03:00',
-    timeLabel: '18:00 hs',
-    priceLabel: 'Abierta con DNI o constancia en Comuna 9',
-    isFree: true,
-    highlightTag: 'Asamblea comunal',
-    source: {
-      label: 'Aquí Mataderos',
-      url: 'https://aquimataderosonline.com.ar/consejo-consultivo-de-la-comuna-9-convocatoria-a-la-asamblea-mensual-12/'
-    }
-  },
-  {
-    id: 'plan-manejo-parque-avellaneda-2026-11-27',
-    venueId: 'parque-avellaneda',
-    venueName: 'Parque Avellaneda · Casona de los Olivera',
-    title: 'Jornadas del Plan de Manejo: Diálogo Multilateral',
-    description:
-      'Primera instancia de las Jornadas de Planificación y Revisión del Plan de Manejo del Parque Avellaneda (vigente desde 2000), convocadas por la Mesa de Trabajo y Consenso (Ley 1153/03). Espacio de reflexión colectiva abierto a vecinos y usuarios del parque, sin inscripción previa.',
-    category: 'Comunidad',
-    barrio: 'Parque Avellaneda',
-    ambito: 'Comuna 9',
-    place: 'Casona de los Olivera, Parque Avellaneda · Av. Directorio y Lacarra',
-    mapsQuery: 'Casona de los Olivera, Parque Avellaneda, CABA, Argentina',
-    startsAt: '2026-11-27T18:30:00-03:00',
-    endsAt: '2026-11-27T21:00:00-03:00',
-    timeLabel: '18:30 hs',
-    priceLabel: 'Participación libre y abierta',
-    isFree: true,
-    highlightTag: 'Participación vecinal',
-    source: {
-      label: 'Aquí Mataderos',
-      url: 'https://aquimataderosonline.com.ar/revision-del-plan-de-manejo-de-parque-avellaneda/'
-    }
-  },
-  {
     id: 'milonga-el-plata-2026-11-27',
     venueId: 'el-plata',
     venueName: 'Cine Teatro El Plata',
@@ -153,52 +107,6 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     },
     relatedNotaSlug: 'que-hacer-este-finde-en-mataderos-noviembre-2026',
     photoId: 'elPlata'
-  },
-  {
-    id: 'plan-manejo-parque-avellaneda-2026-11-28',
-    venueId: 'parque-avellaneda',
-    venueName: 'Parque Avellaneda · Casona de los Olivera',
-    title: 'Jornadas del Plan de Manejo: Taller de Planificación',
-    description:
-      'Segunda jornada de actualización del Plan de Manejo del Parque Avellaneda, enfocada en el trabajo práctico de planificación sobre arbolado, patrimonio histórico y uso público libre. Convoca la Mesa de Trabajo y Consenso; no requiere inscripción previa.',
-    category: 'Comunidad',
-    barrio: 'Parque Avellaneda',
-    ambito: 'Comuna 9',
-    place: 'Casona de los Olivera, Parque Avellaneda · Av. Directorio y Lacarra',
-    mapsQuery: 'Casona de los Olivera, Parque Avellaneda, CABA, Argentina',
-    startsAt: '2026-11-28T10:00:00-03:00',
-    endsAt: '2026-11-28T16:00:00-03:00',
-    timeLabel: '10:00 a 16:00 hs',
-    priceLabel: 'Participación libre y abierta',
-    isFree: true,
-    highlightTag: 'Participación vecinal',
-    source: {
-      label: 'Aquí Mataderos',
-      url: 'https://aquimataderosonline.com.ar/revision-del-plan-de-manejo-de-parque-avellaneda/'
-    }
-  },
-  {
-    id: 'teatro-late-en-la-calle-2026-11-28',
-    venueId: 'parque-avellaneda',
-    venueName: 'Parque Avellaneda · Playón del Antiguo Tambo',
-    title: 'El Teatro Late en la Calle (Jornada 1)',
-    description:
-      'Encuentro de grupos de teatro callejero organizado por la agrupación De La Calle en Chacra de los Remedios. Grilla del sábado: 16 h La Tramoya (Santa Fe), 17 h Actuación en Espacios Abiertos EMAD, 18 h Comediantes de la Legua, 19 h Caracú y 21 h La Runfla. Al aire libre; se suspende por lluvia.',
-    category: 'Cultura',
-    barrio: 'Parque Avellaneda',
-    ambito: 'Comuna 9',
-    place: 'Playón del Antiguo Tambo, Chacra de los Remedios · Av. Directorio y Lacarra',
-    mapsQuery: 'Antiguo Tambo, Parque Avellaneda, Av. Directorio y Lacarra, CABA, Argentina',
-    startsAt: '2026-11-28T16:00:00-03:00',
-    endsAt: '2026-11-28T22:30:00-03:00',
-    timeLabel: 'Desde las 16:00 hs',
-    priceLabel: 'Entrada libre y gratuita',
-    isFree: true,
-    highlightTag: 'Teatro callejero',
-    source: {
-      label: 'Aquí Mataderos',
-      url: 'https://aquimataderosonline.com.ar/chacra-de-los-remedios-programacion-noviembre-2026/'
-    }
   },
   {
     id: 'paraiso-el-plata-2026-11-28',
@@ -275,29 +183,6 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     },
     relatedNotaSlug: 'que-hacer-este-finde-en-mataderos-noviembre-2026',
     photoId: 'baile'
-  },
-  {
-    id: 'teatro-late-en-la-calle-2026-11-29',
-    venueId: 'parque-avellaneda',
-    venueName: 'Parque Avellaneda · Playón del Antiguo Tambo',
-    title: 'El Teatro Late en la Calle (Jornada 2)',
-    description:
-      'Segunda jornada del encuentro de teatro callejero en Chacra de los Remedios. Grilla del domingo: 16 h Compañía Errabunda, 17 h Actuación en Espacios Abiertos EMAD, 18 h Palo Zanco, 19 h Máscara De Moño (Santa Fe), 20 h TXM Teatro Callejero por Mujeres y 21 h Malón Fuego. Se suspende por lluvia.',
-    category: 'Cultura',
-    barrio: 'Parque Avellaneda',
-    ambito: 'Comuna 9',
-    place: 'Playón del Antiguo Tambo, Chacra de los Remedios · Av. Directorio y Lacarra',
-    mapsQuery: 'Antiguo Tambo, Parque Avellaneda, Av. Directorio y Lacarra, CABA, Argentina',
-    startsAt: '2026-11-29T16:00:00-03:00',
-    endsAt: '2026-11-29T22:30:00-03:00',
-    timeLabel: 'Desde las 16:00 hs',
-    priceLabel: 'Entrada libre y gratuita',
-    isFree: true,
-    highlightTag: 'Teatro callejero',
-    source: {
-      label: 'Aquí Mataderos',
-      url: 'https://aquimataderosonline.com.ar/chacra-de-los-remedios-programacion-noviembre-2026/'
-    }
   },
   {
     id: 'paraiso-el-plata-2026-11-29',
@@ -543,13 +428,5 @@ export const AGENDA_SPOTS: AgendaSpotGroup[] = [
     barrioNote: 'Mataderos',
     ambito: 'Mataderos',
     match: (item) => item.venueId === 'macedonio'
-  },
-  {
-    id: 'comuna-9',
-    label: 'Comuna 9',
-    kicker: 'Fuera de Mataderos · Liniers y Parque Avellaneda',
-    barrioNote: 'Comuna 9 · Liniers y Parque Avellaneda',
-    ambito: 'Comuna 9',
-    match: (item) => item.ambito === 'Comuna 9'
   }
 ];

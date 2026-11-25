@@ -24,7 +24,7 @@ import {
   Ticket,
   X
 } from 'lucide-react';
-import type { AgendaItem, EventAmbito } from '@/lib/agenda-data';
+import type { AgendaItem } from '@/lib/agenda-data';
 import {
   BA_TZ,
   agendaStatus,
@@ -37,8 +37,6 @@ import {
   type AgendaStatus
 } from '@/lib/agenda';
 import { ElPlataInstagramLink } from '@/components/ElPlataInstagramLink';
-
-export type AmbitoFilter = 'all' | EventAmbito;
 
 interface ResolvedAgendaItem {
   item: AgendaItem;
@@ -205,7 +203,6 @@ const chipBase =
 
 function AgendaRow({ entry, onOpen }: { entry: ResolvedAgendaItem; onOpen: (id: string) => void }) {
   const { item, startTs, status } = entry;
-  const isComuna9 = item.ambito === 'Comuna 9';
 
   return (
     <li>
@@ -242,7 +239,6 @@ function AgendaRow({ entry, onOpen }: { entry: ResolvedAgendaItem; onOpen: (id: 
             )}
             {status === 'past' && <span className={`${chipBase} border-carbon/30 text-carbon/65`}>Finalizado</span>}
             {item.isFree && <span className={`${chipBase} border-chicago text-chicago`}>Gratis</span>}
-            {isComuna9 && <span className={`${chipBase} border-cuero/60 bg-pampa-deep text-cuero`}>{item.barrio}</span>}
           </span>
         </span>
 
@@ -260,7 +256,6 @@ function EventDetail({ entry, onClose }: { entry: ResolvedAgendaItem; onClose: (
   const { item, startTs, endTs, status } = entry;
   const [canShare, setCanShare] = useState(false);
   const isSingleSource = Boolean(item.source?.note);
-  const isComuna9 = item.ambito === 'Comuna 9';
   const titleId = `agenda-detail-${item.id}`;
 
   useEffect(() => {
@@ -293,7 +288,7 @@ function EventDetail({ entry, onClose }: { entry: ResolvedAgendaItem; onClose: (
             <span className="text-carbon/35" aria-hidden="true">
               ·
             </span>
-            <span className={isComuna9 ? 'font-semibold text-cuero' : 'text-carbon/75'}>{item.barrio}</span>
+            <span className="text-carbon/75">{item.barrio}</span>
             {status === 'in-progress' && <span className={`${chipBase} border-chicago bg-chicago/10 text-chicago`}>En curso</span>}
             {status === 'past' && <span className={`${chipBase} border-carbon/30 text-carbon/65`}>Finalizado</span>}
           </div>
@@ -415,15 +410,12 @@ const selectClass =
 
 export function AgendaExplorer({
   items,
-  serverNow,
-  initialAmbito = 'all'
+  serverNow
 }: {
   items: AgendaItem[];
   serverNow: number;
-  initialAmbito?: AmbitoFilter;
 }) {
   const [now, setNow] = useState<number>(serverNow);
-  const [ambitoFilter, setAmbitoFilter] = useState<AmbitoFilter>(initialAmbito);
   const [query, setQuery] = useState('');
   const [venueFilter, setVenueFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
@@ -504,16 +496,10 @@ export function AgendaExplorer({
     [resolvedAll, showPast, allEnded]
   );
 
-  const scopeCounts = useMemo(() => {
-    const mataderos = visibleByTime.filter((e) => e.item.ambito === 'Mataderos').length;
-    const comuna9 = visibleByTime.filter((e) => e.item.ambito === 'Comuna 9').length;
-    return { all: visibleByTime.length, mataderos, comuna9 };
-  }, [visibleByTime]);
-
-  const venueOptions = useMemo(() => {
-    const scoped = items.filter((item) => ambitoFilter === 'all' || item.ambito === ambitoFilter);
-    return Array.from(new Set(scoped.map((item) => item.venueName)));
-  }, [items, ambitoFilter]);
+  const venueOptions = useMemo(
+    () => Array.from(new Set(items.map((item) => item.venueName))),
+    [items]
+  );
 
   const categoryOptions = useMemo(
     () => Array.from(new Set(items.map((item) => item.category))),
@@ -523,7 +509,6 @@ export function AgendaExplorer({
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return visibleByTime.filter(({ item }) => {
-      if (ambitoFilter !== 'all' && item.ambito !== ambitoFilter) return false;
       if (venueFilter !== 'all' && item.venueName !== venueFilter) return false;
       if (categoryFilter !== 'all' && item.category !== categoryFilter) return false;
       if (freeOnly && !item.isFree) return false;
@@ -539,7 +524,7 @@ export function AgendaExplorer({
         (item.source?.label.toLowerCase().includes(q) ?? false)
       );
     });
-  }, [visibleByTime, ambitoFilter, venueFilter, categoryFilter, freeOnly, query]);
+  }, [visibleByTime, venueFilter, categoryFilter, freeOnly, query]);
 
   /* "En curso" arriba; el resto agrupado por día calendario de Buenos Aires. */
   const groups = useMemo<DayGroup[]>(() => {
@@ -571,13 +556,11 @@ export function AgendaExplorer({
 
   const sheetFilterCount =
     (venueFilter !== 'all' ? 1 : 0) +
-    (categoryFilter !== 'all' ? 1 : 0) +
     (showPast && !allEnded ? 1 : 0) +
     (sortOrder === 'desc' ? 1 : 0);
 
   const hasFilters =
     query.trim().length > 0 ||
-    ambitoFilter !== 'all' ||
     venueFilter !== 'all' ||
     categoryFilter !== 'all' ||
     freeOnly ||
@@ -586,7 +569,6 @@ export function AgendaExplorer({
 
   const clearAll = () => {
     setQuery('');
-    setAmbitoFilter('all');
     setVenueFilter('all');
     setCategoryFilter('all');
     setFreeOnly(false);
@@ -595,12 +577,6 @@ export function AgendaExplorer({
   };
 
   const openEntry = openId ? resolvedAll.find((entry) => entry.item.id === openId) ?? null : null;
-
-  const scopeOptions: { id: AmbitoFilter; label: string; count: number }[] = [
-    { id: 'all', label: 'Todo', count: scopeCounts.all },
-    { id: 'Mataderos', label: 'Mataderos', count: scopeCounts.mataderos },
-    { id: 'Comuna 9', label: 'Liniers y Avellaneda', count: scopeCounts.comuna9 }
-  ];
 
   const chipButton = (active: boolean) =>
     `inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-[4px] border px-3.5 text-sm font-semibold color-field ${
@@ -655,25 +631,19 @@ export function AgendaExplorer({
         <div
           className="-mx-[var(--gutter)] flex gap-2 overflow-x-auto px-[var(--gutter)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
-          aria-label="Filtrar por territorio"
+          aria-label="Filtrar por categoría o entrada"
         >
-          {scopeOptions.map((option) => {
-            const active = ambitoFilter === option.id;
+          {['all', ...categoryOptions].map((cat) => {
+            const active = categoryFilter === cat;
             return (
               <button
-                key={option.id}
+                key={cat}
                 type="button"
                 aria-pressed={active}
-                onClick={() => {
-                  setAmbitoFilter(option.id);
-                  setVenueFilter('all');
-                }}
+                onClick={() => setCategoryFilter(cat)}
                 className={chipButton(active)}
               >
-                {option.label}
-                <span className={`font-mono text-xs font-normal ${active ? 'text-pampa/75' : 'text-carbon/60'}`}>
-                  {option.count}
-                </span>
+                {cat === 'all' ? 'Todo' : cat}
               </button>
             );
           })}

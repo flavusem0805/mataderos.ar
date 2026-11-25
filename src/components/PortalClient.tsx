@@ -246,10 +246,9 @@ function TopRail({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; server
             ? `En curso · ${item.dateBadge}`
             : 'En curso'
           : `${formatBaShortDate(startTs)} · ${formatBaTime(startTs)} hs`;
-      const barrioSuffix = item.ambito === 'Comuna 9' ? ` (${item.barrio} · Comuna 9)` : '';
       return {
         href: `/agenda#${item.id}`,
-        label: `${item.title}${barrioSuffix} · ${when}`
+        label: `${item.title} · ${when}`
       };
     });
   }, [agendaItems, now]);
@@ -778,7 +777,6 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
 
   const { spot, items: spotItems, featured, featuredStatus, featuredStartTs } = currentSpot;
   const spotPhoto = spot.photoId ? FOTOS[spot.photoId] : undefined;
-  const isComuna9Spot = spot.ambito === 'Comuna 9';
 
   return (
     <section
@@ -821,7 +819,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
           <div>
             <div
               role="tablist"
-              aria-label="Espacios y ciclos de Mataderos y Comuna 9"
+              aria-label="Espacios y ciclos de Mataderos"
               className="flex flex-wrap gap-2"
             >
               {spotsData.map((entry) => {
@@ -859,14 +857,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                       >
                         · Próximo
                       </span>
-                    ) : entry.spot.ambito === 'Comuna 9' ? (
-                      <span
-                        className={`font-mono text-xs uppercase ${
-                          selected ? 'text-pampa/80' : 'text-cuero'
-                        }`}
-                      >
-                        · Liniers y P. Avellaneda
-                      </span>
+
                     ) : null}
                   </button>
                 );
@@ -900,9 +891,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                 </figure>
               ) : (
                 <div
-                  className={`flex flex-col justify-between border-b border-carbon/20 p-6 text-pampa sm:p-8 lg:col-span-5 lg:min-h-[320px] lg:border-b-0 lg:border-r ${
-                    isComuna9Spot ? 'bg-cuero' : 'bg-chicago-dark'
-                  }`}
+                  className="flex flex-col justify-between border-b border-carbon/20 bg-chicago-dark p-6 text-pampa sm:p-8 lg:col-span-5 lg:min-h-[320px] lg:border-b-0 lg:border-r" 
                 >
                   <div>
                     <p className="font-mono text-xs uppercase tracking-wider text-pampa/80">
@@ -924,8 +913,8 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
               <div className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-7">
                 <div>
                   <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs uppercase tracking-wide">
-                    <span className={isComuna9Spot ? 'font-semibold text-cuero' : 'font-semibold text-chicago'}>
-                      {isComuna9Spot ? 'Fuera de Mataderos · Comuna 9' : featured.highlightTag}
+                    <span className="font-semibold text-chicago">
+                      {featured.highlightTag}
                     </span>
                     <span className="text-carbon/40" aria-hidden="true">
                       ·
@@ -991,9 +980,6 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                                 </span>
                                 {' — '}
                                 <span className="font-semibold text-carbon">{item.title}</span>
-                                {item.ambito === 'Comuna 9' && (
-                                  <span className="ml-1.5 font-mono text-xs text-cuero">({item.barrio})</span>
-                                )}
                                 {item.source?.note && (
                                   <span className="ml-1.5 font-mono text-xs text-ladrillo">· Fuente única (X)</span>
                                 )}
@@ -1037,14 +1023,6 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                       Fuente: {featured.source.label}
                     </a>
                   )}
-                  {isComuna9Spot && (
-                    <Link
-                      href="/agenda?ambito=comuna-9"
-                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-cuero px-4 font-semibold text-cuero hover:bg-cuero hover:text-pampa color-field"
-                    >
-                      Ver Comuna 9 en /agenda
-                    </Link>
-                  )}
                   {spot.id === 'el-plata' && <ElPlataInstagramLink />}
                 </div>
               </div>
@@ -1056,7 +1034,6 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
               const { startTs } = agendaTimestamps(item);
               const status = agendaStatus(item, now);
               const dm = formatBaDayMonth(startTs);
-              const isComuna9 = item.ambito === 'Comuna 9';
 
               return (
                 <article
@@ -1092,13 +1069,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                       <span className="text-carbon/40" aria-hidden="true">
                         ·
                       </span>
-                      {isComuna9 ? (
-                        <span className="border border-cuero/60 bg-pampa-deep px-2 py-0.5 font-semibold text-cuero">
-                          Comuna 9 · {item.barrio}
-                        </span>
-                      ) : (
-                        <span className="text-carbon/75">{item.barrio}</span>
-                      )}
+                      <span className="text-carbon/75">{item.barrio}</span>
                       <span className="text-carbon/40" aria-hidden="true">
                         ·
                       </span>

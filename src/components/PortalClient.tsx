@@ -107,7 +107,8 @@ function PhotoFill({
   alt,
   sizes,
   priority = false,
-  reference = false
+  reference = false,
+  objectPosition
 }: {
   src: string;
   alt: string;

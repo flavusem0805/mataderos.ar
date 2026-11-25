@@ -90,7 +90,7 @@ export const FOTOS = {
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Monumento_ecuestre_El_Gaucho_Resero_01.JPG',
     changes: 'Copia reducida para la web.',
-    objectPosition: 'object-[50%_12%]'
+    objectPosition: '50% 10%'
   }
 } as const satisfies Record<string, Foto>;
 

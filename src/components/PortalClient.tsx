@@ -124,7 +124,8 @@ function PhotoFill({
         fill
         sizes={sizes}
         priority={priority}
-        className={`object-cover ${objectPosition ?? 'object-center'}`}
+        className="object-cover"
+        style={{ objectPosition: objectPosition ?? 'center' }}
       />
       {reference && (
         <span

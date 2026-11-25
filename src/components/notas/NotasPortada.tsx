@@ -111,7 +111,8 @@ function FiguraCard({
         fill
         priority={priority}
         sizes={sizes}
-        className={`object-cover ${foto.objectPosition ?? 'object-center'}`}
+        className="object-cover"
+        style={{ objectPosition: foto.objectPosition ?? 'center' }}
       />
     </span>
   );

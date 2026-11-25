@@ -64,7 +64,7 @@ export const PATRIMONIO: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'La ficha nacional del monumento describe un edificio italianizante, exento, en la confluencia de dos avenidas. La planta en U abraza la plazoleta. Una calle adoquinada la circunda. La torre central, con reloj de origen inglés y mirador, se ve de lejos y funciona como hito del barrio. En la fachada del cuerpo principal, grandes pilares reciben los arcos de medio punto de las galerías. Dos alas más bajas convergen en un espacio central con recovas. Eso es “La Recova” en el habla del domingo: no un mercado colonial de postal, sino las galerías de la administración de los mataderos.'
+        text: 'La ficha nacional del monumento describe un edificio italianizante, exento, en la confluencia de dos avenidas. La planta en U abraza la plazoleta. Una calle adoquinada la circunda. La torre central, de unos veinte metros, con mirador y un reloj monumental francés de la firma Prost Frères (aunque la vieja ficha nacional lo anotaba como de origen inglés), se ve de lejos y funciona como hito del barrio. En la fachada del cuerpo principal, grandes pilares reciben los arcos de medio punto de las galerías. Dos alas más bajas convergen en un espacio central con recovas. Eso es “La Recova” en el habla del domingo: no un mercado colonial de postal, sino las galerías de la administración de los mataderos.'
       },
       {
         kind: 'p',
@@ -104,7 +104,7 @@ export const PATRIMONIO: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'La Ciudad, además, viene anunciando obras de conservación de fachada: limpieza, recuperación de terminaciones, revoques, herrería, color y luminarias en las recovas norte y sur y en el cuerpo principal. Son trabajos de mantenimiento de un monumento vivo, no una reconstrucción de cero. El casco se usa. El museo abre. La feria apoya puestos en el espacio público regulado. Esa superposición es el patrimonio real de Mataderos, más interesante que una fachada vacía.'
+        text: 'La Ciudad, además, encara en 2026 [obras de restauración en el casco histórico](/notas/obras-la-recova-y-el-resero-noviembre-2026): limpieza, recuperación de terminaciones, puertas y postigos, herrería, pintura a la cal e iluminación en las recovas norte y sur y en el cuerpo principal, junto con la puesta en marcha del reloj monumental y la restauración de El Resero a cargo del MOA. Son trabajos de conservación de un monumento vivo, no una reconstrucción de cero. El casco se usa. El museo abre. La feria apoya puestos en el espacio público regulado. Esa superposición es el patrimonio real de Mataderos, más interesante que una fachada vacía.'
       },
       {
         kind: 'p',
@@ -132,7 +132,7 @@ export const PATRIMONIO: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'El cuarto error es de plano. El casco protegido no es todo Mataderos. Alberdi, Emilio Castro y la cancha tienen su vida y no entran en el polígono del APH 21. Ampliar la palabra “casco” hasta la General Paz vacía la declaratoria. Achicarla a una sola fachada esconde las alas, la plazoleta y el monumento, que la ley nombra juntos. Con esas cuatro correcciones, la esquina se puede mirar sin un guía y sin una leyenda de más. Y si hace falta una quinta: el reloj de la torre es de origen inglés según la ficha nacional, pero la hora que importa para la visita es la de la feria, no la de la maquinaria. Mirá el edificio. Confirmá el domingo en las páginas de la Ciudad.'
+        text: 'El cuarto error es de plano. El casco protegido no es todo Mataderos. Alberdi, Emilio Castro y la cancha tienen su vida y no entran en el polígono del APH 21. Ampliar la palabra “casco” hasta la General Paz vacía la declaratoria. Achicarla a una sola fachada esconde las alas, la plazoleta y el monumento, que la ley nombra juntos. Con esas cuatro correcciones, la esquina se puede mirar sin un guía y sin una leyenda de más. Y si hace falta una quinta: aunque la vieja ficha nacional anotaba un reloj "de origen inglés", la restauración de 2026 documentó que la máquina de la torre es francesa, de la firma Prost Frères de Morez, y volvió a marcar la hora con campanadas a la hora y a la media.'
       }
     ]
   },
@@ -143,7 +143,7 @@ export const PATRIMONIO: Nota[] = [
     title: 'La Recova de Mataderos: la antigua administración del mercado',
     description:
       'Qué es La Recova de Mataderos, cuándo se construyó la antigua administración y por qué es Monumento Histórico Nacional desde 1979.',
-    dek: 'La Recova no es un mercado aparte. Es la galería de la antigua administración: arcos, alas y una torre con reloj inglés.',
+    dek: 'La Recova no es un mercado aparte. Es la galería de la antigua administración: arcos, alas y una torre con reloj monumental francés.',
     category: 'Arquitectura',
     publishedAt: '2026-05-28',
     image: 'frente',
@@ -154,7 +154,8 @@ export const PATRIMONIO: Nota[] = [
         { label: 'Dónde', value: 'Lisandro de la Torre y Av. de los Corrales' },
         { label: 'Estilo', value: 'Italianizante, planta en U' },
         { label: 'Inauguración del establecimiento', value: '21 de marzo de 1900' },
-        { label: 'Declaratoria', value: 'Decreto 1021/1979, Monumento Histórico Nacional' }
+        { label: 'Declaratoria', value: 'Decreto 1021/1979, Monumento Histórico Nacional' },
+        { label: 'Reloj de la torre', value: 'Prost Frères (Morez, Francia), puesto nuevamente en marcha en 2026' }
       ]
     },
     fuentes: [
@@ -174,6 +175,11 @@ export const PATRIMONIO: Nota[] = [
         publisher: 'Aquí Mataderos'
       },
       {
+        title: 'Puesta en Valor del Casco histórico de Mataderos: el Reloj de la Torre',
+        url: 'https://aquimataderosonline.com.ar/puesta-en-valor-del-casco-historico-de-mataderos-el-reloj-de-la-torre/',
+        publisher: 'Aquí Mataderos'
+      },
+      {
         title: 'Ley 3685 — APH 21',
         url: 'https://boletinoficial.buenosaires.gob.ar/normativaba/norma/165471',
         publisher: 'Boletín Oficial de la Ciudad de Buenos Aires'
@@ -190,7 +196,7 @@ export const PATRIMONIO: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'La ficha de la Nación lo describe como un edificio italianizante, separado de las construcciones vecinas. Está en la confluencia de dos avenidas. La planta en U abraza una plazoleta adoquinada, que es donde está El Resero. La torre central tiene un reloj de origen inglés y un mirador: es la señal que se ve desde varias cuadras. Los pilares de la fachada principal reciben arcos de medio punto. Dos alas más bajas se encuentran en el centro con recovas. “Recova”, en el uso porteño, es esa galería cubierta. En Mataderos el apodo se comió al nombre administrativo.'
+        text: 'La ficha de la Nación lo describe como un edificio italianizante, separado de las construcciones vecinas. Está en la confluencia de dos avenidas. La planta en U abraza una plazoleta adoquinada, que es donde está El Resero. La torre central, de unos veinte metros, tiene un mirador y un reloj monumental que la vieja ficha nacional anotó como de origen inglés, pero cuya restauración oficial confirmó como una pieza francesa de la firma Prost Frères (Morez, Francia), de hora y media con medio carrillón y campana timbre: es la señal que se ve y se oye desde varias cuadras. Los pilares de la fachada principal reciben arcos de medio punto. Dos alas más bajas se encuentran en el centro con recovas. “Recova”, en el uso porteño, es esa galería cubierta. En Mataderos el apodo se comió al nombre administrativo.'
       },
       {
         kind: 'p',
@@ -218,7 +224,7 @@ export const PATRIMONIO: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'La torre tiene foto propia de Roberto Fiadone, tomada en noviembre de 2007 desde la avenida de los Corrales hacia el noreste. Sirve para reconocer el hito antes de bajar del colectivo. Si la buscás y no aparece, todavía no llegaste al cruce: en Mataderos hay otras torres, pero ninguna con ese reloj y esa plazoleta delante.'
+        text: 'La torre tiene foto propia de Roberto Fiadone, tomada en noviembre de 2007 desde la avenida de los Corrales hacia el noreste. Sirve para reconocer el hito antes de bajar del colectivo. En 2026 el reloj centenario volvió a ponerse en marcha tras ser restaurado por Guillermo del Valle, como parte de las [obras de recuperación del casco histórico](/notas/obras-la-recova-y-el-resero-noviembre-2026). Si buscás la torre y no aparece, todavía no llegaste al cruce: en Mataderos hay otras torres, pero ninguna con ese reloj y esa plazoleta delante.'
       }
     ]
   },
@@ -253,6 +259,11 @@ export const PATRIMONIO: Nota[] = [
       {
         title: 'Historias de mi Comuna: Monumento El Resero',
         url: 'https://buenosaires.gob.ar/gcaba_historico/noticias/historias-de-mi-comuna-monumento-el-resero',
+        publisher: 'Gobierno de la Ciudad de Buenos Aires'
+      },
+      {
+        title: 'Casco histórico de Mataderos',
+        url: 'https://buenosaires.gob.ar/gcaba_historico/casco-historico-de-mataderos',
         publisher: 'Gobierno de la Ciudad de Buenos Aires'
       },
       {
@@ -305,7 +316,7 @@ export const PATRIMONIO: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'El Decreto 769, del 14 de noviembre de 2019, la declaró bien de interés histórico nacional y bien de interés artístico nacional, dentro de un listado grande de esculturas del espacio público. El edificio de atrás ya era monumento desde el Decreto 1021 de 1979. Juntos forman el centro simbólico del casco. Un domingo de [feria](/notas/feria-de-mataderos) el monumento queda en medio del público: se puede llegar, no siempre se puede fotografiar entero. Entre semana la plazoleta devuelve la escala real, que es la de un hombre a caballo y no la de un escenario.'
+        text: 'El Decreto 769, del 14 de noviembre de 2019, la declaró bien de interés histórico nacional y bien de interés artístico nacional, dentro de un listado grande de esculturas del espacio público. En 2026 la escultura y su base de granito entraron en un proceso de [restauración integral](/notas/obras-la-recova-y-el-resero-noviembre-2026) supervisado por especialistas del MOA (Monumentos y Obras de Arte), con fotogrametría previa, limpieza mecánica y química, retiro de vegetación invasiva, recuperación de pátinas y protección contra la corrosión. El edificio de atrás ya era monumento desde el Decreto 1021 de 1979. Juntos forman el centro simbólico del casco. Un domingo de [feria](/notas/feria-de-mataderos) el monumento queda en medio del público; entre semana la plazoleta devuelve la escala real de un hombre a caballo.'
       }
     ]
   },
@@ -473,7 +484,7 @@ export const PATRIMONIO: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'La Ciudad informa obras de conservación: limpieza, terminaciones originales, ornamentación, carpintería, herrería, color y luminarias en las recovas norte y sur y en el cuerpo principal. Son intervenciones de mantenimiento sobre un monumento que sigue abierto al museo y al domingo. No son una peatonal nueva ni un shopping patrimonial. Si visitás durante una obra, parte de la fachada puede estar en andamio. El conjunto se entiende igual.'
+        text: 'La Ciudad informa además [obras de recuperación en el casco](/notas/obras-la-recova-y-el-resero-noviembre-2026): una etapa ya concluida sobre 14.800 m² en la avenida de los Corrales y la plazoleta —con 856 m² de nueva superficie verde en el bulevar, farolas, bancos, árboles, veredas y recuperación del adoquinado—, la puesta en marcha del reloj francés Prost Frères de la torre y la continuidad de los trabajos en las recovas norte y sur, el cuerpo principal y El Resero. Son intervenciones sobre un monumento que sigue abierto al museo y al domingo. Si visitás durante la obra, parte de la fachada puede estar en andamio, pero el conjunto se entiende igual.'
       },
       {
         kind: 'h2',

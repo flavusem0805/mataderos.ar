@@ -341,43 +341,48 @@ export const ACTUALIDAD: Nota[] = [
     slug: 'obras-la-recova-y-el-resero-noviembre-2026',
     type: 'actualidad',
     pillarSlug: 'patrimonio-de-mataderos',
-    title: 'Cómo van las obras de La Recova y El Resero: estado de la restauración en el casco histórico',
+    title: 'Obras en La Recova y El Resero: volvió a funcionar el reloj de la torre y avanza la restauración del casco histórico',
     description:
-      'Actualización de obra en el casco histórico de Mataderos a noviembre de 2026: etapa terminada en Av. de los Corrales, avance de fachadas en La Recova, reloj francés de la torre, hallazgos en El Resero y el predio pendiente detrás.',
-    dek: 'La primera etapa sobre la avenida de los Corrales y la plazoleta ya terminó; la segunda —fachadas de La Recova, reloj francés de la torre y restauración de El Resero— sigue en obra en noviembre sin fecha oficial de inauguración.',
+      'Actualización de obra en el casco histórico de Mataderos a noviembre de 2026: puesta en marcha del reloj francés Prost Frères, 14.800 m² renovados en Av. de los Corrales, avance en fachadas de La Recova, hallazgos en El Resero y el predio pendiente detrás.',
+    dek: 'El reloj francés Prost Frères de la torre ya volvió a ponerse en marcha tras más de una década detenido y la renovación de Av. de los Corrales y la plazoleta quedó terminada; continúan las tareas sobre las fachadas de La Recova y el monumento a El Resero.',
     category: 'Patrimonio',
-    publishedAt: '2026-11-24',
+    publishedAt: '2026-11-25',
     image: 'resero',
     datos: {
       title: 'Estado de la obra (noviembre 2026)',
       rows: [
         {
           label: 'Etapa 1 (terminada)',
-          value: 'Corredor verde de Av. de los Corrales y Plazoleta El Resero: 44 farolas, 16 bancos, 17 árboles, veredas, readoquinado y bolardos'
+          value: 'Av. de los Corrales y Plazoleta El Resero: 14.800 m² intervenidos, 856 m² de nuevo verde en bulevar, farolas, bancos, árboles, veredas y adoquinado'
+        },
+        {
+          label: 'Reloj monumental (en marcha)',
+          value: 'Pieza francesa Prost Frères (Morez) en la torre de 20 m: restaurado por Guillermo del Valle, con campanadas a la hora y media hora y cuerda semanal'
         },
         {
           label: 'Etapa 2 (en ejecución)',
-          value: 'Fachadas de La Recova (edificio central y recovas norte y sur), reloj de la torre y Monumento El Resero'
+          value: 'Fachadas de La Recova, puertas, postigos, iluminación en fachada e interior de las recovas norte y sur, y Monumento El Resero'
         },
         {
           label: 'Organismo y contratista',
-          value: 'Dirección General de Regeneración Urbana (GCBA) · Adjudicataria: OSP SA'
+          value: 'Ministerio de Espacio Público e Higiene Urbana / DG Regeneración Urbana (GCBA) · Adjudicataria: OSP SA'
         },
         {
           label: 'Supervisión escultórica',
-          value: 'Taller MOA (Monumentos y Obras de Arte) sobre El Resero'
+          value: 'Equipo del MOA (Monumentos y Obras de Arte) sobre El Resero'
         },
         {
           label: 'Color definido',
           value: 'Rosa y blanco desaturado con pintura a la cal (avalado por la Comisión Nacional de Monumentos)'
-        },
-        {
-          label: 'Últimas recorridas',
-          value: '4/11 (recorrida abierta con inscripción) y visita oficial difundida el 9/11 con Ignacio Baistrocchi y Maximiliano Mosquera Fantoni'
         }
       ]
     },
     fuentes: [
+      {
+        title: 'Casco histórico de Mataderos',
+        url: 'https://buenosaires.gob.ar/gcaba_historico/casco-historico-de-mataderos',
+        publisher: 'Gobierno de la Ciudad de Buenos Aires'
+      },
       {
         title: 'Trabajos de restauración de la Recova y el Monumento El Resero',
         url: 'https://aquimataderosonline.com.ar/trabajos-de-restauracion-de-la-recova-y-el-monumento-el-resero/',
@@ -417,55 +422,63 @@ export const ACTUALIDAD: Nota[] = [
     blocks: [
       {
         kind: 'p',
-        text: 'Quien pasa estos días por Lisandro de la Torre y avenida de los Corrales sigue viendo movimiento de restauración sobre el frente histórico del barrio. Esta nota no repite la ficha patrimonial de [La Recova](/notas/la-recova-de-mataderos) ni la historia de [El Resero](/notas/el-resero-de-mataderos) —ambas están reunidas en nuestra guía de [patrimonio de Mataderos](/notas/patrimonio-de-mataderos)—, sino que pasa en limpio en qué estado están los trabajos hacia fines de noviembre de 2026, qué ya quedó resuelto y qué sigue abierto.'
+        text: 'Quien pasa estos días por Lisandro de la Torre y avenida de los Corrales sigue viendo andamios sobre el frente histórico del barrio, pero con una novedad que ya se escucha desde la plazoleta: el reloj monumental de la torre volvió a ponerse en marcha. Esta nota no repite la ficha de [La Recova](/notas/la-recova-de-mataderos) ni la historia de [El Resero](/notas/el-resero-de-mataderos) —reunidas en la guía de [patrimonio de Mataderos](/notas/patrimonio-de-mataderos)—, sino que pasa en limpio qué informó el [Gobierno de la Ciudad](https://buenosaires.gob.ar/gcaba_historico/casco-historico-de-mataderos) este 25 de noviembre, qué etapas ya concluyeron y qué sigue en obra.'
       },
       {
         kind: 'h2',
-        text: 'Qué ya terminó y dónde está la segunda etapa'
+        text: 'Av. de los Corrales terminada y segunda etapa en ejecución'
       },
       {
         kind: 'p',
-        text: 'El plan de puesta en valor anunciado por el Ministerio de Espacio Público e Higiene Urbana porteño en abril de 2025 se dividió en dos tramos. La primera etapa ya está concluida: abarcó la recuperación del boulevard de la avenida de los Corrales y la renovación de la Plazoleta El Resero, donde se colocaron 44 farolas peatonales, 16 bancos, 17 árboles nuevos, bolardos de protección peatonal, nueva vegetación en canteros, reparación de veredas y readoquinado de la calzada.'
+        text: 'El plan del Ministerio de Espacio Público e Higiene Urbana porteño se dividió en dos tramos. La primera etapa, sobre la avenida de los Corrales y la Plazoleta El Resero, ya está terminada: según el balance oficial de la Ciudad, abarcó la renovación de 14.800 m² de espacio público, con 856 m² de nueva superficie verde en el bulevar central, nuevo equipamiento urbano, bancos, árboles, farolas, bolardos, mejora de veredas y recuperación del adoquinado (en la ficha oficial figuran 32 farolas nuevas en el corredor, mientras que los relevamientos barriales contaron 44 luminarias peatonales, 16 bancos y 17 árboles sumando la plazoleta).'
       },
       {
         kind: 'p',
-        text: 'La segunda etapa, bajo la órbita de la Dirección General de Regeneración Urbana y adjudicada a la empresa OSP SA, concentra la restauración de las fachadas del edificio central y las recovas norte y sur, el reloj monumental de la torre y la escultura de El Resero. Aunque a comienzos de año [Metrópolis](https://metropolis.com.ar/restauracion-en-mataderos-el-historico-mercado-de-hacienda-recupera-su-esplendor-original/) informaba una previsión de inauguración para octubre de 2026, noviembre encontró los trabajos todavía en curso: el miércoles 4 de noviembre la Ciudad organizó una recorrida de obra con inscripción previa —con visita al [Museo Criollo de los Corrales](/notas/museo-criollo-de-los-corrales)— y el 9 de noviembre [Transparencia Comunal](https://www.transparenciablog.com.ar/mataderos-recorrieron-las-obras-de-restauracion-de-la-historica-recova/) difundió la recorrida oficial del ministro de Espacio Público, Ignacio Baistrocchi, junto al presidente de la Junta Comunal 9, Maximiliano Mosquera Fantoni. Por el momento no se comunicó una fecha cerrada de entrega final.'
+        text: 'La segunda etapa, a cargo de la Dirección General de Regeneración Urbana y adjudicada a OSP SA, concentra las fachadas del edificio central y de las recovas norte y sur, el reloj monumental y El Resero. Aunque a comienzos de año [Metrópolis](https://metropolis.com.ar/restauracion-en-mataderos-el-historico-mercado-de-hacienda-recupera-su-esplendor-original/) informaba una previsión para octubre de 2026, los trabajos continúan en noviembre: el miércoles 4 hubo una recorrida abierta con visita al [Museo Criollo de los Corrales](/notas/museo-criollo-de-los-corrales), el 9 de noviembre [Transparencia Comunal](https://www.transparenciablog.com.ar/mataderos-recorrieron-las-obras-de-restauracion-de-la-historica-recova/) difundió la recorrida del ministro Ignacio Baistrocchi y el presidente comunal Maximiliano Mosquera Fantoni, y el 25 de noviembre la Ciudad actualizó el parte oficial.'
       },
       {
         kind: 'h2',
-        text: 'Fachadas de La Recova, color definido y el reloj de la torre'
+        text: 'El reloj francés Prost Frères de la torre volvió a funcionar'
       },
       {
         kind: 'p',
-        text: 'Sobre la Antigua Administración de los Mataderos —Monumento Histórico Nacional por Decreto 1021/1979— los trabajos abarcan limpieza integral, retiro de cableado en desuso, vegetación invasiva y capas modernas de látex para volver a la pintura a la cal, además de la reparación de molduras, carpinterías, herrería artística, apertura de vanos originales, limpieza a fondo de la escalera de mármol de Carrara y nueva iluminación arquitectónica de fachadas.'
+        text: 'El hito confirmado por la Ciudad es que el reloj centenario, ubicado en la torre central de unos 20 metros, volvió a ponerse en marcha tras más de una década sin funcionar (los pliegos relevados por [Aquí Mataderos](https://aquimataderosonline.com.ar/puesta-en-valor-del-casco-historico-de-mataderos-el-reloj-de-la-torre/) ubicaban su detención hacia el año 2000 por el ingreso de palomas). Primero se acondicionó el interior de la torre, luego se armó la estructura de soporte y por último se montó la máquina restaurada por Guillermo del Valle, relojero que también intervino los relojes monumentales de la Casa Rosada y el Cabildo.'
       },
       {
         kind: 'p',
-        text: 'Uno de los puntos que más debate generó al comienzo de la obra quedó saldado en junio de 2026: tras relevar fotos desde 1897, postales coloreadas de 1908 y cuatro estratigrafías sobre los muros —que mostraron capas previas de siena, bermellón, ocre y gris antes de los rosados—, la Ciudad y la Comisión Nacional de Monumentos, de Lugares y de Bienes Históricos definieron pintar el conjunto con rosa y blanco desaturado a la cal, respetando el tono que el edificio llevó de manera ininterrumpida durante más de 45 años en la memoria del barrio.'
-      },
-      {
-        kind: 'p',
-        text: 'En paralelo avanzó la recuperación del reloj de la torre central. Según precisó [Aquí Mataderos](https://aquimataderosonline.com.ar/puesta-en-valor-del-casco-historico-de-mataderos-el-reloj-de-la-torre/) a partir de los pliegos de obra, se trata de una maquinaria francesa PROST de 1,30 por 0,80 metros, con carrillón sin campana y cuatro cuadrantes —un relevamiento en obra que corrige la referencia al "origen inglés" de la vieja ficha nacional—, detenida aproximadamente desde el año 2000 por el ingreso y la anidación de palomas. La máquina fue extraída y restaurada por el relojero monumental Guillermo del Valle —responsable de los relojes actuales de la Casa Rosada y el Cabildo— y espera el cierre de las tareas en la sala de la torre para ser reinstalada y volver a marcar la hora.'
+        text: 'El informe oficial precisa la genealogía de la pieza y corrige la referencia al "origen inglés" de una vieja ficha nacional: es una máquina original de la firma francesa Prost Frères —Hermanos Prost—, fabricantes de relojes mecánicos monumentales de Morez, Francia, reconocidos a fines del siglo XIX por sus piezas de alta ingeniería. Mide 1,30 por 0,80 metros, tiene cuatro cuadrantes y es una máquina de hora y media, con medio carrillón y campana timbre: suena el número de campanadas correspondiente a cada hora y una vez a la media hora. Para mantenerse en marcha requiere que se le dé cuerda cada semana.'
       },
       {
         kind: 'h2',
-        text: 'Lo que apareció al restaurar El Resero'
+        text: 'Fachadas de La Recova, puertas, postigos y el color a la cal'
       },
       {
         kind: 'p',
-        text: 'La intervención sobre el bronce de Emilio Sarniguet y su base de granito —Bien de Interés Histórico y Artístico Nacional por Decreto 769/2019— cuenta con supervisión del taller porteño MOA (Monumentos y Obras de Arte). Antes de empezar se realizó una fotogrametría completa en 3D para relevar patologías, seguida de limpieza mecánica y química, retiro de musgos, recuperación de pátinas y protección anticorrosiva.'
+        text: 'Sobre la Antigua Administración de los Mataderos —Monumento Histórico Nacional por Decreto 1021/1979— continúan las tareas en el edificio principal y en las recovas norte y sur: limpieza integral, retiro de cableado y de capas de látex, recuperación de terminaciones originales y ornamentos, restauración de puertas, postigos, carpinterías y herrería artística, limpieza de la escalera de mármol de Carrara e incorporación de iluminación tanto en la fachada como en el interior de las recovas.'
       },
       {
         kind: 'p',
-        text: 'El detalle concreto de lo encontrado adentro de la escultura lo contó a [Cosas de Barrio](https://cosasdebarrioweb.com.ar/2026/01/26/avanzan-las-obras-de-restauracion-del-casco-historico-de-mataderos/) Orlando Falco, director del Museo Criollo y presidente de la Junta de Estudios Históricos de Mataderos: al ser hueca la figura, los restauradores extrajeron cerca de diez litros de agua que se habían filtrado por fisuras ya reparadas, y el pulido devolvió visibilidad a la marca de los Güiraldes en el cuarto trasero izquierdo del caballo. También se encaró la reposición de las riendas y el cabestro robados —vandalizados en abril de 2024—, previstos en materiales menos atractivos para el robo de bronce.'
+        text: 'La reintegración cromática quedó definida en junio de 2026: tras relevar fotos desde 1897, postales de 1908 y cuatro estratigrafías —que mostraron capas previas de siena, bermellón, ocre y gris—, la Ciudad y la Comisión Nacional de Monumentos resolvieron aplicar rosa y blanco desaturado a la cal, respetando el tono que el edificio llevó durante más de 45 años.'
       },
       {
         kind: 'h2',
-        text: 'Qué sigue funcionando hoy y qué no resuelve esta obra'
+        text: 'La restauración de El Resero bajo supervisión del MOA'
       },
       {
         kind: 'p',
-        text: 'Mientras terminan las tareas en el casco —protegido además por el [Distrito APH 21](/notas/casco-historico-de-mataderos)—, la vida de la esquina sigue activa: el Museo Criollo continúa en la recova sur y la [Feria de Mataderos](/notas/feria-de-mataderos) sostiene sus últimos cuatro domingos de la temporada hasta el 20 de diciembre. Lo que esta obra no resuelve es lo que queda detrás de la fachada: a más de cuatro años del cierre del antiguo [Mercado Nacional de Hacienda](/notas/mercado-nacional-de-hacienda) tras la mudanza a Cañuelas, las hectáreas interiores del predio siguen atrapadas en un limbo dominial entre Nación y Ciudad sin escrituración definitiva y funcionan hoy como depósito de autos judicializados del programa PROCOM, según documentó [Bichos de Campo](https://bichosdecampo.com/se-acuerdan-de-las-vacas-a-4-anos-de-su-cierre-y-sin-iniciativas-para-reconvertirlo-el-ex-mercado-de-liniers-se-luce-como-un-deposito-de-autos-judicializados-y-un-freno-contra-los-ocu/) en septiembre con testimonio del propio Falco.'
+        text: 'En paralelo se restaura la figura ecuestre de bronce de Emilio Sarniguet y su base de granito —Bien de Interés Histórico y Artístico Nacional por Decreto 769/2019—, bajo supervisión del MOA (Monumentos y Obras de Arte). Antes de iniciar las tareas se realizó una fotogrametría completa para relevar patologías, seguida de limpieza mecánica y química, remoción de vegetación invasiva como plantas y musgos, recuperación de pátinas y protección especial contra la corrosión.'
+      },
+      {
+        kind: 'p',
+        text: 'Según contó a [Cosas de Barrio](https://cosasdebarrioweb.com.ar/2026/01/26/avanzan-las-obras-de-restauracion-del-casco-historico-de-mataderos/) Orlando Falco, director del Museo Criollo y presidente de la Junta de Estudios Históricos de Mataderos, del interior hueco de la figura se extrajeron diez litros de agua filtrada por fisuras ya reparadas, el pulido devolvió visibilidad a la marca de los Güiraldes en el cuarto trasero izquierdo del caballo y se encaró la reposición de riendas y cabestro vandalizados en abril de 2024.'
+      },
+      {
+        kind: 'h2',
+        text: 'Qué sigue abierto al público y qué queda detrás de la fachada'
+      },
+      {
+        kind: 'p',
+        text: 'Mientras terminan las obras en el casco —protegido por el [Distrito APH 21](/notas/casco-historico-de-mataderos)—, el Museo Criollo sigue activo en la recova sur y la [Feria de Mataderos](/notas/feria-de-mataderos) sostiene sus últimos cuatro domingos del año hasta el 20 de diciembre. Lo que esta obra no abarca es el predio interior detrás de la administración: a cuatro años del cierre del [Mercado Nacional de Hacienda](/notas/mercado-nacional-de-hacienda) tras la mudanza a Cañuelas, las hectáreas internas siguen sin escrituración definitiva entre Nación y Ciudad y funcionan como depósito de autos judicializados del programa PROCOM, según documentó [Bichos de Campo](https://bichosdecampo.com/se-acuerdan-de-las-vacas-a-4-anos-de-su-cierre-y-sin-iniciativas-para-reconvertirlo-el-ex-mercado-de-liniers-se-luce-como-un-deposito-de-autos-judicializados-y-un-freno-contra-los-ocu/).'
       }
     ]
   },

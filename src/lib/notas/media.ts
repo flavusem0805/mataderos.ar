@@ -7,6 +7,7 @@ export interface Foto {
   licenseUrl: string;
   sourceUrl: string;
   changes: string;
+  objectPosition?: string;
 }
 
 export const FOTOS = {
@@ -88,7 +89,8 @@ export const FOTOS = {
     license: 'CC BY-SA 4.0',
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Monumento_ecuestre_El_Gaucho_Resero_01.JPG',
-    changes: 'Copia reducida para la web.'
+    changes: 'Copia reducida para la web.',
+    objectPosition: 'object-[50%_12%]'
   }
 } as const satisfies Record<string, Foto>;
 

@@ -171,7 +171,7 @@ export default async function NotaPage({ params }: NotaPageProps) {
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 1100px"
-                className="object-cover"
+                className={`object-cover ${nota.image.objectPosition ?? 'object-center'}`}
               />
             </div>
             <figcaption className="mt-2 max-w-[75ch] font-mono text-base leading-relaxed">

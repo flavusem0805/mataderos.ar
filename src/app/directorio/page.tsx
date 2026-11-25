@@ -2,15 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
-import {
-  DirectoryExplorer,
-  type DirectoryKindFilter,
-  type ZoneFilter
-} from '@/components/directorio/DirectoryExplorer';
+import { DirectoryExplorer } from '@/components/directorio/DirectoryExplorer';
 import { fetchBusinesses } from '@/lib/supabase';
 import { getEmprendedores } from '@/lib/emprendedores';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Directorio de comercios y emprendedores de Mataderos · Mataderos.ar',
@@ -27,46 +23,9 @@ export const metadata: Metadata = {
   }
 };
 
-interface DirectorioPageProps {
-  searchParams: Promise<{
-    q?: string | string[];
-    tipo?: string | string[];
-    zona?: string | string[];
-    rubro?: string | string[];
-    abierto?: string | string[];
-  }>;
-}
-
-function firstParam(val: string | string[] | undefined): string {
-  return (Array.isArray(val) ? val[0] : val)?.trim() ?? '';
-}
-
-function parseKind(raw: string): DirectoryKindFilter {
-  const lower = raw.toLowerCase();
-  if (lower === 'comercios' || lower === 'comercio') return 'comercios';
-  if (lower === 'emprendedores' || lower === 'emprendedor' || lower === 'feria') {
-    return 'emprendedores';
-  }
-  return 'todos';
-}
-
-function parseZone(raw: string): ZoneFilter {
-  if (raw === 'Av. Alberdi') return 'Av. Alberdi';
-  if (raw === 'Polo Emilio Castro') return 'Polo Emilio Castro';
-  if (raw === 'Casco Histórico') return 'Casco Histórico';
-  if (raw === 'Av. Eva Perón') return 'Av. Eva Perón';
-  return 'todas';
-}
-
-export default async function DirectorioPage({ searchParams }: DirectorioPageProps) {
-  const [businesses, params] = await Promise.all([fetchBusinesses(), searchParams]);
+export default async function DirectorioPage() {
+  const businesses = await fetchBusinesses();
   const emprendedores = getEmprendedores();
-
-  const initialQuery = firstParam(params.q);
-  const initialKind = parseKind(firstParam(params.tipo));
-  const initialZone = parseZone(firstParam(params.zona));
-  const initialCategory = firstParam(params.rubro);
-  const initialOpenOnly = firstParam(params.abierto) === '1' || firstParam(params.abierto) === 'true';
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -122,15 +81,7 @@ export default async function DirectorioPage({ searchParams }: DirectorioPagePro
 
       <section className="bg-pampa-surface py-5 sm:py-10">
         <div className="editorial-container">
-          <DirectoryExplorer
-            businesses={businesses}
-            emprendedores={emprendedores}
-            initialQuery={initialQuery}
-            initialKind={initialKind}
-            initialZone={initialZone}
-            initialCategory={initialCategory}
-            initialOpenOnly={initialOpenOnly}
-          />
+          <DirectoryExplorer businesses={businesses} emprendedores={emprendedores} />
         </div>
       </section>
     </NotaFrame>

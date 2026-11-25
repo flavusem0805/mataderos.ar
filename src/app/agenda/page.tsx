@@ -4,7 +4,7 @@ import { NotaFrame } from '@/components/notas/NotaFrame';
 import { AgendaExplorer } from '@/components/agenda/AgendaExplorer';
 import { fetchAgendaItems } from '@/lib/supabase';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Agenda de Mataderos · Cartelera con fuente · Mataderos.ar',

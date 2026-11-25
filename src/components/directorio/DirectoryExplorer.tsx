@@ -349,6 +349,27 @@ export function DirectoryExplorer({
   useEffect(() => {
     const tick = () => setNow(Date.now());
     tick();
+    const params = new URLSearchParams(window.location.search);
+    const qParam = params.get('q')?.trim();
+    const tipoParam = params.get('tipo')?.trim().toLowerCase();
+    const zonaParam = params.get('zona')?.trim();
+    const rubroParam = params.get('rubro')?.trim();
+    const abiertoParam = params.get('abierto')?.trim().toLowerCase();
+    if (qParam) setQuery(qParam);
+    if (tipoParam === 'comercios' || tipoParam === 'comercio') setKind('comercios');
+    else if (tipoParam === 'emprendedores' || tipoParam === 'emprendedor' || tipoParam === 'feria') {
+      setKind('emprendedores');
+    }
+    if (
+      zonaParam === 'Av. Alberdi' ||
+      zonaParam === 'Polo Emilio Castro' ||
+      zonaParam === 'Casco Histórico' ||
+      zonaParam === 'Av. Eva Perón'
+    ) {
+      setZone(zonaParam);
+    }
+    if (rubroParam) setCategory(rubroParam);
+    if (abiertoParam === '1' || abiertoParam === 'true') setOpenOnly(true);
     const id = window.setInterval(tick, 60000);
     return () => window.clearInterval(id);
   }, []);

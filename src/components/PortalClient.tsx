@@ -45,6 +45,7 @@ export interface HomeNote {
   fecha: string;
   imageSrc?: string;
   imageAlt?: string;
+  imagePosition?: string;
   credit?: string;
   placeLabel?: string;
 }
@@ -113,6 +114,7 @@ function PhotoFill({
   sizes: string;
   priority?: boolean;
   reference?: boolean;
+  objectPosition?: string;
 }) {
   return (
     <>
@@ -122,7 +124,7 @@ function PhotoFill({
         fill
         sizes={sizes}
         priority={priority}
-        className="object-cover"
+        className={`object-cover ${objectPosition ?? 'object-center'}`}
       />
       {reference && (
         <span
@@ -676,6 +678,7 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
                       src={note.imageSrc}
                       alt={note.imageAlt ?? note.title}
                       sizes="(max-width: 640px) 86vw, 40vw"
+                      objectPosition={note.imagePosition}
                     />
                   </span>
                 ) : (

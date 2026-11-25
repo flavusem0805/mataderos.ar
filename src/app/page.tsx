@@ -14,6 +14,7 @@ export default async function HomePage() {
     fecha: formatFecha(nota.publishedAt),
     imageSrc: nota.image?.src,
     imageAlt: nota.image?.alt,
+    imagePosition: nota.image?.objectPosition,
     credit: nota.image ? `${nota.image.author} · ${nota.image.license}` : undefined,
     placeLabel: nota.placeLabel
   }));

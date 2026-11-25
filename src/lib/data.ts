@@ -99,11 +99,12 @@ export interface HeritageMilestone {
 }
 
 export const TICKER_ITEMS: string[] = [
-  'En curso hasta el dom 29/11: SALE MATADEROS con unos 30 locales en Alberdi, De los Corrales y Directorio',
-  'Viernes 27/11 a las 19 hs: Milonga con entrada libre en el hall del Cine Teatro El Plata',
-  'Sábado 28 y domingo 29/11 a las 19 hs: Paraíso en El Plata, con Luciano Cáceres (platea $22.500)',
-  'Domingos 29/11 y 6, 13 y 20/12: últimos cuatro domingos de temporada de la Feria de Mataderos',
-  'Diciembre en C.C. Macedonio Fernández: muestras gratuitas de fin de año los días 1, 9, 10 y 11 de 18 a 20:45 hs'
+  'En curso hasta el dom 29/11: SALE MATADEROS con más de 30 locales en Alberdi, De los Corrales y Directorio',
+  'Sábado 28/11 desde las 20 hs: La Noche de los Templos en la Parroquia San Vicente de Paúl (Manuel Artigas 6150)',
+  'Domingo 29/11 de 9 a 12:30 hs: vacunación antirrábica gratuita sin turno en Plaza Salaberry (Alberdi y Pilar)',
+  'Domingos 29/11 al 27/12 y feriado 8/12 (10 a 20 hs): Feria de Manualistas en Parque Alberdi y domingos de Feria de Mataderos (11 a 19 hs)',
+  'Diciembre en El Bar del Glorias y Cultural de la República: tributos, cena show de Alfredo Silva y teatro independiente',
+  'Muestras gratuitas en C.C. Macedonio Fernández (1, 9, 10 y 11/12) y atención veterinaria con turno miBA en Plaza Salaberry (28 al 30/12)'
 ];
 
 export const BUSINESSES: Business[] = [

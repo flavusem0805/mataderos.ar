@@ -46,7 +46,7 @@ export default async function AgendaPage() {
             Agenda de Mataderos
           </h1>
           <p className="mt-4 hidden max-w-[66ch] font-serif text-xl leading-relaxed text-carbon/90 sm:block">
-            Actividades con fecha y fuente publicada en el barrio: Cine Teatro El Plata, la Feria, el Centro Cultural Macedonio Fernández y los corredores comerciales.
+            Actividades con fecha y fuente publicada en el barrio: salas y clubes culturales, la Feria de Mataderos, ferias barriales, operativos en plazas, templos y corredores comerciales.
           </p>
         </div>
       </section>

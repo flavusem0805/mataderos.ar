@@ -229,7 +229,13 @@ function TopRail({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; server
 
   const items = useMemo(() => {
     const active = agendaItems.filter((item) => agendaStatus(item, now) !== 'past');
-    const source = active.length > 0 ? active : agendaItems;
+    const source = [...(active.length > 0 ? active : agendaItems)].sort((a, b) => {
+      const sa = agendaStatus(a, now);
+      const sb = agendaStatus(b, now);
+      if (sa === 'in-progress' && sb !== 'in-progress') return -1;
+      if (sa !== 'in-progress' && sb === 'in-progress') return 1;
+      return agendaTimestamps(a).startTs - agendaTimestamps(b).startTs;
+    });
     const seen = new Set<string>();
     const picked: AgendaItem[] = [];
 

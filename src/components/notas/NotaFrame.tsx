@@ -2,9 +2,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { NotaNav } from '@/components/notas/NotaNav';
+import { MobileBottomBar } from '@/components/MobileBottomBar';
 
 const LINKS = [
   { href: '/', label: 'Inicio' },
+  { href: '/buscar', label: 'Buscar' },
   { href: '/notas', label: 'Notas' },
   { href: '/agenda', label: 'Agenda' },
   { href: '/emprendedores', label: 'Emprendedores' },
@@ -14,7 +16,7 @@ const LINKS = [
 
 export function NotaFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-pampa text-carbon">
+    <div className="min-h-screen bg-pampa pb-[64px] text-carbon lg:pb-0">
       <a href="#contenido" className="skip-link">
         Saltar al contenido
       </a>
@@ -45,6 +47,9 @@ export function NotaFrame({ children }: { children: ReactNode }) {
             <Link href="/" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
               Volver al portal
             </Link>
+            <Link href="/buscar" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
+              Buscar en la guía
+            </Link>
             <Link href="/sumate" className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4">
               Sumate
             </Link>
@@ -58,6 +63,7 @@ export function NotaFrame({ children }: { children: ReactNode }) {
           <span>Comuna 9 · CABA</span>
         </div>
       </footer>
+      <MobileBottomBar />
     </div>
   );
 }

@@ -53,31 +53,45 @@ export function NotaNav({ links }: { links: NavItem[] }) {
         })}
       </nav>
 
-      <details className="relative lg:hidden">
-        <summary className="flex min-h-[48px] cursor-pointer list-none items-center px-3 font-semibold [&::-webkit-details-marker]:hidden">
-          Menú
-        </summary>
-        <nav
-          aria-label="Secciones"
-          className="absolute right-0 z-50 mt-1 w-[min(18rem,80vw)] border border-pampa/30 bg-chicago-dark"
+      <div className="flex items-center gap-2 lg:hidden">
+        <Link
+          href="/sumate"
+          aria-current={isActivePath(pathname, '/sumate') ? 'page' : undefined}
+          className={`inline-flex min-h-[44px] items-center rounded-[4px] border px-3 text-sm font-semibold color-field sm:min-h-[48px] sm:px-4 sm:text-base ${
+            isActivePath(pathname, '/sumate')
+              ? 'border-pampa bg-pampa text-chicago'
+              : 'border-pampa/50 text-pampa hover:bg-pampa hover:text-chicago'
+          }`}
         >
-          {links.map((link) => {
-            const active = isActivePath(pathname, link.href);
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                aria-current={active ? 'page' : undefined}
-                className={`flex min-h-[48px] items-center border-t border-pampa/15 px-4 ${
-                  active ? 'bg-pampa/15 font-semibold' : ''
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
-      </details>
+          Sumate
+        </Link>
+
+        <details className="relative">
+          <summary className="flex min-h-[44px] cursor-pointer list-none items-center rounded-[4px] border border-pampa/35 px-3 text-sm font-semibold sm:min-h-[48px] sm:text-base [&::-webkit-details-marker]:hidden">
+            Menú
+          </summary>
+          <nav
+            aria-label="Secciones"
+            className="absolute right-0 z-50 mt-1 w-[min(18rem,80vw)] border border-pampa/30 bg-chicago-dark"
+          >
+            {links.map((link) => {
+              const active = isActivePath(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex min-h-[48px] items-center border-t border-pampa/15 px-4 ${
+                    active ? 'bg-pampa/15 font-semibold' : ''
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </details>
+      </div>
     </>
   );
 }

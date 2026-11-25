@@ -163,7 +163,9 @@ export async function fetchAgendaItems(): Promise<AgendaItem[]> {
     return AGENDA_ITEMS;
   }
 
-  return data.map((row) => {
+  return data
+    .filter((row) => ((row.barrio as EventBarrio) ?? 'Mataderos') === 'Mataderos')
+    .map((row) => {
     const barrio = (row.barrio as EventBarrio) ?? 'Mataderos';
     const ambito: EventAmbito =
       (row.ambito as EventAmbito) ?? (barrio === 'Mataderos' ? 'Mataderos' : 'Comuna 9');

@@ -250,12 +250,6 @@ export default async function NotaPage({ params }: NotaPageProps) {
               >
                 Abrir la agenda completa
               </Link>
-              <Link
-                href="/agenda?ambito=comuna-9"
-                className="inline-flex min-h-[48px] items-center justify-center rounded-[4px] border border-carbon px-5 text-base font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
-              >
-                Ver también Comuna 9
-              </Link>
             </div>
           </div>
         )}

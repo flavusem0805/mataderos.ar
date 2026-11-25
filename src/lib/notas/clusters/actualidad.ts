@@ -115,15 +115,11 @@ export const ACTUALIDAD: Nota[] = [
       },
       {
         kind: 'h2',
-        text: 'Cómo ordenar el recorrido (y qué pasa en la Comuna 9)'
+        text: 'Cómo ordenar el recorrido del fin de semana'
       },
       {
         kind: 'p',
         text: 'El Plata y la Feria están en corredores distintos, así que conviene no encimar horarios. El viernes o el sábado se resuelven íntegramente sobre Alberdi: compras de tarde en los locales adheridos a [SALE MATADEROS](/notas/sale-mataderos-noviembre-2026), función a las 19 y, si queda hambre, una esquina clásica sobre la avenida como [El Cedrón](/notas/el-cedron-de-mataderos). El domingo, en cambio, conviene entrar al casco antes del mediodía para ver el mural a las 12, recorrer puestos y escenario, y salir con tiempo si a las 19 hay entrada sacada para Paraíso.'
-      },
-      {
-        kind: 'p',
-        text: 'Fuera de los límites de Mataderos pero dentro de la Comuna 9, Parque Avellaneda suma además dos convocatorias abiertas: las jornadas para revisar el Plan de Manejo (viernes 27 a las 18:30 y sábado 28 de 10 a 16 en la Casona de los Olivera) y el encuentro de teatro callejero "El Teatro Late en la Calle" (sábado 28 y domingo 29 desde las 16 en el Playón del Antiguo Tambo). Ambas figuran separadas en la vista de [Comuna 9 de la agenda](/agenda?ambito=comuna-9).'
       }
     ]
   },

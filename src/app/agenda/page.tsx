@@ -39,7 +39,7 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
   return (
     <NotaFrame>
-      <section className="border-b border-carbon/15 bg-pampa py-5 sm:py-[var(--section-py)]">
+      <section className="border-b border-carbon/15 bg-pampa py-5 sm:py-10">
         <div className="editorial-container">
           <nav aria-label="Miga de pan" className="hidden font-mono text-base text-chicago sm:block">
             <Link href="/" className="inline-flex min-h-[48px] items-center underline underline-offset-4">
@@ -54,16 +54,16 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
           <p className="font-mono text-xs uppercase tracking-wider text-chicago sm:mt-4 sm:text-sm">
             Nov y dic 2026 · Comuna 9
           </p>
-          <h1 className="mt-1.5 max-w-[16ch] font-display text-[clamp(2.25rem,7.5vw,5rem)] font-semibold uppercase leading-[0.9] sm:mt-2">
+          <h1 className="mt-1.5 max-w-[16ch] font-display text-[clamp(2.25rem,6vw,4rem)] font-semibold uppercase leading-[0.9] sm:mt-2">
             Agenda de Mataderos
           </h1>
           <p className="mt-4 hidden max-w-[66ch] font-serif text-xl leading-relaxed text-carbon/90 sm:block">
-            Actividades con fecha y fuente publicada en Mataderos —El Plata, la Feria, el Centro Cultural Macedonio Fernández y comercios— más una sección aparte para encuentros de la Comuna 9 en Liniers y Parque Avellaneda.
+            Actividades con fecha y fuente publicada en Mataderos —El Plata, la Feria, el Centro Cultural Macedonio Fernández y comercios— más encuentros de la Comuna 9 en Liniers y Parque Avellaneda, que podés aislar con un filtro.
           </p>
         </div>
       </section>
 
-      <section className="bg-pampa-surface pb-10 sm:py-[var(--section-py)]">
+      <section className="bg-pampa-surface pb-10 sm:pb-16">
         <div className="editorial-container">
           <AgendaExplorer items={items} serverNow={serverNow} initialAmbito={initialAmbito} />
         </div>

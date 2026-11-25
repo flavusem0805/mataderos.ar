@@ -242,7 +242,7 @@ function AgendaRow({ entry, onOpen }: { entry: ResolvedAgendaItem; onOpen: (id: 
             )}
             {status === 'past' && <span className={`${chipBase} border-carbon/30 text-carbon/65`}>Finalizado</span>}
             {item.isFree && <span className={`${chipBase} border-chicago text-chicago`}>Gratis</span>}
-            {isComuna9 && <span className={`${chipBase} border-cuero/60 bg-pampa-deep text-cuero`}>Comuna 9</span>}
+            {isComuna9 && <span className={`${chipBase} border-cuero/60 bg-pampa-deep text-cuero`}>{item.barrio}</span>}
           </span>
         </span>
 
@@ -293,11 +293,7 @@ function EventDetail({ entry, onClose }: { entry: ResolvedAgendaItem; onClose: (
             <span className="text-carbon/35" aria-hidden="true">
               ·
             </span>
-            {isComuna9 ? (
-              <span className="font-semibold text-cuero">Comuna 9 · {item.barrio}</span>
-            ) : (
-              <span className="text-carbon/75">{item.barrio}</span>
-            )}
+            <span className={isComuna9 ? 'font-semibold text-cuero' : 'text-carbon/75'}>{item.barrio}</span>
             {status === 'in-progress' && <span className={`${chipBase} border-chicago bg-chicago/10 text-chicago`}>En curso</span>}
             {status === 'past' && <span className={`${chipBase} border-carbon/30 text-carbon/65`}>Finalizado</span>}
           </div>
@@ -603,7 +599,7 @@ export function AgendaExplorer({
   const scopeOptions: { id: AmbitoFilter; label: string; count: number }[] = [
     { id: 'all', label: 'Todo', count: scopeCounts.all },
     { id: 'Mataderos', label: 'Mataderos', count: scopeCounts.mataderos },
-    { id: 'Comuna 9', label: 'Comuna 9', count: scopeCounts.comuna9 }
+    { id: 'Comuna 9', label: 'Liniers y Avellaneda', count: scopeCounts.comuna9 }
   ];
 
   const chipButton = (active: boolean) =>

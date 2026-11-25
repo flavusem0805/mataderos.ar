@@ -39,9 +39,9 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
 
   return (
     <NotaFrame>
-      <section className="section-pad border-b border-carbon/15 bg-pampa">
+      <section className="border-b border-carbon/15 bg-pampa py-5 sm:py-[var(--section-py)]">
         <div className="editorial-container">
-          <nav aria-label="Miga de pan" className="font-mono text-base text-chicago">
+          <nav aria-label="Miga de pan" className="hidden font-mono text-base text-chicago sm:block">
             <Link href="/" className="inline-flex min-h-[48px] items-center underline underline-offset-4">
               Inicio
             </Link>
@@ -51,19 +51,19 @@ export default async function AgendaPage({ searchParams }: AgendaPageProps) {
             <span className="text-carbon">Agenda</span>
           </nav>
 
-          <p className="mt-4 font-mono text-sm uppercase tracking-wider text-chicago">
-            Cartelera con fuente · Noviembre y diciembre 2026 · Comuna 9
+          <p className="font-mono text-xs uppercase tracking-wider text-chicago sm:mt-4 sm:text-sm">
+            Nov y dic 2026 · Comuna 9
           </p>
-          <h1 className="mt-2 max-w-[16ch] font-display text-[clamp(2.75rem,7.5vw,5rem)] font-semibold uppercase leading-[0.9]">
+          <h1 className="mt-1.5 max-w-[16ch] font-display text-[clamp(2.25rem,7.5vw,5rem)] font-semibold uppercase leading-[0.9] sm:mt-2">
             Agenda de Mataderos
           </h1>
-          <p className="mt-4 max-w-[66ch] font-serif text-xl leading-relaxed text-carbon/90">
+          <p className="mt-4 hidden max-w-[66ch] font-serif text-xl leading-relaxed text-carbon/90 sm:block">
             Actividades con fecha y fuente publicada en Mataderos —El Plata, la Feria, el Centro Cultural Macedonio Fernández y comercios— más una sección aparte para encuentros de la Comuna 9 en Liniers y Parque Avellaneda.
           </p>
         </div>
       </section>
 
-      <section className="section-pad bg-pampa-surface">
+      <section className="bg-pampa-surface pb-10 sm:py-[var(--section-py)]">
         <div className="editorial-container">
           <AgendaExplorer items={items} serverNow={serverNow} initialAmbito={initialAmbito} />
         </div>

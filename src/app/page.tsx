@@ -2,7 +2,7 @@ import PortalClient, { type HomeNote } from '@/components/PortalClient';
 import { formatFecha, notasRecientes } from '@/lib/notas';
 import { fetchAgendaItems, fetchBusinesses } from '@/lib/supabase';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
 
 export default async function HomePage() {
   const [businesses, agendaItems] = await Promise.all([fetchBusinesses(), fetchAgendaItems()]);

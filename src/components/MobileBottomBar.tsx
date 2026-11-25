@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Calendar, Home, Newspaper, Store } from 'lucide-react';
@@ -49,6 +50,13 @@ const ITEMS: BottomNavItem[] = [
 
 export function MobileBottomBar() {
   const pathname = usePathname() ?? '/';
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
+
+  const effectivePath = pendingHref ?? pathname;
 
   return (
     <nav
@@ -58,15 +66,21 @@ export function MobileBottomBar() {
     >
       <div className="grid grid-cols-4 divide-x divide-pampa/15">
         {ITEMS.map((item) => {
-          const active = item.match(pathname);
+          const active = item.match(effectivePath);
           const Icon = item.icon;
           return (
             <Link
               key={item.id}
               id={item.id}
               href={item.href}
+              prefetch={true}
               aria-current={active ? 'page' : undefined}
-              className={`relative flex min-h-[60px] flex-col items-center justify-center gap-1 px-2 py-2 text-center color-field ${
+              onClick={() => {
+                if (!item.match(pathname)) {
+                  setPendingHref(item.href);
+                }
+              }}
+              className={`relative flex min-h-[60px] flex-col items-center justify-center gap-1 px-2 py-2 text-center transition-colors duration-100 active:bg-chicago/80 ${
                 active
                   ? 'bg-chicago font-semibold text-pampa before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-pampa'
                   : 'bg-carbon text-pampa/80 hover:bg-pampa/10 hover:text-pampa'

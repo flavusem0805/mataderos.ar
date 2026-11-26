@@ -1,0 +1,118 @@
+@keyframes sumateFadeUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes sumateFloatIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes sumateSquarePulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.88);
+  }
+}
+
+.sumate-enter {
+  animation: sumateFadeUp 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sumate-enter-d1 {
+  animation: sumateFadeUp 560ms cubic-bezier(0.22, 1, 0.36, 1) 90ms both;
+}
+
+.sumate-enter-d2 {
+  animation: sumateFadeUp 560ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+}
+
+.sumate-float-card {
+  animation: sumateFloatIn 640ms cubic-bezier(0.22, 1, 0.36, 1) 240ms both;
+}
+
+.sumate-live-dot {
+  animation: sumateSquarePulse 2.4s ease-in-out infinite;
+}
+
+.sumate-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.sumate-reveal[data-reveal='pending'] {
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+}
+
+.sumate-reveal[data-reveal='shown'] {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 560ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 560ms cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+}
+
+.sumate-photo-zoom {
+  overflow: hidden;
+}
+
+.sumate-photo-zoom img {
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sumate-photo-zoom:hover img {
+  transform: scale(1.045);
+}
+
+.sumate-card-lift {
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 280ms ease,
+    background-color 280ms ease;
+}
+
+.sumate-card-lift:hover {
+  transform: translate3d(0, -3px, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sumate-enter,
+  .sumate-enter-d1,
+  .sumate-enter-d2,
+  .sumate-float-card,
+  .sumate-live-dot {
+    animation: none !important;
+  }
+
+  .sumate-reveal,
+  .sumate-reveal[data-reveal='pending'],
+  .sumate-reveal[data-reveal='shown'] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .sumate-photo-zoom img,
+  .sumate-card-lift {
+    transition: none !important;
+    transform: none !important;
+  }
+}

@@ -146,6 +146,7 @@ export default async function SumateComerciosPage({ searchParams }: PageProps) {
         secondaryCtaLabel="Ver planes para comercios"
         secondaryCtaHref="#planes"
         trustLine="Ficha gratis · Acceso anticipado · Sin contrato · Te respondemos hoy"
+        visualVariant="comercios"
       />
 
       <TrustBar items={SUMATE_TRUST_ITEMS} />

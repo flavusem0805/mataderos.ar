@@ -5,6 +5,7 @@ import { SUMATE_PLANS_COPY } from '@/content/sumate';
 import { COMERCIO_PLANS, ESPECIAL_PLANS, type SumatePlan } from '@/lib/sumate-plans';
 import { trackSumateEvent } from '@/lib/sumate-analytics';
 import { PlanCard } from '@/components/sumate/PlanCard';
+import { RevealOnScroll } from '@/components/sumate/RevealOnScroll';
 
 interface PlansGridProps {
   primaryPlans?: SumatePlan[];
@@ -72,8 +73,10 @@ export function PlansGrid({
             primaryPlans.length === 2 ? 'md:grid-cols-2' : 'lg:grid-cols-3'
           }`}
         >
-          {primaryPlans.map((plan) => (
-            <PlanCard key={plan.id} plan={plan} />
+          {primaryPlans.map((plan, idx) => (
+            <RevealOnScroll key={plan.id} delayMs={idx * 80} className="h-full">
+              <PlanCard plan={plan} />
+            </RevealOnScroll>
           ))}
         </div>
 
@@ -83,8 +86,10 @@ export function PlansGrid({
               {secondaryHeading}
             </h3>
             <div className="mt-4 grid gap-6 md:grid-cols-2">
-              {secondaryPlans.map((plan) => (
-                <PlanCard key={plan.id} plan={plan} />
+              {secondaryPlans.map((plan, idx) => (
+                <RevealOnScroll key={plan.id} delayMs={idx * 90} className="h-full">
+                  <PlanCard plan={plan} />
+                </RevealOnScroll>
               ))}
             </div>
           </div>

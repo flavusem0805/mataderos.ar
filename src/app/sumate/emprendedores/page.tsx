@@ -180,6 +180,7 @@ export default async function SumateEmprendedoresPage({ searchParams }: PageProp
         secondaryCtaLabel="Ver Ficha gratis y plan Feria"
         secondaryCtaHref="#planes"
         trustLine="Ficha gratis para siempre · Acceso anticipado plan Feria · Te respondemos hoy"
+        visualVariant="emprendedores"
       />
 
       <TrustBar items={SUMATE_TRUST_ITEMS} />

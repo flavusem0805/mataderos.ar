@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
-import { Check } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Calendar, Home, Newspaper, Phone } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import { LeadForm } from '@/components/sumate/LeadForm';
+import { RevealOnScroll } from '@/components/sumate/RevealOnScroll';
 import { SumateHero } from '@/components/sumate/SumateHero';
 import { SumateViewTracker } from '@/components/sumate/SumateViewTracker';
 import { TrustBar } from '@/components/sumate/TrustBar';
 import { WhatsAppCta } from '@/components/sumate/WhatsAppCta';
 import { SUMATE_SPONSORS } from '@/content/sumate';
+import { FOTOS, type Foto } from '@/lib/notas/media';
 
 export const metadata: Metadata = {
   title: 'Sponsors y marcas locales | Sumate a Mataderos.ar',
@@ -78,6 +82,13 @@ const SPONSOR_TRUST_ITEMS = [
   'Acceso anticipado · Media kit'
 ];
 
+const FORMAT_VISUALS: Array<{ photo: Foto; icon: typeof Home; tag: string }> = [
+  { photo: FOTOS.elPlata, icon: Home, tag: 'Portada principal' },
+  { photo: FOTOS.corrales, icon: Phone, tag: 'Canal directo semanal' },
+  { photo: FOTOS.frente, icon: Newspaper, tag: 'Lectura de fondo' },
+  { photo: FOTOS.sortija, icon: Calendar, tag: 'Calendario barrial' }
+];
+
 export default function SumateSponsorsPage() {
   return (
     <NotaFrame>
@@ -102,6 +113,7 @@ export default function SumateSponsorsPage() {
         secondaryCtaLabel="Dejar datos de contacto"
         secondaryCtaHref="#contacto"
         trustLine="Presencia editorial limpia · Condiciones de acceso anticipado · Respuesta en el día"
+        visualVariant="sponsors"
       />
 
       <TrustBar items={SPONSOR_TRUST_ITEMS} />
@@ -125,27 +137,48 @@ export default function SumateSponsorsPage() {
           </p>
 
           <div className="mt-8 grid gap-6 md:grid-cols-2">
-            {SUMATE_SPONSORS.formats.map((format) => (
-              <article
-                key={format.title}
-                className="border border-carbon/25 bg-pampa-surface p-6"
-              >
-                <div className="flex items-start gap-3">
-                  <Check
-                    className="mt-1 h-5 w-5 shrink-0 text-chicago"
-                    strokeWidth={2}
-                    aria-hidden="true"
-                  />
-                  <div>
-                    <h3 className="font-serif text-xl font-semibold text-carbon">
-                      {format.title}
-                    </h3>
-                    <p className="mt-2 text-base leading-relaxed text-carbon/85">{format.body}</p>
-                  </div>
-                </div>
-              </article>
-            ))}
+            {SUMATE_SPONSORS.formats.map((format, idx) => {
+              const visual = FORMAT_VISUALS[idx % FORMAT_VISUALS.length];
+              const Icon = visual.icon;
+              return (
+                <RevealOnScroll key={format.title} delayMs={idx * 80} className="h-full">
+                  <article className="sumate-card-lift flex h-full flex-col border border-carbon bg-pampa-surface">
+                    <div className="sumate-photo-zoom relative aspect-[16/9] w-full border-b border-carbon bg-carbon">
+                      <Image
+                        src={visual.photo.src}
+                        alt={visual.photo.alt}
+                        fill
+                        loading="lazy"
+                        sizes="(min-width: 768px) 46vw, 100vw"
+                        className="object-cover"
+                      />
+                      <div
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon/65 via-transparent to-transparent"
+                        aria-hidden="true"
+                      />
+                      <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 bg-chicago px-2.5 py-1 font-mono text-xs font-semibold uppercase text-pampa">
+                        <Icon className="h-3.5 w-3.5" strokeWidth={2} aria-hidden="true" />
+                        <span>{visual.tag}</span>
+                      </span>
+                    </div>
+                    <div className="p-6">
+                      <h3 className="font-serif text-xl font-semibold text-carbon">
+                        {format.title}
+                      </h3>
+                      <p className="mt-2 text-base leading-relaxed text-carbon/85">{format.body}</p>
+                    </div>
+                  </article>
+                </RevealOnScroll>
+              );
+            })}
           </div>
+
+          <p className="mt-3 font-mono text-[11px] text-carbon/65">
+            Fotografías de Mataderos con licencias abiertas ·{' '}
+            <Link href="/notas/creditos" className="underline underline-offset-2 hover:text-chicago">
+              Ver autores y licencias
+            </Link>
+          </p>
 
           <div className="mt-8 border-l-4 border-chicago bg-pampa-surface p-5 text-base leading-relaxed text-carbon/85">
             <strong className="font-semibold text-carbon">Transparencia editorial:</strong>{' '}
@@ -168,6 +201,7 @@ export default function SumateSponsorsPage() {
         body="Escribinos por WhatsApp y te compartimos el media kit con formatos, fechas disponibles y propuesta a medida."
         ctaLabel={SUMATE_SPONSORS.ctaLabel}
         ctaHref={SUMATE_SPONSORS.ctaHref}
+        mailSubject="Sponsors · Media kit Mataderos.ar"
         planId="sponsor"
       />
     </NotaFrame>

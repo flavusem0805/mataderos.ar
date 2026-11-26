@@ -46,10 +46,10 @@ export function PlanCard({ plan, onSelectForForm }: PlanCardProps) {
 
   return (
     <article
-      className={`flex h-full flex-col justify-between border p-6 ${
+      className={`sumate-card-lift flex h-full flex-col justify-between border p-6 ${
         isFeatured
           ? 'border-2 border-chicago bg-pampa'
-          : 'border-carbon/25 bg-pampa-surface'
+          : 'border-carbon/25 bg-pampa-surface hover:border-carbon'
       }`}
     >
       <div>

@@ -135,7 +135,7 @@ export async function POST(request: Request) {
     const normalized = check.normalized;
     const whatsappSummary = formatLeadWhatsappSummary(normalized);
     const whatsappHref = whatsappUrl(whatsappSummary);
-    const dbEnabled = process.env.NEXT_PUBLIC_SUMATE_DB_ENABLED === 'true';
+    const dbEnabled = (process.env.SUMATE_DB_ENABLED ?? process.env.NEXT_PUBLIC_SUMATE_DB_ENABLED) === 'true';
     const writeCtx = dbEnabled ? getSupabaseWriteContext() : null;
     const inferredMode =
       normalized.planInteres === 'feria' || /feria/i.test(normalized.addressOrFeria)
@@ -208,7 +208,7 @@ export async function POST(request: Request) {
   const normalized = check.normalized;
   const whatsappSummary = formatWhatsappSummary(normalized);
   const whatsappHref = whatsappUrl(whatsappSummary);
-  const dbEnabled = process.env.NEXT_PUBLIC_SUMATE_DB_ENABLED === 'true';
+  const dbEnabled = (process.env.SUMATE_DB_ENABLED ?? process.env.NEXT_PUBLIC_SUMATE_DB_ENABLED) === 'true';
   const writeCtx = dbEnabled ? getSupabaseWriteContext() : null;
 
   if (writeCtx) {

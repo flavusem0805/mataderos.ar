@@ -26,17 +26,34 @@ import { FOTOS, type FotoId } from './notas/media';
 
 let cachedClient: SupabaseClient | null = null;
 
+function getSupabaseUrl(): string | undefined {
+  return process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+}
+
+function getSupabasePublicKey(): string | undefined {
+  return (
+    process.env.SUPABASE_PUBLISHABLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+}
+
+function getSupabaseSecretKey(): string | undefined {
+  return process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+}
+
 /**
- * Devuelve el cliente de Supabase cuando las variables de entorno están configuradas.
+ * Devuelve el cliente de Supabase (solo servidor) cuando las variables de entorno están configuradas.
  * Mientras no se carguen, la aplicación usa los datos curados locales sin errores.
  */
 export function getSupabaseClient(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) return null;
+  const url = getSupabaseUrl();
+  const publicKey = getSupabasePublicKey();
+  if (!url || !publicKey) return null;
 
   if (!cachedClient) {
-    cachedClient = createClient(url, anonKey);
+    cachedClient = createClient(url, publicKey, { auth: { persistSession: false } });
   }
   return cachedClient;
 }
@@ -358,24 +375,24 @@ export interface SupabaseWriteContext {
 }
 
 /**
- * Devuelve el cliente server-side para escrituras e indica si usa SUPABASE_SERVICE_ROLE_KEY.
- * Si cae a la anon key, las tablas sin policy de SELECT (como `sumate_submissions`) deben insertar
+ * Devuelve el cliente server-side para escrituras e indica si usa SUPABASE_SECRET_KEY / SUPABASE_SERVICE_ROLE_KEY.
+ * Si cae a la publishable/anon key, las tablas sin policy de SELECT (como `sumate_submissions`) deben insertar
  * sin `.select()` para respetar RLS.
  */
 export function getSupabaseWriteContext(): SupabaseWriteContext | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = getSupabaseUrl();
+  const secretKey = getSupabaseSecretKey();
+  const publicKey = getSupabasePublicKey();
   if (!url) return null;
-  if (serviceKey) {
+  if (secretKey) {
     return {
-      client: createClient(url, serviceKey, { auth: { persistSession: false } }),
+      client: createClient(url, secretKey, { auth: { persistSession: false } }),
       isServiceRole: true
     };
   }
-  if (anonKey) {
+  if (publicKey) {
     return {
-      client: createClient(url, anonKey, { auth: { persistSession: false } }),
+      client: createClient(url, publicKey, { auth: { persistSession: false } }),
       isServiceRole: false
     };
   }

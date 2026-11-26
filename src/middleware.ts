@@ -42,7 +42,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const rootDomain = (process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? 'mataderos.ar').toLowerCase();
+  const rootDomain = (
+    process.env.ROOT_DOMAIN ??
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN ??
+    'mataderos.ar'
+  ).toLowerCase();
   let subdomain = '';
 
   if (hostname.endsWith('.localhost')) {

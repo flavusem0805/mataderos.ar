@@ -7,10 +7,12 @@ import { NotaFrame } from '@/components/notas/NotaFrame';
 import { CopyLinkButton } from '@/components/emprendedores/CopyLinkButton';
 import {
   canonicalEmprendedor,
-  getEmprendedorBySlug,
   getEmprendedores,
   LOCATION_TYPE_LABELS
 } from '@/lib/emprendedores';
+import { fetchEmprendedorBySlug } from '@/lib/supabase';
+
+export const revalidate = 300;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -22,7 +24,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const emprendedor = getEmprendedorBySlug(slug);
+  const emprendedor = await fetchEmprendedorBySlug(slug);
   if (!emprendedor) return { title: 'Emprendedor no encontrado · Mataderos.ar' };
 
   const url = canonicalEmprendedor(emprendedor.slug);
@@ -43,7 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function EmprendedorDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const item = getEmprendedorBySlug(slug);
+  const item = await fetchEmprendedorBySlug(slug);
   if (!item) notFound();
 
   const url = canonicalEmprendedor(item.slug);

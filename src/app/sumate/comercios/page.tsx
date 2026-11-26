@@ -2,13 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
-import { SlugSimulator } from '@/components/sumate/SlugSimulator';
+import { SumateBuilder } from '@/components/sumate/SumateBuilder';
 import { PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
+import type { SumateDesiredPlan } from '@/lib/slugs';
+import { fetchTakenSlugs } from '@/lib/supabase';
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Comercios del barrio · Sumate a Mataderos.ar',
   description:
-    'Ficha gratuita en la guía de comercios de Mataderos y opción de Web Oficial en tunombre.mataderos.ar.',
+    'Armá en 3 pasos la ficha gratuita de tu comercio en Mataderos.ar y mirá en vivo cómo queda tu Web Oficial en tunombre.mataderos.ar.',
   alternates: { canonical: 'https://mataderos.ar/sumate/comercios' },
   openGraph: {
     title: 'Comercios del barrio · Sumate a Mataderos.ar',
@@ -63,24 +67,6 @@ const BENEFICIOS = [
   }
 ];
 
-const PASOS = [
-  {
-    step: '01',
-    title: 'Nos pasás el nombre de tu local',
-    body: 'Probá abajo cómo quedaría tu dirección o escribinos directo por WhatsApp.'
-  },
-  {
-    step: '02',
-    title: 'Armamos la ficha gratuita en la guía',
-    body: 'Cargamos dirección, horarios, rubro y WhatsApp para que los vecinos ya te encuentren.'
-  },
-  {
-    step: '03',
-    title: 'Si querés, activamos tu Web Oficial',
-    body: 'Publicamos tu página en tunombre.mataderos.ar con tus servicios y fotos (precio TBD).'
-  }
-];
-
 const FAQS = [
   {
     q: '¿Es realmente gratis?',
@@ -100,7 +86,15 @@ const FAQS = [
   }
 ];
 
-export default function SumateComerciosPage() {
+interface PageProps {
+  searchParams: Promise<{ nombre?: string; plan?: string }>;
+}
+
+export default async function SumateComerciosPage({ searchParams }: PageProps) {
+  const [params, takenSlugs] = await Promise.all([searchParams, fetchTakenSlugs()]);
+  const initialName = typeof params.nombre === 'string' ? params.nombre.trim().slice(0, 60) : '';
+  const initialPlan: SumateDesiredPlan =
+    params.plan === 'web_oficial' ? 'web_oficial' : 'ficha_gratuita';
   const waHref = whatsappUrl('Hola, quiero sumar mi comercio a Mataderos.ar.');
 
   return (
@@ -129,7 +123,7 @@ export default function SumateComerciosPage() {
           </nav>
 
           <p className="mt-4 font-mono text-sm uppercase tracking-wider text-ladrillo">
-            Locales a la calle · Mataderos
+            Locales a la calle · Mataderos · Listo en 3 pasos
           </p>
           <h1 className="mt-2 max-w-[16ch] font-display text-[clamp(2.75rem,7.5vw,5rem)] font-semibold uppercase leading-[0.9]">
             Tu comercio en la guía del barrio
@@ -140,13 +134,11 @@ export default function SumateComerciosPage() {
 
           <div className="mt-7 flex flex-wrap gap-4">
             <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#armar"
               className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] bg-chicago px-6 font-semibold text-pampa hover:bg-chicago-dark color-field"
             >
-              Sumate por WhatsApp
-              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              Armar mi previa en 3 pasos
+              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
             </a>
             <Link
               href="/comercio/veterinariaalberdi"
@@ -161,50 +153,49 @@ export default function SumateComerciosPage() {
 
       <section className="section-pad border-b border-carbon/15 bg-pampa-surface">
         <div className="editorial-container">
+          <SumateBuilder
+            mode="comercio"
+            takenSlugs={takenSlugs}
+            initialName={initialName}
+            initialPlan={initialPlan}
+          />
+        </div>
+      </section>
+
+      <section className="section-pad border-b border-carbon/15 bg-pampa">
+        <div className="editorial-container">
           <p className="font-mono text-sm uppercase tracking-wider text-chicago">Por qué te sirve</p>
           <h2 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-semibold uppercase leading-[0.95]">
             Más visibilidad en el barrio y en Google
           </h2>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             {BENEFICIOS.map((item) => (
-              <div key={item.title} className="border border-carbon/20 bg-pampa p-6">
+              <div key={item.title} className="border border-carbon/20 bg-pampa-surface p-6">
                 <h3 className="font-serif text-xl font-semibold leading-snug">{item.title}</h3>
                 <p className="mt-3 text-base leading-relaxed text-carbon/85">{item.body}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      <section className="section-pad border-b border-carbon/15 bg-pampa">
-        <div className="editorial-container">
-          <p className="font-mono text-sm uppercase tracking-wider text-chicago">Cómo se ve</p>
-          <h2 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-semibold uppercase leading-[0.95]">
-            Un ejemplo real en Mataderos.ar
-          </h2>
-
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            <div className="border border-carbon/20 bg-pampa-surface p-6 sm:p-8">
-              <p className="font-mono text-sm uppercase text-chicago">Web Oficial activa</p>
-              <h3 className="mt-2 font-serif text-2xl font-semibold">Veterinaria Alberdi</h3>
-              <p className="mt-2 font-mono text-base text-carbon/75">
-                veterinariaalberdi.mataderos.ar
-              </p>
-              <p className="mt-4 text-base leading-relaxed text-carbon/85">
-                Página propia con servicios, horarios, dirección en el barrio y botón directo a WhatsApp.
-              </p>
-              <div className="mt-6">
-                <Link
-                  href="/comercio/veterinariaalberdi"
-                  className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-5 font-semibold hover:bg-carbon hover:text-pampa color-field"
-                >
-                  Abrir ejemplo de Web Oficial
-                  <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                </Link>
+          <div className="mt-8 border border-carbon/20 bg-pampa-surface p-6 sm:p-8">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="font-mono text-sm uppercase text-chicago">Ejemplo real activo</p>
+                <h3 className="mt-1 font-serif text-2xl font-semibold">
+                  Veterinaria Alberdi · veterinariaalberdi.mataderos.ar
+                </h3>
+                <p className="mt-2 max-w-[58ch] text-base text-carbon/85">
+                  Página propia con servicios, horarios, dirección exacta en Av. Alberdi 6200 y botón directo a WhatsApp.
+                </p>
               </div>
+              <Link
+                href="/comercio/veterinariaalberdi"
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon px-5 font-semibold hover:bg-carbon hover:text-pampa color-field"
+              >
+                Abrir ejemplo real
+                <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              </Link>
             </div>
-
-            <SlugSimulator />
           </div>
         </div>
       </section>
@@ -249,25 +240,6 @@ export default function SumateComerciosPage() {
               </tbody>
             </table>
           </div>
-        </div>
-      </section>
-
-      <section className="section-pad border-b border-carbon/15 bg-pampa">
-        <div className="editorial-container">
-          <p className="font-mono text-sm uppercase tracking-wider text-chicago">Cómo funciona</p>
-          <h2 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-semibold uppercase leading-[0.95]">
-            Tres pasos simples
-          </h2>
-
-          <ol className="mt-8 grid gap-6 md:grid-cols-3">
-            {PASOS.map((paso) => (
-              <li key={paso.step} className="border border-carbon/20 bg-pampa-surface p-6">
-                <p className="font-mono text-2xl font-semibold text-chicago">{paso.step}</p>
-                <h3 className="mt-3 font-serif text-xl font-semibold">{paso.title}</h3>
-                <p className="mt-2 text-base leading-relaxed text-carbon/85">{paso.body}</p>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 

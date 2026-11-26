@@ -14,6 +14,14 @@ import {
   type Business,
   type NeighborhoodEvent
 } from './data';
+import {
+  EMPRENDEDORES,
+  getEmprendedorBySlug,
+  type Emprendedor,
+  type EmprendedorCategory,
+  type LocationType
+} from './emprendedores';
+import { BUILT_IN_TAKEN_SLUGS } from './slugs';
 import { FOTOS, type FotoId } from './notas/media';
 
 let cachedClient: SupabaseClient | null = null;
@@ -200,4 +208,141 @@ export async function fetchAgendaItems(): Promise<AgendaItem[]> {
       photoId: isFotoId(row.photo_id) ? row.photo_id : undefined
     };
   });
+}
+
+function mapEmprendedorRow(row: Record<string, unknown>): Emprendedor {
+  const photosRaw = Array.isArray(row.photos) ? row.photos : [];
+  const photos = photosRaw
+    .filter((entry): entry is Record<string, unknown> => Boolean(entry && typeof entry === 'object'))
+    .map((entry) => ({
+      src: String(entry.src ?? ''),
+      alt: String(entry.alt ?? '')
+    }))
+    .filter((entry) => entry.src.length > 0);
+
+  return {
+    slug: String(row.slug ?? ''),
+    displayName: String(row.display_name ?? row.displayName ?? ''),
+    tagline: String(row.tagline ?? ''),
+    offerText: String(row.offer_text ?? row.offerText ?? row.tagline ?? ''),
+    category: (row.category as EmprendedorCategory) ?? 'Artesanías',
+    locationType: (row.location_type as LocationType) ?? 'feria_puesto',
+    feriaName: row.feria_name ? String(row.feria_name) : undefined,
+    puestoLabel: row.puesto_label ? String(row.puesto_label) : undefined,
+    address: row.address ? String(row.address) : undefined,
+    zone: String(row.zone ?? 'Mataderos · Comuna 9'),
+    locationNote: String(row.location_note ?? ''),
+    whatsapp: String(row.whatsapp ?? ''),
+    instagram: row.instagram ? String(row.instagram) : undefined,
+    facebook: row.facebook ? String(row.facebook) : undefined,
+    tiktok: row.tiktok ? String(row.tiktok) : undefined,
+    otherUrl: row.other_url ? String(row.other_url) : undefined,
+    heroImage: String(row.hero_image ?? '/notas/frente-recova.jpg'),
+    heroAlt: String(row.hero_alt ?? row.display_name ?? 'Emprendimiento de Mataderos'),
+    photos,
+    catalogPdfName: row.catalog_pdf_name ? String(row.catalog_pdf_name) : undefined,
+    catalogPdfSizeLabel: row.catalog_pdf_size_label ? String(row.catalog_pdf_size_label) : undefined,
+    catalogPdfUrl: row.catalog_pdf_url ? String(row.catalog_pdf_url) : undefined,
+    isFounder: Boolean(row.is_founder),
+    verifiedAt: String(row.verified_at ?? '2026-11-22')
+  };
+}
+
+export async function fetchEmprendedores(): Promise<Emprendedor[]> {
+  const supabase = getSupabaseClient();
+  if (!supabase) return EMPRENDEDORES;
+
+  try {
+    const { data, error } = await supabase
+      .from('emprendedores')
+      .select('*')
+      .order('is_founder', { ascending: false });
+
+    if (error || !data || data.length === 0) {
+      return EMPRENDEDORES;
+    }
+
+    const mapped = (data as Record<string, unknown>[])
+      .filter((row) => (row.status ? String(row.status) === 'verified' : true))
+      .map(mapEmprendedorRow)
+      .filter((item) => item.slug.length > 0 && item.displayName.length > 0);
+
+    return mapped.length > 0 ? mapped : EMPRENDEDORES;
+  } catch {
+    return EMPRENDEDORES;
+  }
+}
+
+export async function fetchEmprendedorBySlug(slug: string): Promise<Emprendedor | null> {
+  const normalized = slug.toLowerCase().trim();
+  const supabase = getSupabaseClient();
+
+  if (supabase) {
+    try {
+      const { data } = await supabase
+        .from('emprendedores')
+        .select('*')
+        .eq('slug', normalized)
+        .maybeSingle();
+
+      if (data) {
+        const row = data as Record<string, unknown>;
+        if (!row.status || String(row.status) === 'verified') {
+          return mapEmprendedorRow(row);
+        }
+      }
+    } catch {
+      // Fallback limpio a los perfiles curados locales si la tabla aún no existe
+    }
+  }
+
+  return getEmprendedorBySlug(normalized) ?? null;
+}
+
+/**
+ * Devuelve todos los slugs ocupados entre comercios, emprendedores y postulaciones activas
+ * para evitar colisiones desde /sumate y #sumar-comercio.
+ */
+export async function fetchTakenSlugs(): Promise<string[]> {
+  const taken = new Set<string>(BUILT_IN_TAKEN_SLUGS);
+  const supabase = getSupabaseClient();
+  if (!supabase) return Array.from(taken);
+
+  try {
+    const [bizRes, empRes, subRes] = await Promise.allSettled([
+      supabase.from('businesses').select('slug'),
+      supabase.from('emprendedores').select('slug'),
+      supabase.from('sumate_submissions').select('slug, status')
+    ]);
+
+    if (bizRes.status === 'fulfilled' && Array.isArray(bizRes.value.data)) {
+      for (const row of bizRes.value.data) {
+        if (row.slug) taken.add(String(row.slug).toLowerCase());
+      }
+    }
+    if (empRes.status === 'fulfilled' && Array.isArray(empRes.value.data)) {
+      for (const row of empRes.value.data) {
+        if (row.slug) taken.add(String(row.slug).toLowerCase());
+      }
+    }
+    if (subRes.status === 'fulfilled' && Array.isArray(subRes.value.data)) {
+      for (const row of subRes.value.data) {
+        if (row.slug && row.status !== 'rejected') {
+          taken.add(String(row.slug).toLowerCase());
+        }
+      }
+    }
+  } catch {
+    // Mantiene la lista base local si la base aún no está migrada
+  }
+
+  return Array.from(taken);
+}
+
+/** Cliente server-side opcional para altas en rutas API cuando esté habilitado el modo DB. */
+export function getSupabaseWriteClient(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
 }

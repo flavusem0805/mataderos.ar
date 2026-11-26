@@ -1,11 +1,16 @@
 import PortalClient, { type HomeNote } from '@/components/PortalClient';
 import { formatFecha, notasRecientes } from '@/lib/notas';
-import { fetchAgendaItems, fetchBusinesses } from '@/lib/supabase';
+import { fetchAgendaItems, fetchBusinesses, fetchEmprendedores, fetchTakenSlugs } from '@/lib/supabase';
 
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [businesses, agendaItems] = await Promise.all([fetchBusinesses(), fetchAgendaItems()]);
+  const [businesses, agendaItems, emprendedores, takenSlugs] = await Promise.all([
+    fetchBusinesses(),
+    fetchAgendaItems(),
+    fetchEmprendedores(),
+    fetchTakenSlugs()
+  ]);
   const serverNow = Date.now();
   const notes: HomeNote[] = notasRecientes(8).map((nota) => ({
     slug: nota.slug,
@@ -24,6 +29,8 @@ export default async function HomePage() {
       businesses={businesses}
       notes={notes}
       agendaItems={agendaItems}
+      emprendedores={emprendedores}
+      takenSlugs={takenSlugs}
       serverNow={serverNow}
     />
   );

@@ -3,7 +3,9 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import { EmprendedoresDirectory } from '@/components/emprendedores/EmprendedoresDirectory';
-import { getEmprendedores } from '@/lib/emprendedores';
+import { fetchEmprendedores } from '@/lib/supabase';
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Emprendedores del barrio verificados · Mataderos.ar',
@@ -20,8 +22,8 @@ export const metadata: Metadata = {
   }
 };
 
-export default function EmprendedoresPage() {
-  const emprendedores = getEmprendedores();
+export default async function EmprendedoresPage() {
+  const emprendedores = await fetchEmprendedores();
 
   return (
     <NotaFrame>

@@ -3,13 +3,17 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
+import { SumateBuilder } from '@/components/sumate/SumateBuilder';
 import { PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
-import { getEmprendedores } from '@/lib/emprendedores';
+import type { SumateDesiredPlan } from '@/lib/slugs';
+import { fetchEmprendedores, fetchTakenSlugs } from '@/lib/supabase';
+
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: 'Emprendedores y feriantes · Sumate a Mataderos.ar',
   description:
-    'Tu landing gratuita en Mataderos.ar para que te encuentren entre feria y feria, con catálogo por WhatsApp y sello de verificado del barrio.',
+    'Armá en 3 pasos tu landing gratuita en Mataderos.ar para que te encuentren entre feria y feria, con catálogo por WhatsApp y sello de verificado.',
   alternates: { canonical: 'https://mataderos.ar/sumate/emprendedores' },
   openGraph: {
     title: 'Emprendedores y feriantes verificados · Mataderos.ar',
@@ -64,24 +68,6 @@ const BENEFICIOS = [
   }
 ];
 
-const PASOS = [
-  {
-    step: '01',
-    title: 'Nos escribís por WhatsApp',
-    body: 'En esta primera ronda hacemos el alta mano a mano con vos para que no tengas que pelear con formularios.'
-  },
-  {
-    step: '02',
-    title: 'Armamos tu ficha juntos',
-    body: 'Nos pasás qué ofrecés, dónde encontrarte, tu WhatsApp, redes, unas fotos y el PDF de catálogo si tenés.'
-  },
-  {
-    step: '03',
-    title: 'Revisamos y publicamos',
-    body: 'Verificamos los datos y dejamos tu página online con el sello «Verificado por Mataderos.ar» y la insignia de Fundador.'
-  }
-];
-
 const FAQS = [
   {
     q: '¿Es realmente gratis?',
@@ -105,8 +91,20 @@ const FAQS = [
   }
 ];
 
-export default function SumateEmprendedoresPage() {
-  const ejemplo = getEmprendedores()[0];
+interface PageProps {
+  searchParams: Promise<{ nombre?: string; plan?: string }>;
+}
+
+export default async function SumateEmprendedoresPage({ searchParams }: PageProps) {
+  const [params, emprendedores, takenSlugs] = await Promise.all([
+    searchParams,
+    fetchEmprendedores(),
+    fetchTakenSlugs()
+  ]);
+  const ejemplo = emprendedores[0];
+  const initialName = typeof params.nombre === 'string' ? params.nombre.trim().slice(0, 60) : '';
+  const initialPlan: SumateDesiredPlan =
+    params.plan === 'gratis_verificado' ? 'gratis_verificado' : 'fundadores';
   const waHref = whatsappUrl(
     'Hola, quiero sumar mi emprendimiento o puesto a la Primera Ronda de Mataderos.ar.'
   );
@@ -137,7 +135,7 @@ export default function SumateEmprendedoresPage() {
           </nav>
 
           <p className="mt-4 font-mono text-sm uppercase tracking-wider text-chicago">
-            Primera Ronda · Convocatoria Fundadores
+            Primera Ronda · Convocatoria Fundadores · Listo en 3 pasos
           </p>
           <h1 className="mt-2 max-w-[16ch] font-display text-[clamp(2.75rem,7.5vw,5rem)] font-semibold uppercase leading-[0.9]">
             Emprendedores y feriantes verificados
@@ -148,13 +146,11 @@ export default function SumateEmprendedoresPage() {
 
           <div className="mt-7 flex flex-wrap gap-4">
             <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#armar"
               className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] bg-chicago px-6 font-semibold text-pampa hover:bg-chicago-dark color-field"
             >
-              Coordiná tu alta por WhatsApp
-              <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+              Armar mi landing en 3 pasos
+              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
             </a>
             {ejemplo && (
               <Link
@@ -171,13 +167,24 @@ export default function SumateEmprendedoresPage() {
 
       <section className="section-pad border-b border-carbon/15 bg-pampa-surface">
         <div className="editorial-container">
+          <SumateBuilder
+            mode="emprendedor"
+            takenSlugs={takenSlugs}
+            initialName={initialName}
+            initialPlan={initialPlan}
+          />
+        </div>
+      </section>
+
+      <section className="section-pad border-b border-carbon/15 bg-pampa">
+        <div className="editorial-container">
           <p className="font-mono text-sm uppercase tracking-wider text-chicago">Por qué te sirve</p>
           <h2 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-semibold uppercase leading-[0.95]">
             Lo esencial para vender en el barrio
           </h2>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
             {BENEFICIOS.map((item) => (
-              <div key={item.title} className="border border-carbon/20 bg-pampa p-6">
+              <div key={item.title} className="border border-carbon/20 bg-pampa-surface p-6">
                 <h3 className="font-serif text-xl font-semibold leading-snug">{item.title}</h3>
                 <p className="mt-3 text-base leading-relaxed text-carbon/85">{item.body}</p>
               </div>
@@ -187,7 +194,7 @@ export default function SumateEmprendedoresPage() {
       </section>
 
       {ejemplo && (
-        <section className="section-pad border-b border-carbon/15 bg-pampa">
+        <section className="section-pad border-b border-carbon/15 bg-pampa-surface">
           <div className="editorial-container">
             <p className="font-mono text-sm uppercase tracking-wider text-chicago">Cómo se ve</p>
             <h2 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-semibold uppercase leading-[0.95]">
@@ -197,7 +204,7 @@ export default function SumateEmprendedoresPage() {
               Esta es una ficha de demostración con la plantilla real que vas a tener en Mataderos.ar, pensada para abrirse rápido desde el celular.
             </p>
 
-            <div className="mt-8 grid items-stretch border border-carbon bg-pampa-surface md:grid-cols-12">
+            <div className="mt-8 grid items-stretch border border-carbon bg-pampa md:grid-cols-12">
               <div className="relative min-h-[240px] border-b border-carbon/15 md:col-span-5 md:border-b-0 md:border-r">
                 <Image
                   src={ejemplo.heroImage}
@@ -213,8 +220,12 @@ export default function SumateEmprendedoresPage() {
                     <span>Verificado por Mataderos.ar</span>
                     <span>·</span>
                     <span>Fundador</span>
-                    <span>·</span>
-                    <span className="text-carbon/70">Ejemplo</span>
+                    {ejemplo.isDemo && (
+                      <>
+                        <span>·</span>
+                        <span className="text-carbon/70">Ejemplo</span>
+                      </>
+                    )}
                   </div>
                   <h3 className="mt-3 font-serif text-2xl font-semibold sm:text-3xl">
                     {ejemplo.displayName}
@@ -239,17 +250,17 @@ export default function SumateEmprendedoresPage() {
         </section>
       )}
 
-      <section className="section-pad border-b border-carbon/15 bg-pampa-surface">
+      <section className="section-pad border-b border-carbon/15 bg-pampa">
         <div className="editorial-container">
           <p className="font-mono text-sm uppercase tracking-wider text-chicago">Planes</p>
           <h2 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-semibold uppercase leading-[0.95]">
             Gratis para siempre, con opción de crecer
           </h2>
 
-          <div className="mt-8 overflow-x-auto border border-carbon/20 bg-pampa">
+          <div className="mt-8 overflow-x-auto border border-carbon/20 bg-pampa-surface">
             <table className="w-full min-w-[640px] border-collapse text-left text-base">
               <thead>
-                <tr className="border-b border-carbon bg-pampa-surface font-mono text-sm uppercase">
+                <tr className="border-b border-carbon bg-pampa font-mono text-sm uppercase">
                   <th className="p-4 font-semibold">Qué incluye</th>
                   <th className="p-4 font-semibold">Gratis (para siempre)</th>
                   <th className="p-4 font-semibold text-chicago">Primera Ronda · Fundadores</th>
@@ -300,25 +311,6 @@ export default function SumateEmprendedoresPage() {
             </Link>
             .
           </p>
-        </div>
-      </section>
-
-      <section className="section-pad border-b border-carbon/15 bg-pampa">
-        <div className="editorial-container">
-          <p className="font-mono text-sm uppercase tracking-wider text-chicago">Cómo funciona</p>
-          <h2 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-semibold uppercase leading-[0.95]">
-            Tres pasos simples
-          </h2>
-
-          <ol className="mt-8 grid gap-6 md:grid-cols-3">
-            {PASOS.map((paso) => (
-              <li key={paso.step} className="border border-carbon/20 bg-pampa-surface p-6">
-                <p className="font-mono text-2xl font-semibold text-chicago">{paso.step}</p>
-                <h3 className="mt-3 font-serif text-xl font-semibold">{paso.title}</h3>
-                <p className="mt-2 text-base leading-relaxed text-carbon/85">{paso.body}</p>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 

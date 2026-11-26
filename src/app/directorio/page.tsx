@@ -3,8 +3,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import { DirectoryExplorer } from '@/components/directorio/DirectoryExplorer';
-import { fetchBusinesses } from '@/lib/supabase';
-import { getEmprendedores } from '@/lib/emprendedores';
+import { fetchBusinesses, fetchEmprendedores } from '@/lib/supabase';
 
 export const revalidate = 300;
 
@@ -24,8 +23,10 @@ export const metadata: Metadata = {
 };
 
 export default async function DirectorioPage() {
-  const businesses = await fetchBusinesses();
-  const emprendedores = getEmprendedores();
+  const [businesses, emprendedores] = await Promise.all([
+    fetchBusinesses(),
+    fetchEmprendedores()
+  ]);
 
   const jsonLd = {
     '@context': 'https://schema.org',

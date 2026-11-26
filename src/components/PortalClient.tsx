@@ -8,6 +8,7 @@ import {
   AlertCircle,
   ArrowRight,
   ArrowUpRight,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -24,7 +25,8 @@ import {
 import { AGENDA_SPOTS, type AgendaItem } from '@/lib/agenda-data';
 import { FOTOS } from '@/lib/notas/media';
 import { whatsappUrl } from '@/lib/contact';
-import { getEmprendedores, LOCATION_TYPE_LABELS } from '@/lib/emprendedores';
+import { EMPRENDEDORES, LOCATION_TYPE_LABELS, type Emprendedor } from '@/lib/emprendedores';
+import { BUILT_IN_TAKEN_SLUGS, checkSlugAvailability } from '@/lib/slugs';
 import {
   agendaStatus,
   agendaTimestamps,
@@ -54,6 +56,8 @@ interface PortalClientProps {
   businesses: Business[];
   notes: HomeNote[];
   agendaItems: AgendaItem[];
+  emprendedores?: Emprendedor[];
+  takenSlugs?: string[];
   serverNow: number;
 }
 
@@ -72,15 +76,6 @@ const ARCHIVE_WIDTHS = [
   'w-[86%] md:w-[40%] lg:w-[30%]',
   'w-[86%] md:w-[44%] lg:w-[33%]'
 ];
-
-function slugifyShopName(input: string): string {
-  const cleaned = input
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '');
-  return cleaned || 'tunegocio';
-}
 
 function mapsHref(query: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
@@ -1381,11 +1376,17 @@ function ShopCard({ business, open }: { business: Business; open: boolean }) {
   );
 }
 
-function ShopDirectory({ businesses }: { businesses: Business[] }) {
+function ShopDirectory({
+  businesses,
+  takenSlugs
+}: {
+  businesses: Business[];
+  takenSlugs: string[];
+}) {
   const scroller = useRef<HTMLDivElement>(null);
   const [category, setCategory] = useState<BusinessCategory | null>(null);
   const [openOnly, setOpenOnly] = useState(false);
-  const [shopName, setShopName] = useState('Veterinaria Alberdi');
+  const [shopName, setShopName] = useState('');
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -1409,7 +1410,7 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
     scroller.current?.scrollTo({ left: 0 });
   };
 
-  const simulated = slugifyShopName(shopName);
+  const slugCheck = checkSlugAvailability(shopName, takenSlugs, 'comercio');
   const emptyMessage =
     openOnly && category
       ? 'No hay comercios abiertos en este rubro ahora'
@@ -1520,11 +1521,16 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
         )}
 
         <div id="sumar-comercio" className="mt-12 border border-carbon p-6 sm:p-8">
-          <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
-            ¿Tenés un comercio en Mataderos? Sumate
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
+              ¿Tenés un comercio en Mataderos? Sumate
+            </h2>
+            <span className="font-mono text-sm uppercase tracking-wide text-chicago">
+              En 3 pasos · Ficha gratis
+            </span>
+          </div>
           <p className="mt-4 max-w-3xl text-lg leading-relaxed">
-            La ficha con dirección, horario y WhatsApp es gratuita. Si querés el sitio del local, activamos la Web oficial dentro de Mataderos.ar.
+            La ficha con dirección, horario y WhatsApp es gratuita. Si querés el sitio propio del local, activamos la Web oficial dentro de Mataderos.ar y la previsualizás antes de enviar.
           </p>
           <label htmlFor="b2b-slug-input" className="mt-6 block text-base font-semibold">
             Nombre del negocio
@@ -1533,26 +1539,68 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
             id="b2b-slug-input"
             type="text"
             value={shopName}
+            placeholder="Ej: Panadería Don José"
             onChange={(event) => setShopName(event.target.value)}
-            className="mt-2 min-h-[48px] w-full border border-carbon/40 bg-pampa-surface px-4 text-lg text-carbon"
+            className="mt-2 min-h-[48px] w-full border border-carbon/40 bg-pampa-surface px-4 text-lg text-carbon placeholder:text-carbon/45"
           />
-          <p className="mt-4 break-words border border-carbon/25 bg-pampa-surface px-4 py-3 font-mono text-base">
-            Web oficial · {simulated}.mataderos.ar
-          </p>
-          <div className="mt-4 flex flex-wrap items-center gap-4">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border border-carbon/25 bg-pampa-surface px-4 py-3 font-mono text-base">
+            <span className="break-words">Web oficial · {slugCheck.slug}.mataderos.ar</span>
+            {!slugCheck.isPlaceholder && (
+              <span
+                className={`inline-flex items-center gap-1.5 text-sm font-semibold ${
+                  slugCheck.available ? 'text-chicago' : 'text-carbon'
+                }`}
+              >
+                {slugCheck.available ? (
+                  <>
+                    <Check className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                    Disponible
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+                    {slugCheck.reason === 'reserved' ? 'Reservada por el portal' : 'Ya registrada'}
+                  </>
+                )}
+              </span>
+            )}
+          </div>
+          {!slugCheck.isPlaceholder && !slugCheck.available && slugCheck.suggestions.length > 0 && (
+            <p className="mt-2 font-mono text-sm text-carbon/75">
+              Sugerencias libres:{' '}
+              {slugCheck.suggestions.map((sug, index) => (
+                <span key={sug}>
+                  {index > 0 ? ' · ' : ''}
+                  {sug}.mataderos.ar
+                </span>
+              ))}
+            </p>
+          )}
+          <div className="mt-5 flex flex-wrap items-center gap-4">
+            <Link
+              href={
+                shopName.trim()
+                  ? `/sumate/comercios?nombre=${encodeURIComponent(shopName.trim())}#armar`
+                  : '/sumate/comercios#armar'
+              }
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+            >
+              Continuar armado en 3 pasos
+              <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </Link>
             <a
               href={whatsappUrl(
-                `Hola! Quiero sumar mi comercio a Mataderos.ar (${simulated}.mataderos.ar).`
+                `Hola! Quiero sumar mi comercio a Mataderos.ar (${slugCheck.slug}.mataderos.ar).`
               )}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon/35 bg-pampa-surface px-5 font-semibold text-carbon hover:border-chicago hover:text-chicago"
             >
-              Sumate por WhatsApp
+              WhatsApp directa
               <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
             </a>
             <Link
-              href="/sumate/emprendedores"
+              href="/sumate/emprendedores#armar"
               className="inline-flex min-h-[48px] items-center gap-1.5 text-base font-medium text-chicago underline underline-offset-4"
             >
               ¿Tenés un puesto en la Feria o un emprendimiento? Entrá por acá
@@ -1565,8 +1613,7 @@ function ShopDirectory({ businesses }: { businesses: Business[] }) {
   );
 }
 
-function EmprendedoresBand() {
-  const emprendedores = getEmprendedores();
+function EmprendedoresBand({ emprendedores }: { emprendedores: Emprendedor[] }) {
 
   return (
     <section
@@ -1822,6 +1869,8 @@ export default function PortalClient({
   businesses,
   notes,
   agendaItems,
+  emprendedores = EMPRENDEDORES,
+  takenSlugs = BUILT_IN_TAKEN_SLUGS,
   serverNow
 }: PortalClientProps) {
   return (
@@ -1838,8 +1887,8 @@ export default function PortalClient({
           <AgendaStrip agendaItems={agendaItems} serverNow={serverNow} />
           <ViviBand />
           <ArchiveCarousel />
-          <ShopDirectory businesses={businesses} />
-          <EmprendedoresBand />
+          <ShopDirectory businesses={businesses} takenSlugs={takenSlugs} />
+          <EmprendedoresBand emprendedores={emprendedores} />
         </div>
       </main>
       <SiteFooter />

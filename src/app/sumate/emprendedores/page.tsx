@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import { SumateBuilder } from '@/components/sumate/SumateBuilder';
-import { PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
+import { mailtoUrl, PORTAL_EMAIL, PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
 import type { SumateDesiredPlan } from '@/lib/slugs';
 import { fetchEmprendedores, fetchTakenSlugs } from '@/lib/supabase';
 
@@ -341,7 +341,14 @@ export default async function SumateEmprendedoresPage({ searchParams }: PageProp
             Sumá tu emprendimiento a la Primera Ronda
           </h2>
           <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-pampa/90">
-            Escribinos directo por WhatsApp ({PORTAL_WHATSAPP_DISPLAY}) y armamos tu ficha juntos en pocos minutos.
+            Escribinos directo por WhatsApp ({PORTAL_WHATSAPP_DISPLAY}) o por mail a{' '}
+            <a
+              href={mailtoUrl('Sumate Emprendedores · Mataderos.ar')}
+              className="font-mono underline underline-offset-4 hover:text-pampa"
+            >
+              {PORTAL_EMAIL}
+            </a>{' '}
+            y armamos tu ficha juntos en pocos minutos.
           </p>
           <div className="mt-7 flex flex-wrap gap-4">
             <a

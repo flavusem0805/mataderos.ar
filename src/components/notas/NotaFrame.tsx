@@ -3,6 +3,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { NotaNav } from '@/components/notas/NotaNav';
 import { MobileBottomBar } from '@/components/MobileBottomBar';
+import { mailtoUrl, PORTAL_EMAIL } from '@/lib/contact';
 
 const LINKS = [
   { href: '/', label: 'Inicio' },
@@ -59,7 +60,15 @@ export function NotaFrame({ children }: { children: ReactNode }) {
               Privacidad
             </Link>
           </div>
-          <span>Comuna 9 · CABA</span>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+            <a
+              href={mailtoUrl('Consulta desde Mataderos.ar')}
+              className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
+            >
+              {PORTAL_EMAIL}
+            </a>
+            <span>Comuna 9 · CABA</span>
+          </div>
         </div>
       </footer>
       <MobileBottomBar />

@@ -4,7 +4,7 @@ import {
   type SumateSubmissionPayload,
   validateSumatePayload
 } from '@/lib/slugs';
-import { fetchTakenSlugs, getSupabaseWriteClient } from '@/lib/supabase';
+import { fetchTakenSlugs, getSupabaseWriteContext } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   let body: Partial<SumateSubmissionPayload>;
@@ -34,39 +34,64 @@ export async function POST(request: Request) {
   const normalized = check.normalized;
   const whatsappSummary = formatWhatsappSummary(normalized);
   const dbEnabled = process.env.NEXT_PUBLIC_SUMATE_DB_ENABLED === 'true';
-  const supabase = dbEnabled ? getSupabaseWriteClient() : null;
+  const writeCtx = dbEnabled ? getSupabaseWriteContext() : null;
 
-  if (supabase) {
+  if (writeCtx) {
+    const baseRow = {
+      mode: normalized.mode,
+      desired_plan: normalized.desiredPlan,
+      display_name: normalized.displayName,
+      slug: normalized.slug,
+      category: normalized.category,
+      zone_or_feria: normalized.zoneOrFeria,
+      location_type: normalized.locationType ?? null,
+      address_or_puesto: normalized.addressOrPuesto,
+      hours_summary: normalized.hoursSummary,
+      tagline: normalized.tagline,
+      whatsapp: normalized.whatsapp,
+      instagram: normalized.instagram ?? null,
+      has_pdf_catalog: Boolean(normalized.hasPdfCatalog),
+      accepted_terms: true,
+      payload: normalized,
+      status: 'pending_review'
+    };
+
+    const rowWithEmail = {
+      ...baseRow,
+      contact_email: normalized.contactEmail ?? null
+    };
+
+    const insertRow = async (row: Record<string, unknown>) => {
+      if (writeCtx.isServiceRole) {
+        const res = await writeCtx.client
+          .from('sumate_submissions')
+          .insert(row)
+          .select('id')
+          .maybeSingle();
+        return {
+          id: res.data?.id ? String(res.data.id) : null,
+          error: res.error
+        };
+      }
+      // Con anon key respetamos RLS (no hay SELECT público sobre sumate_submissions)
+      const res = await writeCtx.client.from('sumate_submissions').insert(row);
+      return { id: null, error: res.error };
+    };
+
     try {
-      const { data, error } = await supabase
-        .from('sumate_submissions')
-        .insert({
-          mode: normalized.mode,
-          desired_plan: normalized.desiredPlan,
-          display_name: normalized.displayName,
-          slug: normalized.slug,
-          category: normalized.category,
-          zone_or_feria: normalized.zoneOrFeria,
-          location_type: normalized.locationType ?? null,
-          address_or_puesto: normalized.addressOrPuesto,
-          hours_summary: normalized.hoursSummary,
-          tagline: normalized.tagline,
-          whatsapp: normalized.whatsapp,
-          instagram: normalized.instagram ?? null,
-          has_pdf_catalog: Boolean(normalized.hasPdfCatalog),
-          accepted_terms: true,
-          payload: normalized,
-          status: 'pending_review'
-        })
-        .select('id')
-        .maybeSingle();
+      let result = await insertRow(rowWithEmail);
 
-      if (!error) {
+      // Compatibilidad hacia atrás si la base aún tiene solo la migración 0001 sin contact_email
+      if (result.error && result.error.message?.includes('contact_email')) {
+        result = await insertRow(baseRow);
+      }
+
+      if (!result.error) {
         return NextResponse.json(
           {
             ok: true,
             mode: 'db',
-            submissionId: data?.id ? String(data.id) : null,
+            submissionId: result.id,
             slug: normalized.slug,
             whatsappSummary
           },

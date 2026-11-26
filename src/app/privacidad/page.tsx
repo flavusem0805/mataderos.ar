@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import {
+  mailtoUrl,
   OPERATOR_NAME,
   OPERATOR_URL,
+  PORTAL_EMAIL,
   PORTAL_WHATSAPP_DISPLAY,
   whatsappUrl
 } from '@/lib/contact';
@@ -40,7 +42,7 @@ export default function PrivacidadPage() {
           Política de privacidad
         </h1>
         <p className="mt-3 font-mono text-base text-carbon/70">
-          Última actualización: 22 de noviembre de 2026 · Ley 25.326 (República Argentina)
+          Última actualización: 26 de noviembre de 2026 · Ley 25.326 (República Argentina)
         </p>
 
         <div className="mt-10 max-w-[70ch] space-y-8 text-lg leading-relaxed">
@@ -56,7 +58,14 @@ export default function PrivacidadPage() {
               >
                 {OPERATOR_NAME}
               </a>
-              , con canal de contacto directo por WhatsApp en{' '}
+              , con canales de contacto oficial por correo electrónico en{' '}
+              <a
+                href={mailtoUrl('Consulta sobre privacidad · Mataderos.ar')}
+                className="font-mono text-chicago underline underline-offset-4"
+              >
+                {PORTAL_EMAIL}
+              </a>{' '}
+              y por WhatsApp en{' '}
               <a
                 href={whatsappUrl('Hola, consulto por privacidad y datos personales en Mataderos.ar')}
                 target="_blank"
@@ -72,10 +81,10 @@ export default function PrivacidadPage() {
           <section className="space-y-3 border-t border-carbon/15 pt-6">
             <h2 className="font-serif text-2xl font-semibold">2. Qué datos solicitamos y para qué</h2>
             <p>
-              Para publicar una ficha de emprendedor o comercio solicitamos únicamente los datos necesarios para el directorio: nombre del proyecto o titular, descripción de la oferta, ubicación aproximada o puesto de feria, número de WhatsApp comercial, enlaces a redes sociales, fotografías y, de forma opcional, un catálogo en formato PDF.
+              Para publicar una ficha de emprendedor o comercio solicitamos únicamente los datos necesarios para el directorio y la revisión editorial: nombre del proyecto o titular, descripción de la oferta, ubicación aproximada o puesto de feria, número de WhatsApp comercial, correo electrónico opcional para avisos de seguimiento, enlaces a redes sociales, fotografías y, de forma opcional, un catálogo en formato PDF.
             </p>
             <p>
-              <strong>Carácter público de la ficha:</strong> una vez verificada y publicada, el nombre del emprendimiento, el WhatsApp informado, las redes, las fotos y el catálogo quedan visibles públicamente en Mataderos.ar para que los vecinos puedan contactarte. No publiques datos personales que no quieras hacer visibles.
+              <strong>Carácter público de la ficha:</strong> una vez verificada y publicada, el nombre del emprendimiento, el WhatsApp informado, las redes, las fotos y el catálogo quedan visibles públicamente en Mataderos.ar para que los vecinos puedan contactarte. El correo electrónico de seguimiento solo se utiliza para comunicaciones editoriales o de cuenta y no se publica en tu ficha sin tu permiso. No publiques datos personales que no quieras hacer visibles.
             </p>
           </section>
 
@@ -96,7 +105,14 @@ export default function PrivacidadPage() {
           <section className="space-y-3 border-t border-carbon/15 pt-6">
             <h2 className="font-serif text-2xl font-semibold">5. Tus derechos (Ley 25.326)</h2>
             <p>
-              Como titular de los datos personales tenés derecho a acceder, rectificar, actualizar o solicitar la supresión total de tu ficha y archivos en cualquier momento, escribiéndonos por WhatsApp al{' '}
+              Como titular de los datos personales tenés derecho a acceder, rectificar, actualizar o solicitar la supresión total de tu ficha y archivos en cualquier momento, escribiéndonos por mail a{' '}
+              <a
+                href={mailtoUrl('Ejercicio de derechos Ley 25.326 · Mataderos.ar')}
+                className="font-mono text-chicago underline underline-offset-4"
+              >
+                {PORTAL_EMAIL}
+              </a>{' '}
+              o por WhatsApp al{' '}
               <a
                 href={whatsappUrl('Hola, quiero actualizar o dar de baja mis datos en Mataderos.ar')}
                 target="_blank"

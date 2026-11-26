@@ -16,7 +16,7 @@ import {
   type EmprendedorCategory,
   type LocationType
 } from '@/lib/emprendedores';
-import { PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
+import { mailtoUrl, PORTAL_EMAIL, PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
 import {
   checkSlugAvailability,
   formatWhatsappSummary,
@@ -101,6 +101,7 @@ export function SumateBuilder({
   const [hoursSummary, setHoursSummary] = useState('');
   const [tagline, setTagline] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
+  const [contactEmail, setContactEmail] = useState('');
   const [instagram, setInstagram] = useState('');
   const [hasPdfCatalog, setHasPdfCatalog] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -144,6 +145,7 @@ export function SumateBuilder({
           hoursSummary,
           tagline,
           whatsapp: normalizedWhatsapp,
+          contactEmail,
           instagram,
           hasPdfCatalog,
           acceptedTerms
@@ -162,6 +164,7 @@ export function SumateBuilder({
       hoursSummary,
       tagline,
       normalizedWhatsapp,
+      contactEmail,
       instagram,
       hasPdfCatalog,
       acceptedTerms,
@@ -184,6 +187,7 @@ export function SumateBuilder({
     setHoursSummary('');
     setTagline('');
     setWhatsapp('');
+    setContactEmail('');
     setInstagram('');
     setHasPdfCatalog(false);
     setAcceptedTerms(false);
@@ -685,6 +689,23 @@ export function SumateBuilder({
                 </div>
               </div>
 
+              <div>
+                <label htmlFor="sumate-email" className="block text-base font-semibold">
+                  Email para seguimiento (opcional)
+                </label>
+                <input
+                  id="sumate-email"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="Ej: contacto@tuproyecto.com"
+                  className={INPUT_CLASS}
+                />
+                <p className="mt-1.5 font-mono text-xs text-carbon/70">
+                  No se publica en tu ficha; solo lo usamos para avisarte desde {PORTAL_EMAIL}.
+                </p>
+              </div>
+
               {mode === 'emprendedor' && (
                 <label className="flex min-h-[48px] cursor-pointer items-start gap-3 border border-carbon/20 bg-pampa p-3.5 text-base">
                   <input
@@ -751,8 +772,8 @@ export function SumateBuilder({
                   )}
                   <p className="mt-2 text-base text-carbon/85">
                     {submitResult.mode === 'db'
-                      ? 'Nuestro equipo revisa tu vínculo con el barrio y te avisa cuando quede activo. Si querés agilizarlo, escribinos por WhatsApp.'
-                      : `Si no se abrió WhatsApp automáticamente, tocá el botón de abajo o copiá el resumen estructurado para mandarlo al ${PORTAL_WHATSAPP_DISPLAY}.`}
+                      ? `Nuestro equipo revisa tu vínculo con el barrio y te avisa cuando quede activo. Si querés agilizarlo o enviar fotos/PDF, escribinos por WhatsApp o a ${PORTAL_EMAIL}.`
+                      : `Si no se abrió WhatsApp automáticamente, tocá el botón de abajo, envialo por mail a ${PORTAL_EMAIL} o copiá el resumen estructurado para mandarlo al ${PORTAL_WHATSAPP_DISPLAY}.`}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-3">
                     <a
@@ -766,10 +787,19 @@ export function SumateBuilder({
                         : 'Abrir WhatsApp con la ficha'}
                       <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                     </a>
+                    <a
+                      href={mailtoUrl(
+                        `Sumate ${mode === 'comercio' ? 'Comercio' : 'Emprendedor'}: ${displayName.trim()}`,
+                        submitResult.whatsappSummary
+                      )}
+                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+                    >
+                      Enviar por mail
+                    </a>
                     <button
                       type="button"
                       onClick={() => handleCopySummary(submitResult.whatsappSummary)}
-                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon/40 px-4 font-semibold text-carbon hover:border-carbon color-field"
                     >
                       {copiedSummary ? 'Resumen copiado' : 'Copiar resumen'}
                     </button>

@@ -1,33 +1,71 @@
+import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, ArrowUpRight, MapPin, Phone, Star } from 'lucide-react';
+import { PORTAL_DOMAIN, PORTAL_URL } from '@/lib/contact';
 import { fetchBusinessBySlug } from '@/lib/supabase';
 
 interface CommercePageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: CommercePageProps) {
+const ROOT_HOSTS = new Set([
+  'localhost',
+  '127.0.0.1',
+  'mataderos.ar',
+  'www.mataderos.ar',
+  'mataderos.com.ar',
+  'www.mataderos.com.ar'
+]);
+
+function resolvePortalBase(hostHeader: string): string | null {
+  const host = hostHeader.trim().toLowerCase();
+  const [hostname, port] = host.split(':');
+  if (!hostname || ROOT_HOSTS.has(hostname) || hostname.endsWith('.vercel.app')) {
+    return null;
+  }
+  if (hostname.endsWith('.localhost')) {
+    return `http://localhost${port ? `:${port}` : ''}`;
+  }
+  if (hostname.endsWith(`.${PORTAL_DOMAIN}`)) {
+    return PORTAL_URL;
+  }
+  return PORTAL_URL;
+}
+
+export async function generateMetadata({ params }: CommercePageProps): Promise<Metadata> {
   const { slug } = await params;
   const business = await fetchBusinessBySlug(slug);
   if (!business) {
     return { title: 'Comercio no encontrado · Mataderos.ar' };
   }
+  const canonicalUrl = `${PORTAL_URL}/comercio/${business.slug}`;
   return {
-    title: `${business.name} — Web Oficial · ${business.slug}.mataderos.ar`,
-    description: business.description
+    title: `${business.name} — Web Oficial · ${business.slug}.${PORTAL_DOMAIN}`,
+    description: business.description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title: `${business.name} · Mataderos.ar`,
+      description: business.description,
+      url: canonicalUrl,
+      locale: 'es_AR',
+      type: 'website',
+      images: [{ url: business.heroImage, alt: business.name }]
+    }
   };
 }
 
 export default async function CommerceSubdomainPage({ params }: CommercePageProps) {
-  const { slug } = await params;
+  const [{ slug }, reqHeaders] = await Promise.all([params, headers()]);
   const business = await fetchBusinessBySlug(slug);
 
   if (!business) {
     notFound();
   }
 
+  const portalBase = resolvePortalBase(reqHeaders.get('host') ?? '');
   const mapsQuery = encodeURIComponent(
     `${business.address}, Mataderos, Ciudad Autónoma de Buenos Aires`
   );
@@ -42,23 +80,40 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
         className="bg-carbon text-pampa border-b border-pampa/20 sticky top-0 z-50"
       >
         <div className="editorial-container min-h-[56px] py-2 flex flex-wrap items-center justify-between gap-3">
-          <Link
-            href="/"
-            className="min-h-[48px] inline-flex items-center gap-2.5 px-3 border border-pampa/30 text-pampa text-[1rem] font-medium hover:bg-pampa hover:text-carbon color-field"
-          >
-            <Image
-              src="/logo-emblem.png"
-              alt="Mataderos.ar"
-              width={26}
-              height={26}
-              className="border border-pampa/30 shrink-0"
-            />
-            <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
-            Volver al Portal Mataderos
-          </Link>
+          {portalBase ? (
+            <a
+              href={portalBase}
+              className="min-h-[48px] inline-flex items-center gap-2.5 px-3 border border-pampa/30 text-pampa text-[1rem] font-medium hover:bg-pampa hover:text-carbon color-field"
+            >
+              <Image
+                src="/logo-emblem.png"
+                alt="Mataderos.ar"
+                width={26}
+                height={26}
+                className="border border-pampa/30 shrink-0"
+              />
+              <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
+              Volver al Portal Mataderos
+            </a>
+          ) : (
+            <Link
+              href="/"
+              className="min-h-[48px] inline-flex items-center gap-2.5 px-3 border border-pampa/30 text-pampa text-[1rem] font-medium hover:bg-pampa hover:text-carbon color-field"
+            >
+              <Image
+                src="/logo-emblem.png"
+                alt="Mataderos.ar"
+                width={26}
+                height={26}
+                className="border border-pampa/30 shrink-0"
+              />
+              <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
+              Volver al Portal Mataderos
+            </Link>
+          )}
 
           <p className="font-mono type-meta text-pampa">
-            Web Oficial · {business.slug}.mataderos.ar
+            Web Oficial · {business.slug}.{PORTAL_DOMAIN}
           </p>
         </div>
       </div>
@@ -294,12 +349,21 @@ export default async function CommerceSubdomainPage({ params }: CommercePageProp
               Web Oficial alojada en Mataderos.ar · Hecho en Mataderos
             </p>
           </div>
-          <Link
-            href="/#sumar-comercio"
-            className="min-h-[48px] px-5 inline-flex items-center border border-pampa/40 text-pampa hover:bg-pampa hover:text-carbon font-semibold text-[1rem] color-field"
-          >
-            ¿Querés una web así para tu negocio?
-          </Link>
+          {portalBase ? (
+            <a
+              href={`${portalBase}/sumate/comercios`}
+              className="min-h-[48px] px-5 inline-flex items-center border border-pampa/40 text-pampa hover:bg-pampa hover:text-carbon font-semibold text-[1rem] color-field"
+            >
+              ¿Querés una web así para tu negocio?
+            </a>
+          ) : (
+            <Link
+              href="/sumate/comercios"
+              className="min-h-[48px] px-5 inline-flex items-center border border-pampa/40 text-pampa hover:bg-pampa hover:text-carbon font-semibold text-[1rem] color-field"
+            >
+              ¿Querés una web así para tu negocio?
+            </Link>
+          )}
         </div>
       </footer>
     </div>

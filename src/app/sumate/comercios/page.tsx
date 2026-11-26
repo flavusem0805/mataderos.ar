@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import { SumateBuilder } from '@/components/sumate/SumateBuilder';
-import { PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
+import { mailtoUrl, PORTAL_EMAIL, PORTAL_WHATSAPP_DISPLAY, whatsappUrl } from '@/lib/contact';
 import type { SumateDesiredPlan } from '@/lib/slugs';
 import { fetchTakenSlugs } from '@/lib/supabase';
 
@@ -270,7 +270,14 @@ export default async function SumateComerciosPage({ searchParams }: PageProps) {
             Sumá tu comercio a la guía
           </h2>
           <p className="mt-4 max-w-[58ch] text-lg leading-relaxed text-pampa/85">
-            Escribinos por WhatsApp ({PORTAL_WHATSAPP_DISPLAY}) con el nombre y dirección de tu local.
+            Escribinos por WhatsApp ({PORTAL_WHATSAPP_DISPLAY}) o por mail a{' '}
+            <a
+              href={mailtoUrl('Sumate Comercios · Mataderos.ar')}
+              className="font-mono underline underline-offset-4 hover:text-pampa"
+            >
+              {PORTAL_EMAIL}
+            </a>{' '}
+            con el nombre y dirección de tu local.
           </p>
           <div className="mt-7 flex flex-wrap gap-4">
             <a

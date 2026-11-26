@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { NotaFrame } from '@/components/notas/NotaFrame';
 import {
+  mailtoUrl,
   OPERATOR_NAME,
   OPERATOR_URL,
+  PORTAL_EMAIL,
   PORTAL_WHATSAPP_DISPLAY,
   whatsappUrl
 } from '@/lib/contact';
@@ -40,7 +42,7 @@ export default function TerminosPage() {
           Términos y condiciones
         </h1>
         <p className="mt-3 font-mono text-base text-carbon/70">
-          Última actualización: 22 de noviembre de 2026 · Operado por {OPERATOR_NAME}
+          Última actualización: 26 de noviembre de 2026 · Operado por {OPERATOR_NAME}
         </p>
 
         <div className="mt-10 max-w-[70ch] space-y-8 text-lg leading-relaxed">
@@ -106,7 +108,14 @@ export default function TerminosPage() {
           <section className="space-y-3 border-t border-carbon/15 pt-6">
             <h2 className="font-serif text-2xl font-semibold">6. Contacto y ley aplicable</h2>
             <p>
-              Ante cualquier consulta, solicitud de baja o reclamo, podés escribirnos por WhatsApp al{' '}
+              Ante cualquier consulta, solicitud de baja o reclamo, podés escribirnos por correo electrónico a{' '}
+              <a
+                href={mailtoUrl('Consulta sobre términos · Mataderos.ar')}
+                className="font-mono text-chicago underline underline-offset-4"
+              >
+                {PORTAL_EMAIL}
+              </a>{' '}
+              o por WhatsApp al{' '}
               <a
                 href={whatsappUrl('Hola, tengo una consulta sobre los términos de Mataderos.ar')}
                 target="_blank"

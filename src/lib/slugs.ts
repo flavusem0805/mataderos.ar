@@ -21,6 +21,7 @@ export interface SumateSubmissionPayload {
   hoursSummary: string;
   tagline: string;
   whatsapp: string;
+  contactEmail?: string;
   instagram?: string;
   hasPdfCatalog?: boolean;
   acceptedTerms: boolean;
@@ -37,6 +38,10 @@ export interface SlugCheckResult {
 export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   'www',
   'mail',
+  'webmail',
+  'info',
+  'noreply',
+  'no-reply',
   'smtp',
   'imap',
   'pop',
@@ -298,6 +303,12 @@ export function validateSumatePayload(
     errors.push('Ingresá un número de WhatsApp válido (con código de área).');
   }
 
+  const rawEmail = String(payload.contactEmail ?? '').trim().toLowerCase();
+  const contactEmail = rawEmail.length > 0 ? rawEmail : undefined;
+  if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+    errors.push('Si ingresás un correo electrónico, revisá que tenga un formato válido.');
+  }
+
   if (!payload.acceptedTerms) {
     errors.push('Necesitamos que aceptes los Términos y la Política de privacidad.');
   }
@@ -321,6 +332,7 @@ export function validateSumatePayload(
       hoursSummary,
       tagline,
       whatsapp,
+      contactEmail,
       instagram: payload.instagram?.trim() || undefined,
       hasPdfCatalog: Boolean(payload.hasPdfCatalog),
       acceptedTerms: true
@@ -344,6 +356,9 @@ export function formatWhatsappSummary(payload: SumateSubmissionPayload): string 
     `- WhatsApp comercial: +${payload.whatsapp}`
   ];
 
+  if (payload.contactEmail) {
+    lines.push(`- Email: ${payload.contactEmail}`);
+  }
   if (payload.instagram) {
     lines.push(`- Instagram: ${payload.instagram}`);
   }

@@ -9,6 +9,18 @@ const ROOT_HOSTS = new Set([
   'www.mataderos.com.ar'
 ]);
 
+const RESERVED_INFRA_SUBDOMAINS = new Set([
+  'www',
+  'mail',
+  'webmail',
+  'smtp',
+  'imap',
+  'pop',
+  'ftp',
+  'autoconfig',
+  'autodiscover'
+]);
+
 /**
  * Enrutamiento multi-tenant para subdominios en producción y desarrollo:
  * Ej. `veterinariaalberdi.mataderos.ar` o `veterinariaalberdi.localhost:3000`
@@ -44,7 +56,7 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  if (subdomain && subdomain !== 'www') {
+  if (subdomain && !RESERVED_INFRA_SUBDOMAINS.has(subdomain)) {
     const rewriteUrl = url.clone();
     rewriteUrl.pathname = `/comercio/${subdomain}${url.pathname === '/' ? '' : url.pathname}`;
     return NextResponse.rewrite(rewriteUrl);

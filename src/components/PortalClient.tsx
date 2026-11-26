@@ -24,7 +24,7 @@ import {
 } from '@/lib/data';
 import { AGENDA_SPOTS, type AgendaItem } from '@/lib/agenda-data';
 import { FOTOS } from '@/lib/notas/media';
-import { whatsappUrl } from '@/lib/contact';
+import { mailtoUrl, PORTAL_EMAIL, whatsappUrl } from '@/lib/contact';
 import { EMPRENDEDORES, LOCATION_TYPE_LABELS, type Emprendedor } from '@/lib/emprendedores';
 import { BUILT_IN_TAKEN_SLUGS, checkSlugAvailability } from '@/lib/slugs';
 import {
@@ -1785,25 +1785,32 @@ function SiteFooter() {
                 </a>
               </div>
             </FooterColumn>
-            <FooterColumn title="Web Oficial" panelId="footer-web">
+            <FooterColumn title="Guía" panelId="footer-guia">
               <div className="flex flex-col">
                 <Link
-                  href="/comercio/veterinariaalberdi"
-                  className="inline-flex min-h-[48px] items-center break-words font-mono text-base hover:underline hover:underline-offset-4"
+                  href="/directorio"
+                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
                 >
-                  veterinariaalberdi.mataderos.ar
+                  Directorio completo
+                </Link>
+                <a
+                  href="#directorio"
+                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
+                >
+                  Comercios del barrio
+                </a>
+                <Link
+                  href="/emprendedores"
+                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
+                >
+                  Emprendedores verificados
                 </Link>
                 <Link
-                  href="/comercio/tostadorescastro"
-                  className="inline-flex min-h-[48px] items-center break-words font-mono text-base hover:underline hover:underline-offset-4"
+                  href="/sumate"
+                  className="inline-flex min-h-[48px] items-center gap-2 hover:underline hover:underline-offset-4"
                 >
-                  tostadorescastro.mataderos.ar
-                </Link>
-                <Link
-                  href="/comercio/cantinaloscorrales"
-                  className="inline-flex min-h-[48px] items-center break-words font-mono text-base hover:underline hover:underline-offset-4"
-                >
-                  cantinaloscorrales.mataderos.ar
+                  Sumate a Mataderos.ar
+                  <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 </Link>
               </div>
             </FooterColumn>
@@ -1818,30 +1825,11 @@ function SiteFooter() {
                   WhatsApp del portal
                   <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
                 </a>
-                <Link
-                  href="/sumate"
-                  className="inline-flex min-h-[48px] items-center gap-2 hover:underline hover:underline-offset-4"
-                >
-                  Sumate a Mataderos.ar
-                  <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-                </Link>
-                <Link
-                  href="/directorio"
-                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
-                >
-                  Directorio completo
-                </Link>
-                <Link
-                  href="/emprendedores"
-                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
-                >
-                  Emprendedores verificados
-                </Link>
                 <a
-                  href="#directorio"
-                  className="inline-flex min-h-[48px] items-center hover:underline hover:underline-offset-4"
+                  href={mailtoUrl('Consulta desde Mataderos.ar')}
+                  className="inline-flex min-h-[48px] items-center font-mono text-base hover:underline hover:underline-offset-4"
                 >
-                  Guía de comercios
+                  {PORTAL_EMAIL}
                 </a>
               </div>
             </FooterColumn>

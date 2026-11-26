@@ -23,7 +23,7 @@ import {
   type BusinessCategory
 } from '@/lib/data';
 import { AGENDA_SPOTS, type AgendaItem } from '@/lib/agenda-data';
-import { FOTOS } from '@/lib/notas/media';
+import { FOTOS, type Foto } from '@/lib/notas/media';
 import { mailtoUrl, PORTAL_EMAIL, whatsappUrl } from '@/lib/contact';
 import { EMPRENDEDORES, LOCATION_TYPE_LABELS, type Emprendedor } from '@/lib/emprendedores';
 import { BUILT_IN_TAKEN_SLUGS, checkSlugAvailability } from '@/lib/slugs';
@@ -793,7 +793,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
   const desktopStatus = agendaStatus(desktopItem, now);
   const desktopStartTs = agendaTimestamps(desktopItem).startTs;
   const desktopPhotoId = desktopItem.photoId ?? desktopSpotEntry?.spot.photoId;
-  const desktopPhoto = desktopPhotoId ? FOTOS[desktopPhotoId] : undefined;
+  const desktopPhoto: Foto | undefined = desktopPhotoId ? FOTOS[desktopPhotoId] : undefined;
   const desktopVenueItems = desktopSpotEntry?.items ?? [desktopItem];
 
   const desktopSpotlightRef = useRef<HTMLElement>(null);

@@ -83,15 +83,15 @@ export default function TerminosPage() {
           </section>
 
           <section className="space-y-3 border-t border-carbon/15 pt-6">
-            <h2 className="font-serif text-2xl font-semibold">4. Gratuidad, Primera Ronda Fundadores y planes pagos</h2>
+            <h2 className="font-serif text-2xl font-semibold">4. Gratuidad, acceso anticipado y planes de presencia gestionada</h2>
             <p>
-              La ficha básica de emprendedores verificados y la ficha básica de comercios en la guía son gratuitas y permanentes. Nunca se cobra el alta ni se da de baja una ficha gratuita para forzar la contratación de un plan pago.
+              La Ficha del barrio (ficha básica en la guía para comercios, servicios, emprendedores y feriantes) es gratuita y permanente. Nunca se cobra el alta ni se da de baja una ficha gratuita para forzar la contratación de un plan pago.
             </p>
             <p>
-              Los beneficios de la Primera Ronda (Fundadores) son una cortesía promocional no transferible para los primeros proyectos verificados. Al finalizar el período bonificado de 12 meses, el perfil continúa en línea en su modalidad gratuita salvo que el titular decida contratar funciones adicionales vigentes al momento de la renovación.
+              Los beneficios de acceso anticipado y la convocatoria para comercios fundadores corresponden a una etapa promocional de lanzamiento con cupo limitado. Su alcance, duración y eventual continuidad se informan y confirman expresamente con cada titular antes de comenzar; al finalizar cualquier servicio pago, la ficha básica puede continuar publicada en modalidad gratuita y el titular conserva sus fotos, textos y datos.
             </p>
             <p>
-              Los planes pagos (Web Oficial con subdominio, plan Pro, destacados o servicios a medida de {OPERATOR_NAME}) se acuerdan de forma expresa con precios publicados o cotizados previamente.
+              Los planes de presencia gestionada (Encontrado, Presencia y Feria, incluyendo la Página en Mataderos.ar), así como los acuerdos para Sponsors y servicios a medida de {OPERATOR_NAME}, no imponen permanencia obligatoria y se acuerdan por escrito con sus condiciones comerciales y de facturación antes de contratar.
             </p>
           </section>
 

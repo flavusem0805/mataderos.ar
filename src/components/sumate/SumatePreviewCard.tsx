@@ -110,11 +110,11 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
           <article className="mx-auto max-w-md border border-carbon bg-pampa p-5">
             {data.mode === 'emprendedor' && (
               <div className="mb-2 flex flex-wrap gap-x-2 gap-y-1 font-mono text-xs uppercase tracking-wide text-chicago">
-                <span>Verificado por Mataderos.ar</span>
+                <span>Vista previa de ejemplo</span>
                 {isFounder && (
                   <>
                     <span aria-hidden="true">·</span>
-                    <span>Fundador</span>
+                    <span>Plan Feria</span>
                   </>
                 )}
               </div>
@@ -137,7 +137,7 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
 
             {isWebOficial && (
               <p className="mt-3 break-words font-mono text-sm font-semibold text-chicago">
-                Web oficial · {addressUrl}
+                Página en Mataderos.ar · {addressUrl}
               </p>
             )}
 
@@ -152,7 +152,7 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
               </div>
               {(isWebOficial || data.mode === 'emprendedor') && (
                 <div className="inline-flex min-h-[48px] items-center justify-center rounded-[4px] border border-carbon px-4 text-sm font-semibold text-carbon">
-                  {data.mode === 'comercio' ? 'Ver web oficial' : 'Ver ficha completa'}
+                  {data.mode === 'comercio' ? 'Ver página en Mataderos.ar' : 'Ver ficha completa'}
                 </div>
               )}
             </div>
@@ -160,7 +160,7 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
 
           {data.mode === 'comercio' && !isWebOficial && (
             <p className="mt-4 border-l-2 border-chicago bg-pampa px-3 py-2 text-sm text-carbon/85">
-              Con la <strong>Ficha gratuita</strong> ya apareces así en la guía y el mapa de zonas. Cambiá a <strong>Web oficial</strong> o tocá la pestaña «Sitio propio» para previsualizar tu subdominio dedicado.
+              Con la <strong>Ficha del barrio ($0)</strong> ya aparecés así en la guía y el mapa. Cambiá a <strong>Página en Mataderos.ar</strong> o tocá la pestaña «Sitio propio» para ver cómo queda incluida en los planes gestionados.
             </p>
           )}
         </div>
@@ -188,8 +188,8 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
                   }`}
                 >
                   {isWebOficial
-                    ? `Web Oficial · ${data.category}`
-                    : `Ficha en guía gratuita · ${data.category}`}
+                    ? `Página en Mataderos.ar · ${data.category}`
+                    : `Ficha del barrio gratuita · ${data.category}`}
                 </p>
                 <h3 className="mt-2 font-display text-[clamp(1.85rem,4vw,2.6rem)] font-semibold uppercase leading-[0.94]">
                   {name}
@@ -205,11 +205,11 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
             ) : (
               <div className="border-b border-carbon/15 bg-pampa px-5 py-6">
                 <div className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-xs uppercase tracking-wider text-chicago">
-                  <span>Verificado por Mataderos.ar</span>
+                  <span>Vista previa de ejemplo</span>
                   {isFounder && (
                     <>
                       <span aria-hidden="true">·</span>
-                      <span>Fundador</span>
+                      <span>Plan Feria</span>
                     </>
                   )}
                 </div>
@@ -262,8 +262,8 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
                     <p className="mt-0.5 text-carbon/75">Cómo llegar en Google Maps</p>
                   </div>
                   <div className="border border-carbon/20 bg-pampa p-3">
-                    <p className="font-semibold text-carbon">Servicios propios</p>
-                    <p className="mt-0.5 text-carbon/75">Prioridad en Comercios</p>
+                    <p className="font-semibold text-carbon">Catálogo y prioridad</p>
+                    <p className="mt-0.5 text-carbon/75">Incluido en planes gestionados</p>
                   </div>
                 </div>
               )}
@@ -283,9 +283,9 @@ export function SumatePreviewCard({ data }: { data: SumatePreviewData }) {
           <p className="mt-3 font-mono text-xs leading-relaxed text-carbon/75">
             {data.mode === 'comercio'
               ? isWebOficial
-                ? 'Con Web Oficial tenés esta dirección propia en .mataderos.ar más prioridad arriba de la guía.'
-                : 'La ficha gratuita te publica en /directorio y la home; la Web Oficial en .mataderos.ar es optativa (precio TBD).'
-              : 'Así queda tu landing pública en Mataderos.ar apenas confirmamos tu vínculo con el barrio.'}
+                ? 'Tu Página en Mataderos.ar viene incluida en los planes Encontrado y Presencia (etapa de acceso anticipado).'
+                : 'La Ficha del barrio ($0) te publica en la guía; la Página en Mataderos.ar con gestión de fotos y catálogo está disponible en acceso anticipado.'
+              : 'Vista previa de ejemplo: así queda tu ficha pública una vez que coordinamos fotos y datos reales.'}
           </p>
         </div>
       )}

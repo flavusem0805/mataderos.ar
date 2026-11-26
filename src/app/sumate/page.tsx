@@ -2,20 +2,49 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { NotaFrame } from '@/components/notas/NotaFrame';
-import { SumateTriager } from '@/components/sumate/SumateTriager';
+import { ComparisonTable } from '@/components/sumate/ComparisonTable';
+import { Deliverables } from '@/components/sumate/Deliverables';
+import { FaqAccordion } from '@/components/sumate/FaqAccordion';
+import { FoundersBand } from '@/components/sumate/FoundersBand';
+import { HowItWorks } from '@/components/sumate/HowItWorks';
+import { LeadForm } from '@/components/sumate/LeadForm';
+import { PlansGrid } from '@/components/sumate/PlansGrid';
+import { SponsorBlock } from '@/components/sumate/SponsorBlock';
+import { SumateHero } from '@/components/sumate/SumateHero';
+import { SumateViewTracker } from '@/components/sumate/SumateViewTracker';
+import { TrustBar } from '@/components/sumate/TrustBar';
+import { WhatsAppCta } from '@/components/sumate/WhatsAppCta';
+import { SUMATE_FAQ, SUMATE_HERO, SUMATE_TRUST_ITEMS } from '@/content/sumate';
+import { isSumatePlanId, SUMATE_PLANS, type SumatePlanId } from '@/lib/sumate-plans';
 
 export const metadata: Metadata = {
-  title: 'Sumate a Mataderos.ar · Emprendedores y comercios del barrio',
+  title: 'Sumate a Mataderos.ar | Más clientes del barrio',
   description:
-    'Si tenés un puesto en la Feria de Mataderos o un local en el barrio, armamos tu lugar en Mataderos.ar en 3 pasos. Gratis para empezar.',
+    'Comercios, servicios y ferias de Mataderos: te ponemos en la guía, en Google y en WhatsApp. Ficha gratis y planes de presencia gestionada.',
   alternates: { canonical: 'https://mataderos.ar/sumate' },
+  robots: { index: true, follow: true },
   openGraph: {
-    title: 'Tu lugar en Mataderos, también online · Mataderos.ar',
+    title: 'Sumate a Mataderos.ar | Más clientes del barrio',
     description:
-      'Dos caminos claros y un armador en 3 pasos: Emprendedores y feriantes verificados, o Comercios del barrio con ficha y Web Oficial.',
+      'Más clientes del barrio, sin aprender marketing. Te ponemos en la guía donde los vecinos buscan, en Google y en WhatsApp.',
     url: 'https://mataderos.ar/sumate',
     locale: 'es_AR',
-    type: 'website'
+    type: 'website',
+    images: [
+      {
+        url: '/sumate/og-sumate.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Sumate a Mataderos.ar — Más clientes del barrio'
+      }
+    ]
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sumate a Mataderos.ar | Más clientes del barrio',
+    description:
+      'Comercios, servicios y ferias de Mataderos: ficha gratis y planes de presencia gestionada en acceso anticipado.',
+    images: ['/sumate/og-sumate.jpg']
   }
 };
 
@@ -23,11 +52,41 @@ const JSON_LD = {
   '@context': 'https://schema.org',
   '@graph': [
     {
-      '@type': 'WebPage',
-      name: 'Sumate a Mataderos.ar',
+      '@type': 'Service',
+      name: 'Presencia gestionada y guía comercial en Mataderos.ar',
       url: 'https://mataderos.ar/sumate',
-      description:
-        'Propuesta de valor para feriantes, emprendedores y comercios de Mataderos, Comuna 9.'
+      areaServed: {
+        '@type': 'AdministrativeArea',
+        name: 'Mataderos, Comuna 9, Ciudad Autónoma de Buenos Aires'
+      },
+      provider: {
+        '@type': 'Organization',
+        name: 'Mataderos.ar',
+        url: 'https://mataderos.ar'
+      },
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: 'Planes de Mataderos.ar',
+        itemListElement: SUMATE_PLANS.map((plan) => ({
+          '@type': 'Offer',
+          name: plan.name,
+          description: `${plan.audience}. ${plan.includes.join('. ')}.`,
+          ...(plan.id === 'ficha'
+            ? { price: '0', priceCurrency: 'ARS' }
+            : { availability: 'https://schema.org/PreOrder' })
+        }))
+      }
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: SUMATE_FAQ.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer
+        }
+      }))
     },
     {
       '@type': 'BreadcrumbList',
@@ -39,115 +98,85 @@ const JSON_LD = {
   ]
 };
 
-const ACTIVATION_STEPS = [
-  {
-    step: '01',
-    title: 'Elegís dirección y rubro',
-    body: 'Comprobás al instante si tu nombre web está libre en mataderos.ar.'
-  },
-  {
-    step: '02',
-    title: 'Ves tu sitio antes de enviar',
-    body: 'Completás zona, horarios y WhatsApp mientras mirás la previa real en vivo.'
-  },
-  {
-    step: '03',
-    title: 'Revisión humana y online',
-    body: 'Verificamos tu vínculo con Mataderos y queda publicado sin trámites.'
-  }
-];
+interface PageProps {
+  searchParams: Promise<{ plan?: string }>;
+}
 
-export default function SumatePage() {
+export default async function SumatePage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const initialPlan: SumatePlanId | undefined = isSumatePlanId(params.plan)
+    ? params.plan
+    : undefined;
+
   return (
     <NotaFrame>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
       />
+      <SumateViewTracker page="sumate" />
 
-      <section className="section-pad border-b border-carbon/15 bg-pampa">
-        <div className="editorial-container">
-          <nav aria-label="Miga de pan" className="font-mono text-base text-chicago">
-            <Link href="/" className="inline-flex min-h-[48px] items-center underline underline-offset-4">
-              Inicio
-            </Link>
-            <span className="mx-2 text-carbon/40" aria-hidden="true">
-              /
-            </span>
-            <span className="text-carbon">Sumate</span>
-          </nav>
+      <SumateHero
+        breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Sumate' }]}
+        eyebrow={SUMATE_HERO.eyebrow}
+        title={SUMATE_HERO.h1}
+        subtitle={SUMATE_HERO.sub}
+        primaryCtaLabel={SUMATE_HERO.primaryCtaLabel}
+        primaryCtaHref={SUMATE_HERO.primaryCtaHref}
+        secondaryCtaLabel={SUMATE_HERO.secondaryCtaLabel}
+        secondaryCtaHref={SUMATE_HERO.secondaryCtaHref}
+        trustLine={SUMATE_HERO.trustLine}
+      />
 
-          <p className="mt-4 font-mono text-sm uppercase tracking-wider text-chicago">
-            En 3 pasos · Sin registro previo · Gratis para empezar
-          </p>
-          <h1 className="mt-2 max-w-[16ch] font-display text-[clamp(2.75rem,8vw,5.25rem)] font-semibold uppercase leading-[0.9]">
-            Tu lugar en Mataderos, también online
-          </h1>
+      <TrustBar items={SUMATE_TRUST_ITEMS} />
 
-          <p className="mt-5 max-w-[62ch] font-serif text-xl leading-relaxed text-carbon/90 sm:text-2xl">
-            Si tenés un puesto en la Feria o un local en el barrio, en tres pasos ya dejás preparada tu ficha en Mataderos.ar con vista previa en vivo antes de enviarla.
-          </p>
+      <HowItWorks />
 
-          <ol
-            aria-label="Cómo se activa tu sitio en 3 pasos"
-            className="mt-8 grid gap-4 border border-carbon/25 bg-pampa-surface p-5 sm:grid-cols-3 sm:p-6"
-          >
-            {ACTIVATION_STEPS.map((item) => (
-              <li key={item.step} className="border-t border-carbon/15 pt-3 sm:border-l sm:border-t-0 sm:pl-5 sm:pt-0 first:border-0 first:pl-0 first:pt-0">
-                <p className="font-mono text-lg font-semibold text-chicago">{item.step}</p>
-                <p className="mt-1 font-serif text-lg font-semibold text-carbon">{item.title}</p>
-                <p className="mt-1 text-base leading-relaxed text-carbon/80">{item.body}</p>
-              </li>
-            ))}
-          </ol>
+      {/* En mobile los planes van antes que el detalle largo; en desktop mantienen orden 4 -> 5 -> 6 */}
+      <div className="flex flex-col">
+        <PlansGrid className="order-1 lg:order-3" />
+        <Deliverables className="order-2 lg:order-1" />
+        <ComparisonTable className="order-3 lg:order-2" />
+      </div>
 
-          <div className="mt-8 grid gap-6 md:grid-cols-2">
-            <Link
-              href="/sumate/emprendedores#armar"
-              className="group flex min-h-[260px] flex-col justify-between border border-carbon bg-pampa-surface p-7 transition-colors hover:bg-chicago hover:text-pampa sm:p-9 color-field"
-            >
-              <div>
-                <p className="font-mono text-sm uppercase tracking-wider text-chicago group-hover:text-pampa/80">
-                  Feria de Mataderos · La Recova · Oficios
-                </p>
-                <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
-                  Soy emprendedor o feriante
-                </h2>
-                <p className="mt-4 max-w-[44ch] text-lg leading-relaxed text-carbon/85 group-hover:text-pampa/90">
-                  Una landing simple, un catálogo para pasar por WhatsApp y el sello de verificado del barrio.
-                </p>
-              </div>
-              <span className="mt-8 inline-flex min-h-[48px] items-center gap-2 font-mono text-base font-semibold uppercase tracking-wide">
-                Armar mi ficha en 3 pasos
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={1.5} aria-hidden="true" />
-              </span>
-            </Link>
+      <FoundersBand />
 
+      <SponsorBlock />
+
+      <FaqAccordion />
+
+      <LeadForm initialPlan={initialPlan} />
+
+      <section className="border-b border-carbon/15 bg-pampa py-8">
+        <div className="editorial-container flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="font-mono text-xs uppercase tracking-wider text-chicago">
+              Demo interactiva opcional
+            </p>
+            <p className="mt-1 font-serif text-xl font-semibold text-carbon">
+              ¿Querés ver cómo quedaría tu ficha? Probala vos mismo.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/sumate/comercios#armar"
-              className="group flex min-h-[260px] flex-col justify-between border border-carbon bg-pampa-surface p-7 transition-colors hover:bg-carbon hover:text-pampa sm:p-9 color-field"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon bg-pampa-surface px-5 text-sm font-semibold text-carbon hover:bg-carbon hover:text-pampa focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chicago color-field"
             >
-              <div>
-                <p className="font-mono text-sm uppercase tracking-wider text-ladrillo group-hover:text-pampa/80">
-                  Locales a la calle · Comuna 9
-                </p>
-                <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
-                  Tengo un comercio
-                </h2>
-                <p className="mt-4 max-w-[44ch] text-lg leading-relaxed text-carbon/85 group-hover:text-pampa/90">
-                  Ficha en la guía del barrio y, si querés, tu web oficial en tunombre.mataderos.ar.
-                </p>
-              </div>
-              <span className="mt-8 inline-flex min-h-[48px] items-center gap-2 font-mono text-base font-semibold uppercase tracking-wide">
-                Probar mi comercio en 3 pasos
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" strokeWidth={1.5} aria-hidden="true" />
-              </span>
+              <span>Probar demo para comercios</span>
+              <ArrowRight className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+            </Link>
+            <Link
+              href="/sumate/emprendedores#armar"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border border-carbon/40 bg-pampa-surface px-5 text-sm font-semibold text-carbon hover:border-carbon focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-chicago"
+            >
+              <span>Probar demo para feria</span>
+              <ArrowRight className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
             </Link>
           </div>
-
-          <SumateTriager />
         </div>
       </section>
+
+      <WhatsAppCta />
     </NotaFrame>
   );
 }

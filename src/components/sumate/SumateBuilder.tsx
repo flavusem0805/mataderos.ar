@@ -269,10 +269,10 @@ export function SumateBuilder({
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-mono text-xs uppercase tracking-wider text-chicago sm:text-sm">
-              Activá tu lugar en 3 pasos · ~2 minutos
+              Demo interactiva opcional · ~2 minutos
             </p>
             <h2 className="mt-1 font-display text-[clamp(2rem,4.5vw,3.25rem)] font-semibold uppercase leading-[0.94]">
-              Probá y dejá lista tu publicación
+              ¿Querés ver cómo quedaría tu ficha? Probala vos mismo.
             </h2>
           </div>
           <p className="font-mono text-sm font-semibold text-carbon">
@@ -334,32 +334,32 @@ export function SumateBuilder({
             <div className="space-y-5">
               <div>
                 <p className="font-mono text-xs uppercase tracking-wider text-carbon/75">
-                  Elegí cómo querés arrancar
+                  Elegí qué formato querés previsualizar
                 </p>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {(mode === 'comercio'
                     ? [
                         {
                           id: 'ficha_gratuita' as const,
-                          title: 'Ficha gratuita',
-                          sub: 'En Comercios del barrio y directorio'
+                          title: 'Ficha del barrio ($0)',
+                          sub: 'En la guía del barrio y el directorio'
                         },
                         {
                           id: 'web_oficial' as const,
-                          title: 'Web oficial (TBD)',
-                          sub: 'Página propia en .mataderos.ar + prioridad'
+                          title: 'Página en Mataderos.ar',
+                          sub: 'Incluida en planes gestionados (acceso anticipado)'
                         }
                       ]
                     : [
                         {
                           id: 'fundadores' as const,
-                          title: 'Primera Ronda · Fundadores',
-                          sub: 'Gratis + 12 meses Pro bonificados'
+                          title: 'Plan Feria (acceso anticipado)',
+                          sub: 'Ficha completa, QR de puesto y difusión por temporada'
                         },
                         {
                           id: 'gratis_verificado' as const,
-                          title: 'Landing gratis permanente',
-                          sub: 'Ficha verificada y PDF para WhatsApp'
+                          title: 'Ficha del barrio ($0)',
+                          sub: 'Gratis para siempre con catálogo por WhatsApp'
                         }
                       ]
                   ).map((option) => {

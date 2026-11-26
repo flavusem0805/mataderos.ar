@@ -79,6 +79,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8
     },
     {
+      url: `${PORTAL_URL}/sumate/sponsors`,
+      lastModified: newest,
+      changeFrequency: 'weekly',
+      priority: 0.7
+    },
+    {
       url: `${PORTAL_URL}/emprendedores`,
       lastModified: newest,
       changeFrequency: 'weekly',

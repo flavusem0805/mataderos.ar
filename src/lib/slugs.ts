@@ -82,6 +82,8 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set([
   'feriademataderos',
   'elplata',
   'cineteatroelplata',
+  'sponsor',
+  'sponsors',
   'tulocal',
   'tunombre',
   'tunegocio'
@@ -233,13 +235,13 @@ export function publicAddressLabel(slug: string, mode: SumateMode): string {
 export function planDisplayLabel(plan: SumateDesiredPlan): string {
   switch (plan) {
     case 'ficha_gratuita':
-      return 'Ficha gratuita en guía de comercios';
+      return 'Ficha del barrio (gratuita)';
     case 'web_oficial':
-      return 'Web oficial (.mataderos.ar · TBD)';
+      return 'Página en Mataderos.ar (acceso anticipado)';
     case 'gratis_verificado':
-      return 'Landing gratuita verificada';
+      return 'Ficha del barrio para feriantes (gratuita)';
     case 'fundadores':
-      return 'Primera Ronda · Fundadores';
+      return 'Plan Feria · Acceso anticipado';
   }
 }
 
@@ -364,6 +366,107 @@ export function formatWhatsappSummary(payload: SumateSubmissionPayload): string 
   }
   if (payload.mode === 'emprendedor' && payload.hasPdfCatalog) {
     lines.push('- Catálogo PDF: listo para adjuntar en este chat');
+  }
+
+  return lines.join('\n');
+}
+
+export interface SumateLeadPayload {
+  businessName: string;
+  category: string;
+  addressOrFeria: string;
+  whatsapp: string;
+  goal?: string;
+  planInteres?: string;
+  acceptedTerms: boolean;
+  website?: string;
+}
+
+const LEAD_PLAN_LABELS: Record<string, string> = {
+  ficha: 'Ficha del barrio ($0)',
+  encontrado: 'Encontrado (acceso anticipado)',
+  presencia: 'Presencia (acceso anticipado)',
+  feria: 'Feria (acceso anticipado)',
+  sponsor: 'Sponsor (media kit)'
+};
+
+export function validateSumateLead(
+  payload: Partial<SumateLeadPayload>
+): { valid: boolean; errors: string[]; fieldErrors: Record<string, string>; normalized?: SumateLeadPayload } {
+  const errors: string[] = [];
+  const fieldErrors: Record<string, string> = {};
+
+  const businessName = String(payload.businessName ?? '').trim().slice(0, 80);
+  if (businessName.length < 2) {
+    const msg = 'Ingresá el nombre de tu negocio o proyecto (mínimo 2 caracteres).';
+    errors.push(msg);
+    fieldErrors.businessName = msg;
+  }
+
+  const category = String(payload.category ?? '').trim().slice(0, 60);
+  if (category.length < 2) {
+    const msg = 'Indicá tu rubro (por ejemplo: veterinaria, cafetería, ferretería o artesanías).';
+    errors.push(msg);
+    fieldErrors.category = msg;
+  }
+
+  const addressOrFeria = String(payload.addressOrFeria ?? '').trim().slice(0, 120);
+  if (addressOrFeria.length < 3) {
+    const msg = 'Indicá la dirección del local o escribí «Solo feria».';
+    errors.push(msg);
+    fieldErrors.addressOrFeria = msg;
+  }
+
+  const whatsapp = normalizeWhatsappAr(String(payload.whatsapp ?? ''));
+  if (whatsapp.length < 8) {
+    const msg = 'Ingresá un número de WhatsApp válido con código de área.';
+    errors.push(msg);
+    fieldErrors.whatsapp = msg;
+  }
+
+  if (!payload.acceptedTerms) {
+    const msg = 'Necesitamos que aceptes la política de privacidad y el tratamiento de tus datos.';
+    errors.push(msg);
+    fieldErrors.acceptedTerms = msg;
+  }
+
+  if (errors.length > 0) {
+    return { valid: false, errors, fieldErrors };
+  }
+
+  const goal = String(payload.goal ?? '').trim().slice(0, 80) || undefined;
+  const planInteres = String(payload.planInteres ?? '').trim().slice(0, 40) || undefined;
+
+  return {
+    valid: true,
+    errors: [],
+    fieldErrors: {},
+    normalized: {
+      businessName,
+      category,
+      addressOrFeria,
+      whatsapp,
+      goal,
+      planInteres,
+      acceptedTerms: true
+    }
+  };
+}
+
+export function formatLeadWhatsappSummary(payload: SumateLeadPayload): string {
+  const lines = [
+    'Hola, quiero sumar mi negocio a Mataderos.ar:',
+    `- Negocio: ${payload.businessName}`,
+    `- Rubro: ${payload.category}`,
+    `- Dirección / modalidad: ${payload.addressOrFeria}`,
+    `- WhatsApp: +${payload.whatsapp}`
+  ];
+
+  if (payload.planInteres) {
+    lines.push(`- Plan de interés: ${LEAD_PLAN_LABELS[payload.planInteres] ?? payload.planInteres}`);
+  }
+  if (payload.goal) {
+    lines.push(`- Qué quiero resolver: ${payload.goal}`);
   }
 
   return lines.join('\n');

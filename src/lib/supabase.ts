@@ -25,59 +25,111 @@ import { BUILT_IN_TAKEN_SLUGS } from './slugs';
 import { FOTOS, type FotoId } from './notas/media';
 
 let cachedClient: SupabaseClient | null = null;
+let cachedKeySignature: string | null = null;
+
+function cleanEnvValue(raw: string | undefined): string {
+  if (!raw) return '';
+  return raw.trim().replace(/^['"]+|['"]+$/g, '').trim();
+}
 
 function getSupabaseUrl(): string | undefined {
-  return process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const raw = cleanEnvValue(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL);
+  if (!raw) return undefined;
+
+  const candidate = /^[a-z0-9-]+\.supabase\.co$/i.test(raw) ? `https://${raw}` : raw;
+  try {
+    const parsed = new URL(candidate);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return undefined;
+    if (!parsed.hostname || parsed.hostname.includes(' ')) return undefined;
+    return parsed.origin;
+  } catch {
+    return undefined;
+  }
+}
+
+function cleanSupabaseKey(raw: string | undefined): string | undefined {
+  const val = cleanEnvValue(raw);
+  if (!val || !/^[\x21-\x7E]+$/.test(val)) return undefined;
+  return val;
 }
 
 function getSupabasePublicKey(): string | undefined {
   return (
-    process.env.SUPABASE_PUBLISHABLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    cleanSupabaseKey(process.env.SUPABASE_PUBLISHABLE_KEY) ||
+    cleanSupabaseKey(process.env.SUPABASE_ANON_KEY) ||
+    cleanSupabaseKey(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) ||
+    cleanSupabaseKey(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   );
 }
 
 function getSupabaseSecretKey(): string | undefined {
-  return process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return (
+    cleanSupabaseKey(process.env.SUPABASE_SECRET_KEY) ||
+    cleanSupabaseKey(process.env.SUPABASE_SERVICE_ROLE_KEY)
+  );
+}
+
+function safeImageSrc(raw: unknown, fallback: string): string {
+  const val = typeof raw === 'string' ? raw.trim() : '';
+  if (!val || val === 'null' || val === 'undefined') return fallback;
+  if (val.startsWith('/')) return val;
+  try {
+    const parsed = new URL(val);
+    if (
+      parsed.protocol === 'https:' &&
+      (parsed.hostname === 'images.unsplash.com' || parsed.hostname.endsWith('.supabase.co'))
+    ) {
+      return val;
+    }
+  } catch {
+    // Usa el fallback local seguro si la URL no es válida para next/image
+  }
+  return fallback;
 }
 
 /**
  * Devuelve el cliente de Supabase (solo servidor) cuando las variables de entorno están configuradas.
- * Mientras no se carguen, la aplicación usa los datos curados locales sin errores.
+ * Mientras no se carguen o tengan un formato inválido, usa los datos curados locales sin romper el build.
  */
 export function getSupabaseClient(): SupabaseClient | null {
   const url = getSupabaseUrl();
   const publicKey = getSupabasePublicKey();
   if (!url || !publicKey) return null;
 
-  if (!cachedClient) {
-    cachedClient = createClient(url, publicKey, { auth: { persistSession: false } });
+  const signature = `${url}|${publicKey}`;
+  if (!cachedClient || cachedKeySignature !== signature) {
+    try {
+      cachedClient = createClient(url, publicKey, { auth: { persistSession: false } });
+      cachedKeySignature = signature;
+    } catch {
+      cachedClient = null;
+      cachedKeySignature = null;
+      return null;
+    }
   }
   return cachedClient;
 }
 
 function mapBusinessRow(row: Record<string, unknown>): Business {
   return {
-    id: String(row.id),
-    slug: String(row.slug),
-    name: String(row.name),
-    category: row.category as Business['category'],
-    zone: row.zone as Business['zone'],
-    address: String(row.address),
+    id: String(row.id ?? ''),
+    slug: String(row.slug ?? ''),
+    name: String(row.name ?? ''),
+    category: (row.category as Business['category']) ?? 'Servicios',
+    zone: (row.zone as Business['zone']) ?? 'Av. Alberdi',
+    address: String(row.address ?? ''),
     nearCorner: String(row.near_corner ?? 'Mataderos, Comuna 9'),
-    description: String(row.description),
-    longDescription: String(row.long_description ?? row.description),
-    tagline: String(row.tagline ?? row.description),
+    description: String(row.description ?? ''),
+    longDescription: String(row.long_description ?? row.description ?? ''),
+    tagline: String(row.tagline ?? row.description ?? ''),
     phone: String(row.phone ?? ''),
-    whatsapp: String(row.whatsapp),
+    whatsapp: String(row.whatsapp ?? ''),
     hoursSummary: String(row.hours_summary ?? 'Consultar horario'),
     hours: Array.isArray(row.hours) ? row.hours : [],
     isOpenNow: Boolean(row.is_open_now),
     hasSubdomain: Boolean(row.has_subdomain),
     featured: Boolean(row.featured),
-    heroImage: String(row.hero_image),
+    heroImage: safeImageSrc(row.hero_image, '/notas/frente-recova.jpg'),
     emoji: '',
     yearsInNeighborhood: String(row.years_in_neighborhood ?? 'Comercio de Mataderos'),
     paymentMethods: String(row.payment_methods ?? 'Consultar medios de pago'),
@@ -87,86 +139,105 @@ function mapBusinessRow(row: Record<string, unknown>): Business {
 }
 
 export async function fetchBusinesses(): Promise<Business[]> {
-  const supabase = getSupabaseClient();
-  if (!supabase) return BUSINESSES;
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) return BUSINESSES;
 
-  const { data, error } = await supabase
-    .from('businesses')
-    .select('*')
-    .order('featured', { ascending: false });
+    const { data, error } = await supabase
+      .from('businesses')
+      .select('*')
+      .order('featured', { ascending: false });
 
-  if (error || !data || data.length === 0) {
+    if (error || !data || data.length === 0) {
+      return BUSINESSES;
+    }
+
+    const mapped = (data as Record<string, unknown>[])
+      .map(mapBusinessRow)
+      .filter((item) => item.slug.length > 0 && item.name.length > 0);
+
+    return mapped.length > 0 ? mapped : BUSINESSES;
+  } catch {
     return BUSINESSES;
   }
-
-  return (data as Record<string, unknown>[]).map(mapBusinessRow);
 }
 
 export async function fetchBusinessBySlug(slug: string): Promise<Business | null> {
   const normalized = slug.toLowerCase().trim();
-  const supabase = getSupabaseClient();
+  try {
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      const { data } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('slug', normalized)
+        .maybeSingle();
 
-  if (supabase) {
-    const { data } = await supabase
-      .from('businesses')
-      .select('*')
-      .eq('slug', normalized)
-      .maybeSingle();
-
-    if (data) {
-      return mapBusinessRow(data as Record<string, unknown>);
+      if (data) {
+        return mapBusinessRow(data as Record<string, unknown>);
+      }
     }
+  } catch {
+    // Fallback al listado curado local
   }
 
   return BUSINESSES.find((b) => b.slug === normalized) ?? null;
 }
 
 export async function fetchArticles(): Promise<Article[]> {
-  const supabase = getSupabaseClient();
-  if (!supabase) return ARTICLES;
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) return ARTICLES;
 
-  const { data, error } = await supabase
-    .from('articles')
-    .select('*')
-    .order('published_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .order('published_at', { ascending: false });
 
-  if (error || !data || data.length === 0) {
+    if (error || !data || data.length === 0) {
+      return ARTICLES;
+    }
+
+    return data.map((row) => ({
+      id: String(row.id),
+      slug: String(row.slug),
+      title: String(row.title),
+      excerpt: String(row.excerpt),
+      content: Array.isArray(row.content) ? row.content : [String(row.excerpt)],
+      category: String(row.category),
+      zone: String(row.zone),
+      readTime: String(row.read_time ?? '3 min'),
+      publishedLabel: 'Reciente',
+      imageUrl: safeImageSrc(row.image_url, '/notas/frente-recova.jpg')
+    }));
+  } catch {
     return ARTICLES;
   }
-
-  return data.map((row) => ({
-    id: String(row.id),
-    slug: String(row.slug),
-    title: String(row.title),
-    excerpt: String(row.excerpt),
-    content: Array.isArray(row.content) ? row.content : [String(row.excerpt)],
-    category: String(row.category),
-    zone: String(row.zone),
-    readTime: String(row.read_time ?? '3 min'),
-    publishedLabel: 'Reciente',
-    imageUrl: String(row.image_url)
-  }));
 }
 
 export async function fetchEvents(): Promise<NeighborhoodEvent[]> {
-  const supabase = getSupabaseClient();
-  if (!supabase) return EVENTS;
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) return EVENTS;
 
-  const { data, error } = await supabase.from('events').select('*');
-  if (error || !data || data.length === 0) {
+    const { data, error } = await supabase.from('events').select('*');
+    if (error || !data || data.length === 0) {
+      return EVENTS;
+    }
+
+    return data.map((row) => ({
+      id: String(row.id),
+      title: String(row.title),
+      dateLabel: String(row.date_label),
+      timeLabel: 'Consultar horario',
+      location: String(row.location),
+      category: (row.category as NeighborhoodEvent['category']) ?? 'Cultura',
+      description: String(row.description),
+      highlightTag: String(row.highlight_tag ?? 'Comunidad')
+    }));
+  } catch {
     return EVENTS;
   }
-
-  return data.map((row) => ({
-    id: String(row.id),
-    title: String(row.title),
-    dateLabel: String(row.date_label),
-    timeLabel: 'Consultar horario',
-    location: String(row.location),
-    category: (row.category as NeighborhoodEvent['category']) ?? 'Cultura',
-    description: String(row.description),
-    highlightTag: String(row.highlight_tag ?? 'Comunidad')
-  }));
 }
 
 function isFotoId(value: unknown): value is FotoId {
@@ -175,59 +246,73 @@ function isFotoId(value: unknown): value is FotoId {
 
 /**
  * Devuelve la agenda fechada desde Supabase (`public.events`) cuando existen filas
- * con `starts_at` y `ends_at`. Mientras la base no esté poblada, usa `AGENDA_ITEMS`.
+ * con `starts_at` y `ends_at` válidos. Mientras la base no esté poblada, usa `AGENDA_ITEMS`.
  */
 export async function fetchAgendaItems(): Promise<AgendaItem[]> {
-  const supabase = getSupabaseClient();
-  if (!supabase) return AGENDA_ITEMS;
+  try {
+    const supabase = getSupabaseClient();
+    if (!supabase) return AGENDA_ITEMS;
 
-  const { data, error } = await supabase
-    .from('events')
-    .select('*')
-    .not('starts_at', 'is', null)
-    .order('starts_at', { ascending: true });
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .not('starts_at', 'is', null)
+      .order('starts_at', { ascending: true });
 
-  if (error || !data || data.length === 0) {
+    if (error || !data || data.length === 0) {
+      return AGENDA_ITEMS;
+    }
+
+    const mapped = (data as Record<string, unknown>[])
+      .filter((row) => {
+        const barrio = (row.barrio as EventBarrio) ?? 'Mataderos';
+        const startsTs = Date.parse(String(row.starts_at ?? ''));
+        return barrio === 'Mataderos' && !Number.isNaN(startsTs);
+      })
+      .map((row) => {
+        const barrio = (row.barrio as EventBarrio) ?? 'Mataderos';
+        const ambito: EventAmbito =
+          (row.ambito as EventAmbito) ?? (barrio === 'Mataderos' ? 'Mataderos' : 'Comuna 9');
+        const startsAt = String(row.starts_at);
+        const endsRaw = String(row.ends_at ?? startsAt);
+        const endsAt = Number.isNaN(Date.parse(endsRaw)) ? startsAt : endsRaw;
+
+        return {
+          id: String(row.id),
+          venueId: String(row.venue_id ?? row.id),
+          venueName: String(row.venue_name ?? row.location ?? 'Mataderos'),
+          title: String(row.title ?? ''),
+          description: String(row.description ?? ''),
+          category: (row.category as EventCategory) ?? 'Cultura',
+          barrio,
+          ambito,
+          place: String(row.place ?? row.location ?? 'Mataderos'),
+          mapsQuery: String(row.maps_query ?? `${row.location ?? 'Mataderos'}, ${barrio}, CABA, Argentina`),
+          startsAt,
+          endsAt,
+          isMultiDay: Boolean(row.is_multiday),
+          dateBadge: row.date_badge ? String(row.date_badge) : undefined,
+          timeLabel: String(row.time_label ?? row.date_label ?? 'Consultar horario'),
+          priceLabel: String(row.price_label ?? 'Consultar acceso'),
+          isFree: Boolean(row.is_free),
+          highlightTag: String(row.highlight_tag ?? 'Agenda'),
+          source:
+            row.source_url && row.source_label
+              ? {
+                  label: String(row.source_label),
+                  url: String(row.source_url),
+                  note: row.source_note ? String(row.source_note) : undefined
+                }
+              : undefined,
+          relatedNotaSlug: row.related_nota_slug ? String(row.related_nota_slug) : undefined,
+          photoId: isFotoId(row.photo_id) ? row.photo_id : undefined
+        };
+      });
+
+    return mapped.length > 0 ? mapped : AGENDA_ITEMS;
+  } catch {
     return AGENDA_ITEMS;
   }
-
-  return data
-    .filter((row) => ((row.barrio as EventBarrio) ?? 'Mataderos') === 'Mataderos')
-    .map((row) => {
-    const barrio = (row.barrio as EventBarrio) ?? 'Mataderos';
-    const ambito: EventAmbito =
-      (row.ambito as EventAmbito) ?? (barrio === 'Mataderos' ? 'Mataderos' : 'Comuna 9');
-    return {
-      id: String(row.id),
-      venueId: String(row.venue_id ?? row.id),
-      venueName: String(row.venue_name ?? row.location),
-      title: String(row.title),
-      description: String(row.description),
-      category: (row.category as EventCategory) ?? 'Cultura',
-      barrio,
-      ambito,
-      place: String(row.place ?? row.location),
-      mapsQuery: String(row.maps_query ?? `${row.location}, ${barrio}, CABA, Argentina`),
-      startsAt: String(row.starts_at),
-      endsAt: String(row.ends_at ?? row.starts_at),
-      isMultiDay: Boolean(row.is_multiday),
-      dateBadge: row.date_badge ? String(row.date_badge) : undefined,
-      timeLabel: String(row.time_label ?? row.date_label ?? 'Consultar horario'),
-      priceLabel: String(row.price_label ?? 'Consultar acceso'),
-      isFree: Boolean(row.is_free),
-      highlightTag: String(row.highlight_tag ?? 'Agenda'),
-      source:
-        row.source_url && row.source_label
-          ? {
-              label: String(row.source_label),
-              url: String(row.source_url),
-              note: row.source_note ? String(row.source_note) : undefined
-            }
-          : undefined,
-      relatedNotaSlug: row.related_nota_slug ? String(row.related_nota_slug) : undefined,
-      photoId: isFotoId(row.photo_id) ? row.photo_id : undefined
-    };
-  });
 }
 
 function mapEmprendedorRow(row: Record<string, unknown>): Emprendedor {
@@ -235,7 +320,7 @@ function mapEmprendedorRow(row: Record<string, unknown>): Emprendedor {
   const photos = photosRaw
     .filter((entry): entry is Record<string, unknown> => Boolean(entry && typeof entry === 'object'))
     .map((entry) => ({
-      src: String(entry.src ?? ''),
+      src: safeImageSrc(entry.src, ''),
       alt: String(entry.alt ?? '')
     }))
     .filter((entry) => entry.src.length > 0);
@@ -257,7 +342,7 @@ function mapEmprendedorRow(row: Record<string, unknown>): Emprendedor {
     facebook: row.facebook ? String(row.facebook) : undefined,
     tiktok: row.tiktok ? String(row.tiktok) : undefined,
     otherUrl: row.other_url ? String(row.other_url) : undefined,
-    heroImage: String(row.hero_image ?? '/notas/frente-recova.jpg'),
+    heroImage: safeImageSrc(row.hero_image, '/notas/frente-recova.jpg'),
     heroAlt: String(row.hero_alt ?? row.display_name ?? 'Emprendimiento de Mataderos'),
     photos,
     catalogPdfName: row.catalog_pdf_name ? String(row.catalog_pdf_name) : undefined,
@@ -269,10 +354,10 @@ function mapEmprendedorRow(row: Record<string, unknown>): Emprendedor {
 }
 
 export async function fetchEmprendedores(): Promise<Emprendedor[]> {
-  const supabase = getSupabaseClient();
-  if (!supabase) return EMPRENDEDORES;
-
   try {
+    const supabase = getSupabaseClient();
+    if (!supabase) return EMPRENDEDORES;
+
     const { data, error } = await supabase
       .from('emprendedores')
       .select('*')
@@ -295,10 +380,9 @@ export async function fetchEmprendedores(): Promise<Emprendedor[]> {
 
 export async function fetchEmprendedorBySlug(slug: string): Promise<Emprendedor | null> {
   const normalized = slug.toLowerCase().trim();
-  const supabase = getSupabaseClient();
-
-  if (supabase) {
-    try {
+  try {
+    const supabase = getSupabaseClient();
+    if (supabase) {
       const { data } = await supabase
         .from('emprendedores')
         .select('*')
@@ -311,9 +395,9 @@ export async function fetchEmprendedorBySlug(slug: string): Promise<Emprendedor 
           return mapEmprendedorRow(row);
         }
       }
-    } catch {
-      // Fallback limpio a los perfiles curados locales si la tabla aún no existe
     }
+  } catch {
+    // Fallback limpio a los perfiles curados locales si la tabla aún no existe
   }
 
   return getEmprendedorBySlug(normalized) ?? null;
@@ -325,12 +409,10 @@ export async function fetchEmprendedorBySlug(slug: string): Promise<Emprendedor 
  */
 export async function fetchTakenSlugs(): Promise<string[]> {
   const taken = new Set<string>(BUILT_IN_TAKEN_SLUGS);
-  const supabase = getSupabaseClient();
-  if (!supabase) return Array.from(taken);
-
   try {
-    // Preferimos la función RPC `get_taken_slugs()` (SECURITY DEFINER), que devuelve solo slugs
-    // sin exponer datos personales de `sumate_submissions` ni perfiles pendientes.
+    const supabase = getSupabaseClient();
+    if (!supabase) return Array.from(taken);
+
     const rpcRes = await supabase.rpc('get_taken_slugs');
     if (!rpcRes.error && Array.isArray(rpcRes.data)) {
       for (const row of rpcRes.data as Array<{ slug?: string | null }>) {
@@ -380,21 +462,25 @@ export interface SupabaseWriteContext {
  * sin `.select()` para respetar RLS.
  */
 export function getSupabaseWriteContext(): SupabaseWriteContext | null {
-  const url = getSupabaseUrl();
-  const secretKey = getSupabaseSecretKey();
-  const publicKey = getSupabasePublicKey();
-  if (!url) return null;
-  if (secretKey) {
-    return {
-      client: createClient(url, secretKey, { auth: { persistSession: false } }),
-      isServiceRole: true
-    };
-  }
-  if (publicKey) {
-    return {
-      client: createClient(url, publicKey, { auth: { persistSession: false } }),
-      isServiceRole: false
-    };
+  try {
+    const url = getSupabaseUrl();
+    const secretKey = getSupabaseSecretKey();
+    const publicKey = getSupabasePublicKey();
+    if (!url) return null;
+    if (secretKey) {
+      return {
+        client: createClient(url, secretKey, { auth: { persistSession: false } }),
+        isServiceRole: true
+      };
+    }
+    if (publicKey) {
+      return {
+        client: createClient(url, publicKey, { auth: { persistSession: false } }),
+        isServiceRole: false
+      };
+    }
+  } catch {
+    return null;
   }
   return null;
 }

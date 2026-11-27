@@ -413,6 +413,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'Detrás de la semana de ofertas hay una asociación vieja. Esta nota es sobre la asociación, no sobre el descuento de cada vidriera.',
     category: 'Comercio',
     publishedAt: '2026-11-27',
+    image: 'alberdiVidrieras',
     blocks: [
       {
         kind: 'p',
@@ -483,6 +484,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'No es la junta comunal. Es el lugar donde un vecino de Mataderos puede sentar un tema y empujarlo como recomendación.',
     category: 'Comuna',
     publishedAt: '2026-11-27',
+    image: 'clubCardenas',
     blocks: [
       {
         kind: 'p',

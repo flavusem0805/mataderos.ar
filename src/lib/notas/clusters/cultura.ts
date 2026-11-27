@@ -144,6 +144,7 @@ export const CULTURA: Nota[] = [
     dek: 'La esquina existía antes de la pizza. Se llamaba Primera Curva por el tranvía. En 1935 pasó a ser El Cedrón.',
     category: 'Bares',
     publishedAt: '2026-07-30',
+    image: 'elCedron',
     datos: {
       title: 'La esquina',
       rows: [

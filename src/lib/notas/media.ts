@@ -301,6 +301,39 @@ export const FOTOS = {
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Club_Glorias_Argentinas.jpg',
     changes: 'Copia reducida para la web.'
+  },
+  elCedron: {
+    src: '/notas/el-cedron.jpg',
+    alt: 'Ochava de la pizzería El Cedrón, en Avenida Alberdi 6101 y Murguiondo, Mataderos. El cartel dice Cedrón.',
+    author: 'kaart_1, Mapillary',
+    taken: '25 de agosto de 2024',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://www.mapillary.com/app/?pKey=1048077370439638&focus=photo',
+    changes: 'Copia reducida para la web. Se recortó la franja del registrador y el borde derecho.',
+    objectPosition: '28% 40%'
+  },
+  clubCardenas: {
+    src: '/notas/club-cardenas.jpg',
+    alt: 'Frente del Club Cárdenas, en la avenida Coronel Cárdenas al 2900, Mataderos. El Consejo Consultivo de la Comuna 9 se reúne en esta sede.',
+    author: 'kaart_1, Mapillary',
+    taken: '25 de agosto de 2024',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://www.mapillary.com/app/?pKey=1569547297103883&focus=photo',
+    changes: 'Copia reducida para la web. Se recortó la franja del registrador y el borde izquierdo.',
+    objectPosition: '55% 42%'
+  },
+  alberdiVidrieras: {
+    src: '/notas/alberdi-vidrieras.jpg',
+    alt: 'Avenida Alberdi al 6074, en Mataderos, con vidrieras del corredor comercial. No es la sede del Centro Comercial Alberdi.',
+    author: 'kaart_1, Mapillary',
+    taken: '25 de agosto de 2024',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://www.mapillary.com/app/?pKey=953432433470150&focus=photo',
+    changes: 'Copia reducida para la web. Se recortó la franja del registrador.',
+    objectPosition: 'center 45%'
   }
 } as const satisfies Record<string, Foto>;
 

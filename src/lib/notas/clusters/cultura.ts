@@ -10,7 +10,7 @@ export const CULTURA: Nota[] = [
     dek: 'La música que el barrio documenta en vivo es el folklore del domingo. El tango está en la memoria de sus bares. Conviene no cambiarles el lugar.',
     category: 'Cultura',
     publishedAt: '2026-04-21',
-    image: 'baile',
+    image: 'glorias',
     datos: {
       title: 'Dónde está cada cosa',
       rows: [
@@ -144,7 +144,6 @@ export const CULTURA: Nota[] = [
     dek: 'La esquina existía antes de la pizza. Se llamaba Primera Curva por el tranvía. En 1935 pasó a ser El Cedrón.',
     category: 'Bares',
     publishedAt: '2026-07-30',
-    image: 'corrales',
     datos: {
       title: 'La esquina',
       rows: [
@@ -229,7 +228,7 @@ export const CULTURA: Nota[] = [
     dek: 'El escenario del casco programa música y danza folklórica todas las semanas de feria. Se mira de pie, entre los puestos, sin entrada.',
     category: 'Folklore',
     publishedAt: '2026-09-17',
-    image: 'baile',
+    image: 'adampolBaile',
     datos: {
       title: 'El escenario',
       rows: [
@@ -319,7 +318,7 @@ export const CULTURA: Nota[] = [
     dek: 'Hay una esquina con historia escrita por la Ciudad. Hay un casco que fue pulpería de oficio. No hay, en esta guía, un ranking de diez bares.',
     category: 'Bares',
     publishedAt: '2026-10-22',
-    image: 'frente',
+    image: 'barOviedo',
     datos: {
       title: 'Esquinas con fuente',
       rows: [

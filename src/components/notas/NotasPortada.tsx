@@ -93,9 +93,9 @@ function FiguraCard({
     return (
       <div
         aria-hidden="true"
-        className={`flex flex-col justify-between p-5 text-pampa ${CAMPOS[campoKey]} ${className}`}
+        className={`flex flex-col justify-between border border-pampa/40 p-5 text-pampa ${CAMPOS[campoKey]} ${className}`}
       >
-        <span className="font-mono text-sm uppercase tracking-wider text-pampa/80">{topLabel}</span>
+        <span className="border-b border-pampa/40 pb-3 font-mono text-sm uppercase tracking-wider text-pampa/80">{topLabel}</span>
         <span className="font-display text-[clamp(1.6rem,3vw,2.4rem)] font-semibold uppercase leading-[0.95]">
           {bottomLabel}
         </span>
@@ -130,7 +130,7 @@ function NotaDestacada({ nota }: { nota: NotaCardData }) {
           foto={nota.foto}
           campoKey={campoKey}
           topLabel={nota.placeLabel ?? nota.guiaLabel ?? nota.category}
-          bottomLabel={nota.category}
+          bottomLabel={nota.title}
           priority
           sizes="(min-width: 1024px) 58vw, 100vw"
           className="aspect-[3/2] lg:col-span-7 lg:aspect-auto lg:min-h-[340px]"
@@ -164,7 +164,7 @@ function TarjetaNota({ nota }: { nota: NotaCardData }) {
           foto={nota.foto}
           campoKey={campoKey}
           topLabel={nota.placeLabel ?? nota.guiaLabel ?? nota.category}
-          bottomLabel={nota.category}
+          bottomLabel={nota.title}
           sizes="(min-width: 1024px) 30vw, (min-width: 768px) 46vw, 100vw"
         />
         <span className="flex flex-1 flex-col p-4">

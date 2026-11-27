@@ -187,11 +187,17 @@ export default async function NotaPage({ params }: NotaPageProps) {
             </a>
             </figcaption>
           </figure>
-        ) : nota.placeLabel ? (
-          <div className="mt-8 max-w-[68ch] border-y border-carbon/25 bg-pampa-deep px-5 py-4 font-mono text-sm uppercase tracking-wider text-cuero">
-            {nota.placeLabel}
+        ) : (
+          <div className="mt-8 max-w-[68ch] border border-carbon bg-cuero px-6 py-10 text-pampa sm:px-10">
+            <p className="font-mono text-base uppercase tracking-wider text-pampa/80">
+              {nota.placeLabel ?? nota.category}
+            </p>
+            <div className="my-4 border-t border-pampa/40" />
+            <p className="font-display text-[clamp(2rem,5vw,3.5rem)] font-semibold uppercase leading-[0.95]">
+              {nota.title}
+            </p>
           </div>
-        ) : null}
+        )}
 
         {nota.slug === 'cine-teatro-el-plata' && <ElPlataInstagram />}
 

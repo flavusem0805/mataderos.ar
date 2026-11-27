@@ -10,7 +10,7 @@ export const QUE_HACER: Nota[] = [
     dek: 'Una tarde alcanza para el casco. Un domingo completo suma la feria. El Plata, Alberdi y la cancha piden otro ritmo, no otra ciudad.',
     category: 'Guía',
     publishedAt: '2026-03-29',
-    image: 'corrales',
+    image: 'plaza17',
     datos: {
       title: 'Cinco paradas que sí están',
       rows: [
@@ -153,7 +153,7 @@ export const QUE_HACER: Nota[] = [
     dek: 'Un orden posible: casco temprano, museo si abre, feria, comida, baile o sortija, y salida antes de que el colectivo se sienta lejos.',
     category: 'Guía',
     publishedAt: '2026-06-18',
-    image: 'baile',
+    image: 'corridaSortija',
     datos: {
       title: 'Orden sugerido',
       rows: [
@@ -250,7 +250,7 @@ export const QUE_HACER: Nota[] = [
     dek: 'Alberdi es el centro comercial de toda la semana. Emilio Castro es otro corredor. El casco de la feria es un tercero. No son la misma caminata.',
     category: 'Guía',
     publishedAt: '2026-08-06',
-    image: 'torre',
+    image: 'avenidaMataderos',
     datos: {
       title: 'Tres corredores',
       rows: [

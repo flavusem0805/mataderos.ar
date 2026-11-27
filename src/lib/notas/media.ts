@@ -141,6 +141,166 @@ export const FOTOS = {
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:DefPuebloCABA_-_Barrio_de_Mataderos.jpg',
     changes: 'Copia reducida para la web.'
+  },
+  bustoSuarez: {
+    src: '/notas/busto-suarez.jpg',
+    alt: 'Busto de Justo Suárez en Mataderos.',
+    author: 'Fma12',
+    taken: '18 de agosto de 2011',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Busto_suarez_mataderos.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  cartelMataderos: {
+    src: '/notas/cartel-mataderos.jpg',
+    alt: 'Cartel del barrio de Mataderos.',
+    author: 'Camila Mazza',
+    taken: '20 de agosto de 2015',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Cartel_Mataderos.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  museoCriollo: {
+    src: '/notas/museo-criollo.jpg',
+    alt: 'Museo Criollo de los Corrales, en la recova de Mataderos.',
+    author: 'Camila Mazza',
+    taken: '20 de agosto de 2015',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Museo_Criollo_de_los_Corrales.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  feriaMazza: {
+    src: '/notas/feria-mazza.jpg',
+    alt: 'Puestos de la Feria de Mataderos.',
+    author: 'Camila Mazza',
+    taken: '20 de agosto de 2015',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Feria_de_Mataderos.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  corridaSortija: {
+    src: '/notas/corrida-sortija.jpg',
+    alt: 'Corrida de sortija en la Feria de Mataderos.',
+    author: 'Roberto Fiadone',
+    taken: 'noviembre de 2007',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Corrida_de_Sortija.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  preparandoSortija: {
+    src: '/notas/preparando-sortija.jpg',
+    alt: 'Preparativos de la corrida de sortija en la Feria de Mataderos.',
+    author: 'Roberto Fiadone',
+    taken: 'noviembre de 2007',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Preparando_corrida_de_sortija.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  plaza17: {
+    src: '/notas/plaza-17-mayo.jpg',
+    alt: 'Plaza 17 de Mayo, en Mataderos.',
+    author: 'Nestor Dinatale',
+    taken: '21 de febrero de 2015',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Inauguraci%C3%B3n_Plaza_17_de_Mayo,_Mataderos,_Ciudad_de_Buenos_Aires.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  cartelAdministracion: {
+    src: '/notas/cartel-administracion.jpg',
+    alt: 'Cartel de la antigua administración de los Mataderos.',
+    author: 'Camila Mazza',
+    taken: '20 de agosto de 2015',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Cartel_de_la_antigua_administracion.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  antiguoEdificio: {
+    src: '/notas/antiguo-edificio.jpg',
+    alt: 'Antiguo edificio de la administración de los Mataderos.',
+    author: 'Camila Mazza',
+    taken: '20 de agosto de 2015',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Antiguo_edificio_de_la_administraci%C3%B3n.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  corralesViejos: {
+    src: '/notas/corrales-viejos.jpg',
+    alt: 'Los corrales de Mataderos hacia 1899.',
+    author: 'Autor desconocido',
+    taken: 'circa 1899',
+    license: 'Dominio público',
+    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Corrales_viejos_en_mataderos.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  reseroInduni: {
+    src: '/notas/resero-induni.jpg',
+    alt: 'El Resero, monumento ecuestre frente a la antigua administración.',
+    author: 'Noelia Induni',
+    taken: '21 de agosto de 2015',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Resero.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  barOviedo: {
+    src: '/notas/bar-oviedo.jpg',
+    alt: 'Bar Oviedo, en Mataderos.',
+    author: 'Roberto Fiadone',
+    taken: '14 de diciembre de 2014',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Bar_Oviedo_Mataderos_01.JPG',
+    changes: 'Copia reducida para la web.'
+  },
+  tribunaPerales: {
+    src: '/notas/tribuna-perales.jpg',
+    alt: 'Tribuna del estadio de Nueva Chicago que da al barrio Los Perales.',
+    author: 'Herjherrera',
+    taken: '16 de agosto de 2010',
+    license: 'Dominio público',
+    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Tribuna_que_da_al_barrio_Los_Perales.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  adampolBaile: {
+    src: '/notas/adampol-baile.jpg',
+    alt: 'Pareja de baile frente al cartel de la Feria de Mataderos.',
+    author: 'Carlos Adampol Galindo',
+    taken: '13 de diciembre de 2009',
+    license: 'CC BY-SA 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Feria_de_Mataderos,_Buenos_Aires,_Argentina_(4188165517).jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  adampolNino: {
+    src: '/notas/adampol-nino.jpg',
+    alt: 'Nene a caballo en la Feria de Mataderos.',
+    author: 'Carlos Adampol Galindo',
+    taken: '13 de diciembre de 2009',
+    license: 'CC BY-SA 2.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/2.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Feria_de_Mataderos,_Buenos_Aires,_Argentina_(4188927458).jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  glorias: {
+    src: '/notas/glorias.jpg',
+    alt: 'Club Glorias Argentinas, en Mataderos.',
+    author: 'Dubstar',
+    taken: '23 de octubre de 2021',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Club_Glorias_Argentinas.jpg',
+    changes: 'Copia reducida para la web.'
   }
 } as const satisfies Record<string, Foto>;
 

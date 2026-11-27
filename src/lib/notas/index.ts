@@ -48,9 +48,7 @@ function assertEditorial(list: NotaResuelta[]) {
     if (nota.fuentes.length === 0) {
       throw new Error(`La nota ${nota.slug} debe incluir al menos una fuente verificada.`);
     }
-    if ((nota.type === 'pilar' || nota.type === 'satelite') && !nota.image) {
-      throw new Error(`La nota ${nota.slug} requiere una imagen verificada.`);
-    }
+    // Sin foto republicable: la portada es una tapa tipográfica, no se reutiliza la de otra nota.
     if (nota.type === 'satelite') {
       if (!nota.pillarSlug || !slugs.has(nota.pillarSlug)) {
         throw new Error(`Satélite sin pilar válido: ${nota.slug}`);

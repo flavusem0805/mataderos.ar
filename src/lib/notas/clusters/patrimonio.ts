@@ -146,7 +146,7 @@ export const PATRIMONIO: Nota[] = [
     dek: 'La Recova no es un mercado aparte. Es la galería de la antigua administración: arcos, alas y una torre con reloj monumental francés.',
     category: 'Arquitectura',
     publishedAt: '2026-05-28',
-    image: 'frente',
+    image: 'cartelAdministracion',
     datos: {
       title: 'El edificio',
       rows: [
@@ -330,7 +330,7 @@ export const PATRIMONIO: Nota[] = [
     dek: 'Está dentro de la recova, no en un edificio nuevo. Seis salas, una pulpería, una capilla y el patio del aljibe, a metros de El Resero.',
     category: 'Museo',
     publishedAt: '2026-09-03',
-    image: 'frente',
+    image: 'museoCriollo',
     datos: {
       title: 'Visita',
       rows: [
@@ -424,7 +424,7 @@ export const PATRIMONIO: Nota[] = [
     dek: 'El casco no es un slogan. Es un polígono del Código de Planeamiento, con niveles de protección para el edificio, el monumento y hasta el tamaño de los carteles.',
     category: 'Patrimonio',
     publishedAt: '2026-10-08',
-    image: 'corrales',
+    image: 'antiguoEdificio',
     datos: {
       title: 'La norma',
       rows: [

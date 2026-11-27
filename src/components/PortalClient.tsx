@@ -694,13 +694,13 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
                 ) : (
                   <span
                     aria-hidden="true"
-                    className="flex aspect-[4/3] w-full shrink-0 flex-col justify-between bg-cuero p-4 text-pampa"
+                    className="flex aspect-[4/3] w-full shrink-0 flex-col justify-between border border-pampa/40 bg-cuero p-4 text-pampa"
                   >
-                    <span className="font-mono text-sm uppercase tracking-wider text-pampa/85">
+                    <span className="border-b border-pampa/40 pb-3 font-mono text-sm uppercase tracking-wider text-pampa/85">
                       {note.placeLabel ?? note.category}
                     </span>
-                    <span className="font-display text-3xl font-semibold uppercase leading-[0.95]">
-                      {note.category}
+                    <span className="line-clamp-4 font-display text-3xl font-semibold uppercase leading-[0.95]">
+                      {note.title}
                     </span>
                   </span>
                 )}

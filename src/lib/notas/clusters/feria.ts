@@ -240,7 +240,7 @@ export const FERIA: Nota[] = [
     dek: 'Se come lo que las provincias mandan a los puestos: asado, empanadas, humita, locro, dulce y pastelitos. No hay una carta oficial ni un precio de lista.',
     category: 'Gastronomía',
     publishedAt: '2026-06-11',
-    image: 'baile',
+    image: 'feriaMazza',
     datos: {
       title: 'Para comer en la feria',
       rows: [

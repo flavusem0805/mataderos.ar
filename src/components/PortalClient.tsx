@@ -1367,45 +1367,46 @@ function ViviTile({
   tile: (typeof VIVI_TILES)[number];
   imageClass: string;
 }) {
-  const figure = (
-    <>
-      <span className={`relative block overflow-hidden ${imageClass}`}>
-        <PhotoFill src={tile.imageUrl} alt={tile.imageAlt} sizes="(max-width: 1024px) 85vw, 25vw" />
-      </span>
-      <span className="block p-4 pb-0">
-        <span className="block font-display text-[clamp(1.75rem,2vw,2.25rem)] font-semibold uppercase leading-none group-hover:underline group-hover:underline-offset-4">
-          {tile.title}
-        </span>
-        <span className="mt-3 block text-lg leading-snug [hyphens:manual] [overflow-wrap:normal] [word-break:normal]">
-          {tile.line}
-        </span>
-      </span>
-    </>
-  );
-
   const credit = tile.imageCreditHref ? (
     <a
       href={tile.imageCreditHref}
       target="_blank"
       rel="noopener noreferrer"
-      className="block font-mono text-[11px] leading-snug text-pampa/75 underline underline-offset-4 hover:text-pampa"
+      className="block truncate font-mono text-[11px] leading-tight text-pampa/70 underline underline-offset-2 hover:text-pampa"
     >
       {tile.imageCredit}
     </a>
   ) : (
-    <span className="block font-mono text-[11px] leading-snug text-pampa/65">{tile.imageCredit}</span>
+    <span className="block truncate font-mono text-[11px] leading-tight text-pampa/65">
+      {tile.imageCredit}
+    </span>
   );
 
   return (
-    <article className="flex h-full flex-col justify-between border border-pampa/30 bg-carbon">
+    <article className="flex h-full flex-col border border-pampa/30 bg-carbon">
+      <figure className="border-b border-pampa/15">
+        <a
+          href={tile.href}
+          aria-label={`${tile.title}. ${tile.line}`}
+          className={`relative block overflow-hidden ${imageClass}`}
+        >
+          <PhotoFill src={tile.imageUrl} alt={tile.imageAlt} sizes="(max-width: 1024px) 85vw, 25vw" />
+        </a>
+        <figcaption className="px-3 py-1.5">{credit}</figcaption>
+      </figure>
+
       <a
         href={tile.href}
         aria-label={`${tile.title}. ${tile.line}`}
-        className="group block"
+        className="group block flex-1 p-4"
       >
-        {figure}
+        <span className="block font-display text-[clamp(1.75rem,2vw,2.25rem)] font-semibold uppercase leading-none group-hover:underline group-hover:underline-offset-4">
+          {tile.title}
+        </span>
+        <span className="mt-2.5 block text-lg leading-snug [hyphens:manual] [overflow-wrap:normal] [word-break:normal]">
+          {tile.line}
+        </span>
       </a>
-      <div className="px-4 pb-3 pt-2.5">{credit}</div>
     </article>
   );
 }

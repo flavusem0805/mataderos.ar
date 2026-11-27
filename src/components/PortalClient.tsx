@@ -1388,37 +1388,25 @@ function ViviTile({
       href={tile.imageCreditHref}
       target="_blank"
       rel="noopener noreferrer"
-      className="mt-3 block font-mono text-base leading-snug text-pampa underline underline-offset-4"
+      className="block font-mono text-[11px] leading-snug text-pampa/75 underline underline-offset-4 hover:text-pampa"
     >
       {tile.imageCredit}
     </a>
   ) : (
-    <span className="mt-3 block font-mono text-base leading-snug text-pampa/80">{tile.imageCredit}</span>
+    <span className="block font-mono text-[11px] leading-snug text-pampa/65">{tile.imageCredit}</span>
   );
 
-  if (tile.id === 'vivi-plata') {
-    return (
-      <div className="border border-pampa/30 bg-carbon">
-        <a href={tile.href} aria-label={`${tile.title}. ${tile.line}`} className="group block">
-          {figure}
-        </a>
-        <div className="space-y-4 px-4 py-4">
-          {credit}
-          <ElPlataInstagramLink tone="dark" />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <a
-      href={tile.href}
-      aria-label={`${tile.title}. ${tile.line}`}
-      className="group block border border-pampa/30 bg-carbon"
-    >
-      {figure}
-      <span className="block px-4 pb-4">{credit}</span>
-    </a>
+    <article className="flex h-full flex-col justify-between border border-pampa/30 bg-carbon">
+      <a
+        href={tile.href}
+        aria-label={`${tile.title}. ${tile.line}`}
+        className="group block"
+      >
+        {figure}
+      </a>
+      <div className="px-4 pb-3 pt-2.5">{credit}</div>
+    </article>
   );
 }
 

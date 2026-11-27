@@ -738,34 +738,15 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
 
 function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; serverNow: number }) {
   const [now, setNow] = useState<number>(serverNow);
-  const [activeId, setActiveId] = useState<string>(AGENDA_SPOTS[0]?.id ?? 'el-plata');
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [expanded, setExpanded] = useState(false);
+
+  const mobileSpotlightRef = useRef<HTMLElement>(null);
+  const desktopSpotlightRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setNow(Date.now());
   }, []);
-
-  const spotsData = useMemo(() => {
-    return AGENDA_SPOTS.map((spot) => {
-      const matched = agendaItems
-        .filter(spot.match)
-        .sort((a, b) => agendaTimestamps(a).startTs - agendaTimestamps(b).startTs);
-      const activeOrUpcoming = matched.filter((item) => agendaStatus(item, now) !== 'past');
-      const visible = activeOrUpcoming.length > 0 ? activeOrUpcoming : matched;
-      const featured = visible[0];
-      const featuredStatus = featured ? agendaStatus(featured, now) : 'past';
-      const featuredStartTs = featured ? agendaTimestamps(featured).startTs : Infinity;
-      return { spot, items: visible, featured, featuredStatus, featuredStartTs };
-    }).filter((entry) => entry.featured !== undefined);
-  }, [agendaItems, now]);
-
-  const soonestMataderosSpotId = useMemo(() => {
-    const candidates = spotsData
-      .filter((entry) => entry.spot.ambito === 'Mataderos' && entry.featuredStatus === 'upcoming')
-      .sort((a, b) => a.featuredStartTs - b.featuredStartTs);
-    return candidates[0]?.spot.id ?? null;
-  }, [spotsData]);
 
   const quickList = useMemo(() => {
     const active = agendaItems.filter((item) => agendaStatus(item, now) !== 'past');
@@ -779,41 +760,26 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
     });
   }, [agendaItems, now]);
 
-  const currentSpot = spotsData.find((entry) => entry.spot.id === activeId) ?? spotsData[0];
-  if (!currentSpot || !currentSpot.featured) return null;
+  if (quickList.length === 0) return null;
 
-  const { spot, items: spotItems, featured, featuredStatus, featuredStartTs } = currentSpot;
-  const mobileSpotPhoto = spot.photoId ? FOTOS[spot.photoId] : undefined;
+  const featuredItem =
+    (selectedItemId ? quickList.find((item) => item.id === selectedItemId) : undefined) ??
+    quickList[0];
+  const featuredStatus = agendaStatus(featuredItem, now);
+  const featuredStartTs = agendaTimestamps(featuredItem).startTs;
+  const featuredSpot = AGENDA_SPOTS.find((spot) => spot.match(featuredItem));
+  const featuredPhotoId = featuredItem.photoId ?? featuredSpot?.photoId;
+  const featuredPhoto: Foto | undefined = featuredPhotoId ? FOTOS[featuredPhotoId] : undefined;
 
-  // Selección activa para la cartelera desktop (permite inspeccionar cualquier evento del radar o espacio)
-  const desktopItem =
-    (selectedItemId ? agendaItems.find((item) => item.id === selectedItemId) : undefined) ??
-    featured;
-  const desktopSpotEntry = spotsData.find((entry) => entry.spot.match(desktopItem));
-  const desktopStatus = agendaStatus(desktopItem, now);
-  const desktopStartTs = agendaTimestamps(desktopItem).startTs;
-  const desktopPhotoId = desktopItem.photoId ?? desktopSpotEntry?.spot.photoId;
-  const desktopPhoto: Foto | undefined = desktopPhotoId ? FOTOS[desktopPhotoId] : undefined;
-  const desktopVenueItems = desktopSpotEntry?.items ?? [desktopItem];
+  const radarItems = quickList.slice(0, 7);
+  const mobileRadarItems = quickList.slice(0, 6);
+  const weekendCards = quickList.slice(7, 10);
 
-  const desktopSpotlightRef = useRef<HTMLElement>(null);
-
-  const radarItems = quickList.slice(0, 5);
-  const weekendCards = quickList.slice(5, 8);
-
-  const selectSpotOnDesktop = (spotId: string) => {
-    setActiveId(spotId);
-    setSelectedItemId(null);
-  };
-
-  const selectEventOnDesktop = (item: AgendaItem, scrollToSpotlight = false) => {
+  const selectEvent = (item: AgendaItem, target: 'desktop' | 'mobile', scrollToSpotlight = false) => {
     setSelectedItemId(item.id);
-    const matchingSpot = spotsData.find((entry) => entry.spot.match(item));
-    if (matchingSpot) {
-      setActiveId(matchingSpot.spot.id);
-    }
-    if (scrollToSpotlight && desktopSpotlightRef.current) {
-      desktopSpotlightRef.current.scrollIntoView({
+    const ref = target === 'desktop' ? desktopSpotlightRef.current : mobileSpotlightRef.current;
+    if (scrollToSpotlight && ref) {
+      ref.scrollIntoView({
         behavior: prefersReducedMotion() ? 'auto' : 'smooth',
         block: 'nearest'
       });
@@ -861,448 +827,363 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
 
         {!expanded ? (
           <>
-            {/* MOBILE (< lg): se preserva intacta la resolución por pestañas y ficha */}
-            <div className="lg:hidden">
-              <div
-                role="tablist"
-                aria-label="Espacios y ciclos de Mataderos"
-                className="flex flex-wrap gap-2"
-              >
-                {spotsData.map((entry) => {
-                  const selected = entry.spot.id === spot.id;
-                  const isSoonest = soonestMataderosSpotId === entry.spot.id;
-                  const isLive = entry.featuredStatus === 'in-progress';
-                  return (
-                    <button
-                      key={entry.spot.id}
-                      id={`agenda-mobile-${entry.spot.id}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={selected}
-                      onClick={() => setActiveId(entry.spot.id)}
-                      className={`inline-flex min-h-[48px] items-center gap-2 rounded-[4px] border px-4 text-base font-semibold color-field ${
-                        selected
-                          ? 'border-carbon bg-carbon text-pampa'
-                          : 'border-carbon/35 bg-pampa-surface text-carbon hover:border-carbon'
-                      }`}
-                    >
-                      <span>{entry.spot.label}</span>
-                      {isLive ? (
-                        <span
-                          className={`font-mono text-xs uppercase ${
-                            selected ? 'text-pampa/85' : 'text-chicago'
-                          }`}
-                        >
-                          · En curso
-                        </span>
-                      ) : isSoonest ? (
-                        <span
-                          className={`font-mono text-xs uppercase ${
-                            selected ? 'text-pampa/80' : 'text-chicago'
-                          }`}
-                        >
-                          · Próximo
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-
+            {/* MOBILE (< lg): Ficha compacta del destacado + lista cronológica unificada */}
+            <div className="space-y-4 lg:hidden">
               <article
-                role="tabpanel"
-                aria-labelledby={`agenda-mobile-${spot.id}`}
-                className="mt-5 border border-carbon/30 bg-pampa-surface"
+                ref={mobileSpotlightRef}
+                aria-live="polite"
+                className="border border-carbon bg-pampa-surface scroll-mt-24"
               >
-                {mobileSpotPhoto ? (
-                  <figure className="flex flex-col border-b border-carbon/20">
-                    <span className="relative block aspect-[16/10] w-full overflow-hidden">
+                {featuredPhoto ? (
+                  <figure className="border-b border-carbon/20">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-carbon">
                       <PhotoFill
-                        src={mobileSpotPhoto.src}
-                        alt={mobileSpotPhoto.alt}
+                        src={featuredPhoto.src}
+                        alt={featuredPhoto.alt}
                         sizes="100vw"
+                        objectPosition={featuredPhoto.objectPosition}
                       />
-                    </span>
-                    <figcaption className="border-t border-carbon/15 px-4 py-2.5 font-mono text-xs text-carbon/75">
+                      <div
+                        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon/70 via-carbon/15 to-transparent"
+                        aria-hidden="true"
+                      />
+                      <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
+                        <span className="bg-chicago px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-pampa">
+                          {featuredStatus === 'in-progress' ? 'En curso ahora' : 'Destacado'}
+                        </span>
+                        <span className="border border-pampa/40 bg-carbon/85 px-2 py-0.5 font-mono text-[11px] uppercase text-pampa">
+                          {featuredItem.category}
+                        </span>
+                      </div>
+                    </div>
+                    <figcaption className="flex items-center justify-between gap-2 border-t border-carbon/15 px-4 py-1.5 font-mono text-[11px] text-carbon/70">
+                      <span className="truncate">{featuredItem.place}</span>
                       <a
-                        href={mobileSpotPhoto.sourceUrl}
-                        className="underline underline-offset-4"
+                        href={featuredPhoto.sourceUrl}
+                        className="shrink-0 underline underline-offset-4"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Foto: {mobileSpotPhoto.author} ({mobileSpotPhoto.taken}) · {mobileSpotPhoto.license}
+                        Foto: {featuredPhoto.author}
                       </a>
                     </figcaption>
                   </figure>
                 ) : (
-                  <div className="flex flex-col justify-between border-b border-carbon/20 bg-chicago-dark p-6 text-pampa sm:p-8">
-                    <div>
-                      <p className="font-mono text-xs uppercase tracking-wider text-pampa/80">
-                        {spot.barrioNote}
-                      </p>
-                      <p className="mt-3 font-display text-[clamp(2.25rem,4.5vw,3.75rem)] font-semibold uppercase leading-[0.92]">
-                        {spot.label}
-                      </p>
+                  <div className="border-b border-carbon/20 bg-chicago-dark px-4 py-4 text-pampa">
+                    <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[11px] uppercase tracking-wider text-pampa/80">
+                      <span>
+                        {featuredItem.category} · {featuredItem.barrio}
+                      </span>
+                      <span>{featuredItem.highlightTag}</span>
                     </div>
-                    <div className="mt-8 border-t border-pampa/25 pt-4 font-mono text-sm text-pampa/90">
-                      <p>{spot.kicker}</p>
-                      <p className="mt-1">
-                        {spotItems.length} {spotItems.length === 1 ? 'fecha programada' : 'fechas programadas'}
-                      </p>
-                    </div>
+                    <p className="mt-1.5 font-display text-2xl font-semibold uppercase leading-[0.95]">
+                      {featuredItem.venueName}
+                    </p>
+                    <p className="mt-1 font-mono text-xs text-pampa/85">{featuredItem.place}</p>
                   </div>
                 )}
 
-                <div className="flex flex-col justify-between p-6 sm:p-8">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs uppercase tracking-wide">
-                      <span className="font-semibold text-chicago">{featured.highlightTag}</span>
-                      <span className="text-carbon/40" aria-hidden="true">
-                        ·
-                      </span>
-                      <span className="text-carbon/75">{featured.place}</span>
-                    </div>
+                <div className="p-4 sm:p-5">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs uppercase tracking-wide">
+                    <span className="font-semibold text-chicago">{featuredItem.highlightTag}</span>
+                    <span className="text-carbon/40" aria-hidden="true">
+                      ·
+                    </span>
+                    <span className="text-carbon/75">{featuredItem.venueName}</span>
+                  </div>
 
-                    <h3 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] font-semibold uppercase leading-[0.95]">
-                      {featured.title}
-                    </h3>
+                  <h3 className="mt-2 font-display text-[1.75rem] font-semibold uppercase leading-[0.96] text-carbon">
+                    {featuredItem.title}
+                  </h3>
 
-                    <p className="mt-2 font-serif text-lg font-semibold text-carbon/90 sm:text-xl">
-                      {featured.venueName} · {featured.priceLabel}
-                    </p>
+                  <p className="mt-1.5 font-serif text-base font-semibold text-carbon/90">
+                    {featuredItem.priceLabel}
+                  </p>
 
-                    <div className="mt-5 border-y border-carbon/20 py-4">
-                      <p className="font-mono text-xs uppercase tracking-wider text-carbon/70">
-                        {featuredStatus === 'in-progress' ? 'En curso ahora' : 'Próxima fecha'}
-                      </p>
-                      <p className="mt-1 font-serif text-xl font-semibold">
-                        {featuredStatus === 'in-progress'
-                          ? featured.isMultiDay && featured.dateBadge
-                            ? `${featured.dateBadge} · ${featured.timeLabel}`
-                            : `En curso · ${featured.timeLabel}`
-                          : `${formatBaDate(featuredStartTs)} · ${featured.timeLabel}`}
-                      </p>
-
-                      {featuredStatus === 'upcoming' && <Countdown target={featuredStartTs} />}
-                      {featuredStatus === 'in-progress' && (
-                        <p className="mt-3 inline-block border border-chicago bg-chicago/10 px-3 py-1.5 font-display text-xl uppercase text-chicago">
-                          En curso {featured.dateBadge ? `· ${featured.dateBadge}` : ''}
+                  <div className="mt-3 border-y border-carbon/20 py-3">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <div>
+                        <p className="font-mono text-[11px] uppercase tracking-wider text-carbon/70">
+                          {featuredStatus === 'in-progress' ? 'En curso ahora' : 'Próxima fecha'}
                         </p>
+                        <p className="mt-0.5 font-serif text-lg font-semibold">
+                          {featuredStatus === 'in-progress'
+                            ? featuredItem.isMultiDay && featuredItem.dateBadge
+                              ? `${featuredItem.dateBadge} · ${featuredItem.timeLabel}`
+                              : `En curso · ${featuredItem.timeLabel}`
+                            : `${formatBaDate(featuredStartTs)} · ${featuredItem.timeLabel}`}
+                        </p>
+                      </div>
+                      {featuredStatus === 'in-progress' && (
+                        <span className="border border-chicago bg-chicago/10 px-2.5 py-0.5 font-display text-base uppercase text-chicago">
+                          En curso
+                        </span>
                       )}
                     </div>
 
-                    <p className="mt-5 max-w-[60ch] text-base leading-relaxed text-carbon/85 sm:text-lg">
-                      {featured.description}
-                    </p>
-
-                    {featured.source?.note && (
-                      <p className="mt-3 flex items-start gap-2 border-l-2 border-ladrillo bg-pampa px-3 py-2 font-mono text-xs text-carbon/85">
-                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-ladrillo" strokeWidth={1.75} aria-hidden="true" />
-                        <span>{featured.source.note}</span>
-                      </p>
-                    )}
-
-                    {spotItems.length > 1 && (
-                      <div className="mt-5 border-t border-carbon/15 pt-4">
-                        <p className="font-mono text-xs uppercase tracking-wider text-carbon/70">
-                          Todas las fechas de {spot.label}
-                        </p>
-                        <ul className="mt-2.5 divide-y divide-carbon/15">
-                          {spotItems.map((item) => {
-                            const { startTs } = agendaTimestamps(item);
-                            return (
-                              <li
-                                key={item.id}
-                                className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 py-2 text-sm"
-                              >
-                                <span className="min-w-0">
-                                  <span className="font-mono font-semibold text-chicago">
-                                    {formatBaShortDate(startTs)} · {item.timeLabel}
-                                  </span>
-                                  {' — '}
-                                  <span className="font-semibold text-carbon">{item.title}</span>
-                                  {item.source?.note && (
-                                    <span className="ml-1.5 font-mono text-xs text-ladrillo">· Fuente única (X)</span>
-                                  )}
-                                </span>
-                                {item.source && (
-                                  <a
-                                    href={item.source.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="shrink-0 font-mono text-xs text-carbon/75 underline underline-offset-4 hover:text-chicago"
-                                  >
-                                    {item.source.label}
-                                  </a>
-                                )}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-                    )}
+                    {featuredStatus === 'upcoming' && <Countdown target={featuredStartTs} />}
                   </div>
 
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-carbon/85">
+                    {featuredItem.description}
+                  </p>
+
+                  {featuredItem.source?.note && (
+                    <p className="mt-3 flex items-start gap-2 border-l-2 border-ladrillo bg-pampa px-3 py-2 font-mono text-xs text-carbon/85">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-ladrillo" strokeWidth={1.75} aria-hidden="true" />
+                      <span>{featuredItem.source.note}</span>
+                    </p>
+                  )}
+
+                  <div className="mt-4 flex flex-wrap gap-2.5">
                     <a
-                      href={mapsHref(featured.mapsQuery)}
+                      href={mapsHref(featuredItem.mapsQuery)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+                      className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-[4px] bg-chicago px-4 text-sm font-semibold text-pampa color-field hover:bg-chicago-dark"
                     >
                       Cómo llegar
                       <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                     </a>
-                    {featured.source && (
+                    {featuredItem.source && (
                       <a
-                        href={featured.source.url}
+                        href={featuredItem.source.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon px-4 font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-[4px] border border-carbon px-3.5 text-sm font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
                       >
                         <ExternalLink className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                        Fuente: {featured.source.label}
+                        Fuente: {featuredItem.source.label}
                       </a>
                     )}
-                    {spot.id === 'el-plata' && <ElPlataInstagramLink />}
+                    {featuredItem.venueId === 'el-plata' && <ElPlataInstagramLink />}
                   </div>
                 </div>
               </article>
+
+              <aside
+                aria-label="Próximas fechas en Mataderos"
+                className="border border-carbon bg-pampa-surface"
+              >
+                <div className="flex items-center justify-between gap-2 border-b border-carbon bg-carbon px-4 py-2.5 text-pampa">
+                  <span className="font-mono text-xs font-semibold uppercase tracking-wider">
+                    Próximas fechas
+                  </span>
+                  <span className="font-mono text-[11px] text-pampa/75">
+                    Tocá para ver arriba
+                  </span>
+                </div>
+
+                <ul className="divide-y divide-carbon/15">
+                  {mobileRadarItems.map((item) => {
+                    const { startTs } = agendaTimestamps(item);
+                    const status = agendaStatus(item, now);
+                    const dm = formatBaDayMonth(startTs);
+                    const active = item.id === featuredItem.id;
+
+                    return (
+                      <li key={item.id}>
+                        <button
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => selectEvent(item, 'mobile', true)}
+                          className={`grid w-full grid-cols-[72px_1fr] items-center gap-3 px-4 py-3 text-left transition-colors ${
+                            active ? 'border-l-4 border-l-chicago bg-pampa' : 'hover:bg-pampa/60'
+                          }`}
+                        >
+                          <div>
+                            {status === 'in-progress' ? (
+                              <span className="inline-block bg-chicago px-2 py-0.5 font-mono text-[10px] font-semibold uppercase text-pampa">
+                                En curso
+                              </span>
+                            ) : (
+                              <>
+                                <span className="block font-display text-xl font-semibold uppercase leading-none text-carbon">
+                                  {dm.day} {dm.month}
+                                </span>
+                                <span className="mt-0.5 block font-mono text-[11px] uppercase text-carbon/70">
+                                  {dm.weekdayShort} · {item.timeLabel}
+                                </span>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="truncate font-mono text-[11px] uppercase text-chicago">
+                              {item.category} · <span className="text-carbon/75">{item.venueName}</span>
+                            </p>
+                            <p className="mt-0.5 line-clamp-1 font-serif text-base font-semibold text-carbon">
+                              {item.title}
+                            </p>
+                          </div>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+
+                <div className="flex items-center justify-between gap-2 border-t border-carbon/20 bg-pampa px-4 py-3">
+                  <span className="font-mono text-xs text-carbon/75">
+                    {quickList.length > mobileRadarItems.length
+                      ? `+${quickList.length - mobileRadarItems.length} fechas más`
+                      : `${quickList.length} actividades`}
+                  </span>
+                  <Link
+                    href="/agenda"
+                    className="inline-flex min-h-[40px] items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-chicago underline underline-offset-4"
+                  >
+                    Filtrar por lugar en /agenda
+                    <ArrowRight className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} aria-hidden="true" />
+                  </Link>
+                </div>
+              </aside>
             </div>
 
-            {/* DESKTOP (lg+): Cartelera editorial multi-evento (Primer plano + Radar de 5 fechas + Tira de 3 destacados) */}
+            {/* DESKTOP (lg+): Cartelera 6/6 equilibrada sin pestañas (Spotlight compacto + 7 fechas en agenda) */}
             <div className="hidden lg:block">
-              <div
-                role="tablist"
-                aria-label="Filtrar primer plano por espacio de Mataderos"
-                className="flex flex-wrap items-center gap-2"
-              >
-                {spotsData.map((entry) => {
-                  const selected =
-                    desktopSpotEntry?.spot.id === entry.spot.id &&
-                    (!selectedItemId || entry.spot.match(desktopItem));
-                  const isSoonest = soonestMataderosSpotId === entry.spot.id;
-                  const isLive = entry.featuredStatus === 'in-progress';
-                  return (
-                    <button
-                      key={entry.spot.id}
-                      id={`agenda-${entry.spot.id}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={selected}
-                      onClick={() => selectSpotOnDesktop(entry.spot.id)}
-                      className={`inline-flex min-h-[44px] items-center gap-2 rounded-[4px] border px-3.5 text-sm font-semibold color-field ${
-                        selected
-                          ? 'border-carbon bg-carbon text-pampa'
-                          : 'border-carbon/35 bg-pampa-surface text-carbon hover:border-carbon'
-                      }`}
-                    >
-                      <span>{entry.spot.label}</span>
-                      <span
-                        className={`font-mono text-xs ${
-                          selected ? 'text-pampa/75' : 'text-carbon/60'
-                        }`}
-                      >
-                        ({entry.items.length})
-                      </span>
-                      {isLive ? (
-                        <span
-                          className={`font-mono text-[11px] uppercase ${
-                            selected ? 'text-pampa' : 'text-chicago'
-                          }`}
-                        >
-                          · En curso
-                        </span>
-                      ) : isSoonest ? (
-                        <span
-                          className={`font-mono text-[11px] uppercase ${
-                            selected ? 'text-pampa/85' : 'text-chicago'
-                          }`}
-                        >
-                          · Próximo
-                        </span>
-                      ) : null}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-5 grid grid-cols-12 items-stretch gap-6">
-                {/* Columna izquierda (7 cols): Evento en primer plano */}
+              <div className="grid grid-cols-12 items-stretch gap-6">
+                {/* Columna izquierda (6 cols): Evento en primer plano compacto */}
                 <article
                   ref={desktopSpotlightRef}
                   aria-live="polite"
-                  className="col-span-7 flex flex-col justify-between border border-carbon bg-pampa-surface scroll-mt-36"
+                  className="col-span-6 flex flex-col justify-between border border-carbon bg-pampa-surface scroll-mt-36"
                 >
                   <div>
-                    {desktopPhoto ? (
+                    {featuredPhoto ? (
                       <figure className="border-b border-carbon/20">
-                        <div className="relative aspect-[21/9] w-full overflow-hidden bg-carbon">
+                        <div className="relative aspect-[24/9] w-full overflow-hidden bg-carbon">
                           <PhotoFill
-                            src={desktopPhoto.src}
-                            alt={desktopPhoto.alt}
-                            sizes="55vw"
-                            objectPosition={desktopPhoto.objectPosition}
+                            src={featuredPhoto.src}
+                            alt={featuredPhoto.alt}
+                            sizes="48vw"
+                            objectPosition={featuredPhoto.objectPosition}
                           />
                           <div
                             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-carbon/70 via-carbon/15 to-transparent"
                             aria-hidden="true"
                           />
-                          <div className="absolute left-4 top-4 flex flex-wrap items-center gap-2">
+                          <div className="absolute left-4 top-3.5 flex flex-wrap items-center gap-2">
                             <span className="bg-chicago px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-wider text-pampa">
-                              {desktopStatus === 'in-progress' ? 'En curso ahora' : 'En primer plano'}
+                              {featuredStatus === 'in-progress' ? 'En curso ahora' : 'En primer plano'}
                             </span>
                             <span className="border border-pampa/40 bg-carbon/85 px-2.5 py-1 font-mono text-xs uppercase text-pampa">
-                              {desktopItem.category} · {desktopItem.highlightTag}
+                              {featuredItem.category} · {featuredItem.highlightTag}
                             </span>
                           </div>
                         </div>
-                        <figcaption className="flex items-center justify-between gap-4 border-t border-carbon/15 px-5 py-2 font-mono text-xs text-carbon/70">
-                          <span>{desktopItem.place}</span>
+                        <figcaption className="flex items-center justify-between gap-4 border-t border-carbon/15 px-5 py-1.5 font-mono text-xs text-carbon/70">
+                          <span className="truncate">{featuredItem.place}</span>
                           <a
-                            href={desktopPhoto.sourceUrl}
+                            href={featuredPhoto.sourceUrl}
                             className="shrink-0 underline underline-offset-4 hover:text-chicago"
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            Foto: {desktopPhoto.author} · {desktopPhoto.license}
+                            Foto: {featuredPhoto.author} · {featuredPhoto.license}
                           </a>
                         </figcaption>
                       </figure>
                     ) : (
-                      <div className="border-b border-carbon/20 bg-chicago-dark px-7 py-6 text-pampa">
+                      <div className="border-b border-carbon/20 bg-chicago-dark px-6 py-5 text-pampa">
                         <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-xs uppercase tracking-wider text-pampa/80">
                           <span>
-                            {desktopItem.category} · {desktopItem.barrio}
+                            {featuredItem.category} · {featuredItem.barrio}
                           </span>
-                          <span>{desktopItem.highlightTag}</span>
+                          <span>{featuredItem.highlightTag}</span>
                         </div>
-                        <p className="mt-2 font-display text-4xl font-semibold uppercase leading-[0.95]">
-                          {desktopSpotEntry?.spot.label ?? desktopItem.venueName}
+                        <p className="mt-2 font-display text-3xl font-semibold uppercase leading-[0.95]">
+                          {featuredItem.venueName}
                         </p>
-                        <p className="mt-2 font-mono text-xs text-pampa/85">{desktopItem.place}</p>
+                        <p className="mt-1.5 font-mono text-xs text-pampa/85">{featuredItem.place}</p>
                       </div>
                     )}
 
-                    <div className="p-7">
-                      <h3 className="font-display text-[clamp(2rem,3.4vw,3rem)] font-semibold uppercase leading-[0.94] text-carbon">
-                        {desktopItem.title}
+                    <div className="p-5">
+                      <h3 className="font-display text-[clamp(1.75rem,2.6vw,2.35rem)] font-semibold uppercase leading-[0.96] text-carbon">
+                        {featuredItem.title}
                       </h3>
 
-                      <p className="mt-2 font-serif text-xl font-semibold text-carbon/90">
-                        {desktopItem.venueName} · {desktopItem.priceLabel}
+                      <p className="mt-1.5 font-serif text-lg font-semibold text-carbon/90">
+                        {featuredItem.venueName} · {featuredItem.priceLabel}
                       </p>
 
-                      <div className="mt-4 border-y border-carbon/20 py-4">
+                      <div className="mt-3.5 border-y border-carbon/20 py-3">
                         <div className="flex flex-wrap items-baseline justify-between gap-3">
                           <div>
                             <p className="font-mono text-xs uppercase tracking-wider text-carbon/70">
-                              {desktopStatus === 'in-progress' ? 'Estado actual' : 'Fecha y horario'}
+                              {featuredStatus === 'in-progress' ? 'Estado actual' : 'Fecha y horario'}
                             </p>
-                            <p className="mt-1 font-serif text-xl font-semibold">
-                              {desktopStatus === 'in-progress'
-                                ? desktopItem.isMultiDay && desktopItem.dateBadge
-                                  ? `${desktopItem.dateBadge} · ${desktopItem.timeLabel}`
-                                  : `En curso · ${desktopItem.timeLabel}`
-                                : `${formatBaDate(desktopStartTs)} · ${desktopItem.timeLabel}`}
+                            <p className="mt-0.5 font-serif text-lg font-semibold">
+                              {featuredStatus === 'in-progress'
+                                ? featuredItem.isMultiDay && featuredItem.dateBadge
+                                  ? `${featuredItem.dateBadge} · ${featuredItem.timeLabel}`
+                                  : `En curso · ${featuredItem.timeLabel}`
+                                : `${formatBaDate(featuredStartTs)} · ${featuredItem.timeLabel}`}
                             </p>
                           </div>
-                          {desktopStatus === 'in-progress' && (
-                            <span className="border border-chicago bg-chicago/10 px-3 py-1 font-display text-lg uppercase text-chicago">
-                              En curso {desktopItem.dateBadge ? `· ${desktopItem.dateBadge}` : ''}
+                          {featuredStatus === 'in-progress' && (
+                            <span className="border border-chicago bg-chicago/10 px-2.5 py-1 font-display text-base uppercase text-chicago">
+                              En curso {featuredItem.dateBadge ? `· ${featuredItem.dateBadge}` : ''}
                             </span>
                           )}
                         </div>
-                        {desktopStatus === 'upcoming' && <Countdown target={desktopStartTs} />}
+                        {featuredStatus === 'upcoming' && <Countdown target={featuredStartTs} />}
                       </div>
 
-                      <p className="mt-4 text-base leading-relaxed text-carbon/85">
-                        {desktopItem.description}
+                      <p className="mt-3.5 line-clamp-3 text-sm leading-relaxed text-carbon/85">
+                        {featuredItem.description}
                       </p>
 
-                      {desktopItem.source?.note && (
+                      {featuredItem.source?.note && (
                         <p className="mt-3 flex items-start gap-2 border-l-2 border-ladrillo bg-pampa px-3 py-2 font-mono text-xs text-carbon/85">
                           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-ladrillo" strokeWidth={1.75} aria-hidden="true" />
-                          <span>{desktopItem.source.note}</span>
+                          <span>{featuredItem.source.note}</span>
                         </p>
-                      )}
-
-                      {desktopVenueItems.length > 1 && desktopSpotEntry && (
-                        <div className="mt-5 border-t border-carbon/15 pt-4">
-                          <p className="font-mono text-xs uppercase tracking-wider text-carbon/70">
-                            Más fechas en {desktopSpotEntry.spot.label} (clic para ver detalle)
-                          </p>
-                          <div className="mt-2.5 flex flex-wrap gap-2">
-                            {desktopVenueItems.map((vItem) => {
-                              const { startTs } = agendaTimestamps(vItem);
-                              const isCurrent = vItem.id === desktopItem.id;
-                              return (
-                                <button
-                                  key={vItem.id}
-                                  type="button"
-                                  aria-pressed={isCurrent}
-                                  onClick={() => selectEventOnDesktop(vItem)}
-                                  className={`inline-flex min-h-[40px] items-center gap-2 rounded-[4px] border px-3 py-1.5 text-left font-mono text-xs transition-colors ${
-                                    isCurrent
-                                      ? 'border-chicago bg-chicago font-semibold text-pampa'
-                                      : 'border-carbon/25 bg-pampa text-carbon hover:border-carbon'
-                                  }`}
-                                >
-                                  <span>{formatBaShortDate(startTs)}</span>
-                                  <span>·</span>
-                                  <span className="max-w-[24ch] truncate font-sans text-sm">
-                                    {vItem.title}
-                                  </span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3 border-t border-carbon/15 bg-pampa/55 px-7 py-4">
+                  <div className="flex flex-wrap items-center gap-2.5 border-t border-carbon/15 bg-pampa/55 px-5 py-3.5">
                     <a
-                      href={mapsHref(desktopItem.mapsQuery)}
+                      href={mapsHref(featuredItem.mapsQuery)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-5 font-semibold text-pampa color-field hover:bg-chicago-dark"
+                      className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[4px] bg-chicago px-4 text-sm font-semibold text-pampa color-field hover:bg-chicago-dark"
                     >
                       Cómo llegar
                       <ArrowUpRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                     </a>
-                    {desktopItem.source && (
+                    {featuredItem.source && (
                       <a
-                        href={desktopItem.source.url}
+                        href={featuredItem.source.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[4px] border border-carbon bg-pampa-surface px-4 font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[4px] border border-carbon bg-pampa-surface px-3.5 text-sm font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
                       >
                         <ExternalLink className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-                        Fuente: {desktopItem.source.label}
+                        Fuente: {featuredItem.source.label}
                       </a>
                     )}
-                    {desktopItem.relatedNotaSlug && (
+                    {featuredItem.relatedNotaSlug && (
                       <Link
-                        href={`/notas/${desktopItem.relatedNotaSlug}`}
-                        className="inline-flex min-h-[48px] items-center gap-1.5 px-2 font-mono text-sm font-semibold text-chicago underline underline-offset-4 hover:text-chicago-dark"
+                        href={`/notas/${featuredItem.relatedNotaSlug}`}
+                        className="inline-flex min-h-[44px] items-center gap-1.5 px-2 font-mono text-xs font-semibold text-chicago underline underline-offset-4 hover:text-chicago-dark"
                       >
-                        Leer nota relacionada
-                        <ArrowRight className="h-4 w-4 shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                        Leer nota
+                        <ArrowRight className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
                       </Link>
                     )}
-                    {desktopSpotEntry?.spot.id === 'el-plata' && <ElPlataInstagramLink />}
+                    {featuredItem.venueId === 'el-plata' && <ElPlataInstagramLink />}
                   </div>
                 </article>
 
-                {/* Columna derecha (5 cols): Radar cronológico con 5 actividades visibles al mismo tiempo */}
+                {/* Columna derecha (6 cols): Radar cronológico con 7 actividades proporcionadas */}
                 <aside
                   aria-label="Próximas actividades en el barrio"
-                  className="col-span-5 flex flex-col justify-between border border-carbon bg-pampa-surface"
+                  className="col-span-6 flex flex-col justify-between border border-carbon bg-pampa-surface"
                 >
                   <div>
-                    <div className="flex items-center justify-between gap-2 border-b border-carbon bg-carbon px-5 py-3.5 text-pampa">
+                    <div className="flex items-center justify-between gap-2 border-b border-carbon bg-carbon px-5 py-3 text-pampa">
                       <span className="font-mono text-xs font-semibold uppercase tracking-wider">
                         En cartelera y próximos días
                       </span>
@@ -1311,20 +1192,20 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                       </span>
                     </div>
 
-                    <ul className="divide-y divide-carbon/20">
+                    <ul className="divide-y divide-carbon/15">
                       {radarItems.map((item) => {
                         const { startTs } = agendaTimestamps(item);
                         const status = agendaStatus(item, now);
                         const dm = formatBaDayMonth(startTs);
-                        const active = item.id === desktopItem.id;
+                        const active = item.id === featuredItem.id;
 
                         return (
                           <li key={item.id}>
                             <button
                               type="button"
                               aria-pressed={active}
-                              onClick={() => selectEventOnDesktop(item)}
-                              className={`grid w-full grid-cols-12 items-center gap-3 px-5 py-4 text-left transition-colors ${
+                              onClick={() => selectEvent(item, 'desktop')}
+                              className={`grid w-full grid-cols-12 items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                                 active
                                   ? 'border-l-4 border-l-chicago bg-pampa'
                                   : 'hover:bg-pampa/60'
@@ -1332,15 +1213,15 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                             >
                               <div className="col-span-3 pr-1">
                                 {status === 'in-progress' ? (
-                                  <span className="inline-block bg-chicago px-2 py-1 font-mono text-[11px] font-semibold uppercase leading-tight text-pampa">
+                                  <span className="inline-block bg-chicago px-2 py-0.5 font-mono text-[11px] font-semibold uppercase leading-tight text-pampa">
                                     En curso
                                   </span>
                                 ) : (
                                   <div>
-                                    <span className="block font-display text-2xl font-semibold uppercase leading-none text-carbon">
+                                    <span className="block font-display text-xl font-semibold uppercase leading-none text-carbon">
                                       {dm.day} {dm.month}
                                     </span>
-                                    <span className="mt-1 block font-mono text-[11px] uppercase text-carbon/70">
+                                    <span className="mt-0.5 block font-mono text-[11px] uppercase text-carbon/70">
                                       {dm.weekdayShort} · {item.timeLabel}
                                     </span>
                                   </div>
@@ -1355,10 +1236,10 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                                   </span>
                                   <span className="truncate text-carbon/75">{item.venueName}</span>
                                 </div>
-                                <p className="mt-1 line-clamp-2 font-serif text-lg font-semibold leading-snug text-carbon">
+                                <p className="mt-0.5 line-clamp-1 font-serif text-base font-semibold leading-snug text-carbon">
                                   {item.title}
                                 </p>
-                                <p className="mt-1 font-mono text-xs text-carbon/70">
+                                <p className="mt-0.5 truncate font-mono text-xs text-carbon/70">
                                   {status === 'in-progress' && item.dateBadge
                                     ? `${item.dateBadge} · ${item.priceLabel}`
                                     : item.priceLabel}
@@ -1371,7 +1252,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                     </ul>
                   </div>
 
-                  <div className="flex items-center justify-between gap-3 border-t border-carbon/20 bg-pampa px-5 py-3.5">
+                  <div className="flex items-center justify-between gap-3 border-t border-carbon/20 bg-pampa px-5 py-3">
                     <span className="font-mono text-xs text-carbon/80">
                       +{Math.max(0, quickList.length - radarItems.length)} fechas más cargadas
                     </span>
@@ -1379,19 +1260,19 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                       href="/agenda"
                       className="inline-flex min-h-[40px] items-center gap-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-chicago underline underline-offset-4 hover:text-chicago-dark"
                     >
-                      Abrir agenda completa
+                      Filtrar y ver agenda completa
                       <ArrowRight className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden="true" />
                     </Link>
                   </div>
                 </aside>
               </div>
 
-              {/* Tira inferior de 3 tarjetas: más actividades del fin de semana visibles de un vistazo */}
+              {/* Tira inferior de 3 tarjetas: siguientes actividades sin repetir las del radar */}
               {weekendCards.length > 0 && (
                 <div className="mt-6">
                   <div className="mb-3 flex items-center justify-between">
                     <p className="font-mono text-xs font-semibold uppercase tracking-wider text-carbon/75">
-                      Más actividades esta semana en Mataderos
+                      Más actividades próximas en Mataderos
                     </p>
                     <button
                       type="button"
@@ -1406,7 +1287,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                     {weekendCards.map((item) => {
                       const { startTs } = agendaTimestamps(item);
                       const dm = formatBaDayMonth(startTs);
-                      const isSelected = item.id === desktopItem.id;
+                      const isSelected = item.id === featuredItem.id;
                       return (
                         <article
                           key={item.id}
@@ -1446,7 +1327,7 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                             <button
                               type="button"
                               aria-pressed={isSelected}
-                              onClick={() => selectEventOnDesktop(item, true)}
+                              onClick={() => selectEvent(item, 'desktop', true)}
                               className="inline-flex min-h-[44px] items-center gap-1.5 font-mono text-xs font-semibold uppercase text-chicago underline underline-offset-4 hover:text-chicago-dark"
                             >
                               {isSelected ? 'Mostrando arriba' : 'Ver en primer plano'}

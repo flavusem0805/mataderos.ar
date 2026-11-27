@@ -773,7 +773,6 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
 
   const radarItems = quickList.slice(0, 7);
   const mobileRadarItems = quickList.slice(0, 6);
-  const weekendCards = quickList.slice(7, 10);
 
   const selectEvent = (item: AgendaItem, target: 'desktop' | 'mobile', scrollToSpotlight = false) => {
     setSelectedItemId(item.id);
@@ -1266,89 +1265,6 @@ function AgendaStrip({ agendaItems, serverNow }: { agendaItems: AgendaItem[]; se
                   </div>
                 </aside>
               </div>
-
-              {/* Tira inferior de 3 tarjetas: siguientes actividades sin repetir las del radar */}
-              {weekendCards.length > 0 && (
-                <div className="mt-6">
-                  <div className="mb-3 flex items-center justify-between">
-                    <p className="font-mono text-xs font-semibold uppercase tracking-wider text-carbon/75">
-                      Más actividades próximas en Mataderos
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setExpanded(true)}
-                      className="font-mono text-xs font-semibold uppercase tracking-wide text-chicago underline underline-offset-4 hover:text-chicago-dark"
-                    >
-                      Ver listado completo aquí ({quickList.length})
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-5">
-                    {weekendCards.map((item) => {
-                      const { startTs } = agendaTimestamps(item);
-                      const dm = formatBaDayMonth(startTs);
-                      const isSelected = item.id === featuredItem.id;
-                      return (
-                        <article
-                          key={item.id}
-                          className={`flex flex-col justify-between border p-5 transition-colors ${
-                            isSelected
-                              ? 'border-2 border-chicago bg-pampa'
-                              : 'border-carbon/30 bg-pampa-surface hover:border-carbon'
-                          }`}
-                        >
-                          <div>
-                            <div className="flex items-start justify-between gap-3 border-b border-carbon/15 pb-3">
-                              <div>
-                                <p className="font-display text-2xl font-semibold uppercase leading-none text-carbon">
-                                  {dm.day} {dm.month}
-                                </p>
-                                <p className="mt-1 font-mono text-xs uppercase text-carbon/70">
-                                  {dm.weekdayShort} · {item.timeLabel}
-                                </p>
-                              </div>
-                              <span className="border border-chicago/35 bg-pampa px-2.5 py-1 font-mono text-[11px] font-semibold uppercase text-chicago">
-                                {item.highlightTag}
-                              </span>
-                            </div>
-
-                            <p className="mt-3 font-mono text-xs uppercase text-carbon/70">
-                              {item.venueName}
-                            </p>
-                            <h3 className="mt-1 font-serif text-xl font-semibold leading-snug text-carbon">
-                              {item.title}
-                            </h3>
-                            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-carbon/80">
-                              {item.description}
-                            </p>
-                          </div>
-
-                          <div className="mt-4 flex items-center justify-between gap-2 border-t border-carbon/15 pt-3">
-                            <button
-                              type="button"
-                              aria-pressed={isSelected}
-                              onClick={() => selectEvent(item, 'desktop', true)}
-                              className="inline-flex min-h-[44px] items-center gap-1.5 font-mono text-xs font-semibold uppercase text-chicago underline underline-offset-4 hover:text-chicago-dark"
-                            >
-                              {isSelected ? 'Mostrando arriba' : 'Ver en primer plano'}
-                              <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden="true" />
-                            </button>
-                            <a
-                              href={mapsHref(item.mapsQuery)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex min-h-[44px] items-center gap-1 rounded-[4px] border border-carbon/30 px-3 font-mono text-xs font-semibold text-carbon hover:bg-carbon hover:text-pampa color-field"
-                            >
-                              Mapa
-                              <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.5} aria-hidden="true" />
-                            </a>
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
             </div>
           </>
         ) : (

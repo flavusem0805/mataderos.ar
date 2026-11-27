@@ -91,6 +91,56 @@ export const FOTOS = {
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Monumento_ecuestre_El_Gaucho_Resero_01.JPG',
     changes: 'Copia reducida para la web.',
     objectPosition: '50% 10%'
+  },
+  estadioChicago: {
+    src: '/notas/estadio-chicago.jpg',
+    alt: 'Tribuna del estadio de Nueva Chicago llena, con banderas verdes y negras y el campo de juego adelante.',
+    author: 'mat4',
+    taken: '2006',
+    license: 'Dominio público',
+    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Estadio_Nueva_Chicago.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  tribunaChicago: {
+    src: '/notas/tribuna-chicago.jpg',
+    alt: 'Cancha de Nueva Chicago con la tribuna República de Mataderos y el escudo del club pintado en las plateas.',
+    author: 'Herjherrera',
+    taken: '16 de agosto de 2010',
+    license: 'Dominio público',
+    licenseUrl: 'https://creativecommons.org/publicdomain/mark/1.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Tribuna_Rep_de_Mataderos.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  jacarandaAlberdi: {
+    src: '/notas/jacaranda-alberdi.jpg',
+    alt: 'Jacarandás en flor en Parque Alberdi, con la torre del ex Mercado de Hacienda al fondo.',
+    author: 'Roberto Fiadone',
+    taken: '18 de noviembre de 2007',
+    license: 'CC BY-SA 3.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Jacarand%C3%A1_Parque_Alberdi.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  casaFenk: {
+    src: '/notas/casa-fenk-alberdi.jpg',
+    alt: 'Local Casa FENK sobre la avenida Alberdi, en Mataderos, con el cartel vertical en la fachada.',
+    author: 'Just a Man',
+    taken: '22 de enero de 2026',
+    license: 'CC BY 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:Casa_FENK_en_Avenida_Alberdi,_Mataderos,_Ciudad_de_Buenos_Aires.jpg',
+    changes: 'Copia reducida para la web.'
+  },
+  avenidaMataderos: {
+    src: '/notas/barrio-defensoria.jpg',
+    alt: 'Avenida comercial de Mataderos con el escudo del barrio en un cartel de la vereda, entre edificios y locales.',
+    author: 'Defensoría del Pueblo de la Ciudad de Buenos Aires',
+    taken: '12 de diciembre de 2012',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl: 'https://commons.wikimedia.org/wiki/File:DefPuebloCABA_-_Barrio_de_Mataderos.jpg',
+    changes: 'Copia reducida para la web.'
   }
 } as const satisfies Record<string, Foto>;
 

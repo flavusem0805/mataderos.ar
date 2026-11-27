@@ -17,6 +17,7 @@ import {
   satelitesDe
 } from '@/lib/notas';
 import type { NotaResuelta } from '@/lib/notas';
+import { FOTOS } from '@/lib/notas/media';
 
 interface NotaPageProps {
   params: Promise<{ slug: string }>;
@@ -180,14 +181,10 @@ export default async function NotaPage({ params }: NotaPageProps) {
               <a href={nota.image.sourceUrl} className="underline underline-offset-4">
                 Fuente
               </a>
-              {nota.image.license.startsWith('CC') && (
-                <>
-                  {' · '}
-                  <a href={nota.image.licenseUrl} className="underline underline-offset-4">
-                    {nota.image.license}
-                  </a>
-                </>
-              )}
+            {' · '}
+            <a href={nota.image.licenseUrl} className="underline underline-offset-4">
+              {nota.image.license}
+            </a>
             </figcaption>
           </figure>
         ) : nota.placeLabel ? (
@@ -202,6 +199,35 @@ export default async function NotaPage({ params }: NotaPageProps) {
 
         <div className="mt-8 max-w-[68ch] text-lg leading-relaxed sm:text-xl">
           {nota.blocks.map((block, index) => {
+            if (block.kind === 'figure' && block.image) {
+              const foto = FOTOS[block.image];
+              return (
+                <figure key={index} className="my-8 min-w-0">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-carbon">
+                    <Image
+                      src={foto.src}
+                      alt={foto.alt}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 720px"
+                      className="object-cover"
+                      style={{ objectPosition: 'objectPosition' in foto ? foto.objectPosition ?? 'center' : 'center' }}
+                    />
+                  </div>
+                  <figcaption className="mt-2 font-mono text-base leading-relaxed">
+                    {block.text ? `${block.text} ` : ''}
+                    Foto: {foto.author}, {foto.taken}.{' '}
+                    <a href={foto.sourceUrl} className="underline underline-offset-4">
+                      Fuente
+                    </a>
+                    {' · '}
+                    <a href={foto.licenseUrl} className="underline underline-offset-4">
+                      {foto.license}
+                    </a>
+                    . {foto.changes}
+                  </figcaption>
+                </figure>
+              );
+            }
             if (block.kind === 'h2') {
               return (
                 <h2 key={index} className="mb-3 mt-10 font-serif text-[clamp(1.6rem,3vw,2.1rem)] font-semibold leading-tight">

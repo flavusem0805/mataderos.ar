@@ -676,13 +676,20 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
             >
               <Link href={`/notas/${note.slug}`} className="flex h-full w-full flex-col bg-carbon text-pampa">
                 {note.imageSrc ? (
-                  <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden">
-                    <PhotoFill
-                      src={note.imageSrc}
-                      alt={note.imageAlt ?? note.title}
-                      sizes="(max-width: 640px) 86vw, 40vw"
-                      objectPosition={note.imagePosition}
-                    />
+                  <span className="block border-b border-pampa/15">
+                    <span className="relative block aspect-[4/3] w-full shrink-0 overflow-hidden">
+                      <PhotoFill
+                        src={note.imageSrc}
+                        alt={note.imageAlt ?? note.title}
+                        sizes="(max-width: 640px) 86vw, 40vw"
+                        objectPosition={note.imagePosition}
+                      />
+                    </span>
+                    {note.credit && (
+                      <span className="block truncate px-3 py-1.5 font-mono text-[11px] leading-tight text-pampa/70">
+                        {note.credit}
+                      </span>
+                    )}
                   </span>
                 ) : (
                   <span
@@ -698,15 +705,13 @@ function NewsCarousel({ notes }: { notes: HomeNote[] }) {
                   </span>
                 )}
                 <span className="flex flex-1 flex-col p-4">
-                  <span className="font-mono text-base">
+                  <span className="font-mono text-sm text-pampa/80">
                     {note.category} · {note.fecha}
                   </span>
                   <h3 className="mt-2 line-clamp-3 font-serif text-xl font-semibold leading-snug">{note.title}</h3>
-                  {note.credit ? (
-                    <span className="mt-2 font-mono text-base leading-snug text-pampa/80">{note.credit}</span>
-                  ) : note.placeLabel ? (
-                    <span className="mt-2 font-mono text-base leading-snug text-pampa/80">{note.placeLabel}</span>
-                  ) : null}
+                  {!note.imageSrc && note.placeLabel && (
+                    <span className="mt-2 font-mono text-xs leading-snug text-pampa/70">{note.placeLabel}</span>
+                  )}
                   <span className="mt-auto inline-flex min-h-[48px] items-center gap-2 pt-3 font-semibold">
                     Leer nota
                     <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />

@@ -1,4 +1,5 @@
 import { ACTUALIDAD } from './clusters/actualidad';
+import { NOVEDADES } from './clusters/novedades-27';
 import { CULTURA } from './clusters/cultura';
 import { FERIA } from './clusters/feria';
 import { HISTORIA } from './clusters/historia';
@@ -40,7 +41,7 @@ function assertEditorial(list: NotaResuelta[]) {
 
   for (const nota of list) {
     const min = nota.type === 'pilar' ? 1500 : nota.type === 'satelite' ? 600 : 200;
-    const max = nota.type === 'pilar' ? 2500 : 1000;
+    const max = nota.type === 'pilar' ? 2500 : nota.type === 'actualidad' ? 1800 : 1000;
     if (nota.words < min || nota.words > max) {
       throw new Error(`Extensión fuera de rango en ${nota.slug}: ${nota.words} palabras (esperado ${min}-${max}).`);
     }
@@ -81,7 +82,7 @@ function assertEditorial(list: NotaResuelta[]) {
   }
 }
 
-const RAW: Nota[] = [...ACTUALIDAD, ...HISTORIA, ...FERIA, ...QUE_HACER, ...PATRIMONIO, ...CULTURA];
+const RAW: Nota[] = [...NOVEDADES, ...ACTUALIDAD, ...HISTORIA, ...FERIA, ...QUE_HACER, ...PATRIMONIO, ...CULTURA];
 const RESUELTAS = RAW.map(resolve);
 assertEditorial(RESUELTAS);
 

@@ -255,7 +255,7 @@ export const AGENDA_ITEMS: AgendaItem[] = [
       label: 'Turismo BA',
       url: 'https://turismo.buenosaires.gob.ar/es/otros-establecimientos/feria-de-mataderos'
     },
-    relatedNotaSlug: 'feria-de-mataderos',
+    relatedNotaSlug: 'ultimos-domingos-de-la-feria-de-mataderos',
     photoId: 'baile'
   },
   {
@@ -352,7 +352,7 @@ export const AGENDA_ITEMS: AgendaItem[] = [
       label: 'Turismo BA',
       url: 'https://turismo.buenosaires.gob.ar/es/otros-establecimientos/feria-de-mataderos'
     },
-    relatedNotaSlug: 'feria-de-mataderos',
+    relatedNotaSlug: 'ultimos-domingos-de-la-feria-de-mataderos',
     photoId: 'baile'
   },
   {
@@ -377,7 +377,7 @@ export const AGENDA_ITEMS: AgendaItem[] = [
       label: 'Turismo BA',
       url: 'https://turismo.buenosaires.gob.ar/es/otros-establecimientos/feria-de-mataderos'
     },
-    relatedNotaSlug: 'feria-de-mataderos',
+    relatedNotaSlug: 'ultimos-domingos-de-la-feria-de-mataderos',
     photoId: 'baile'
   },
   // Nuevas fechas verificadas en Mataderos (noviembre–diciembre 2026). El orden cronológico lo resuelven TopRail, AgendaStrip y AgendaExplorer según startsAt.
@@ -402,7 +402,8 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     source: {
       label: 'Aquí Mataderos',
       url: 'https://aquimataderosonline.com.ar/la-noche-de-los-templos-celebra-la-diversidad-cultural-y-religiosa/'
-    }
+    },
+    relatedNotaSlug: 'san-vicente-de-paul-y-la-noche-de-los-templos'
   },
   {
     id: 'antirrabica-salaberry-2026-11-29',
@@ -471,7 +472,8 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     source: {
       label: 'Ferias de la Ciudad (GCBA)',
       url: 'https://buenosaires.gob.ar/gcaba_historico/ubicaciones-y-horarios'
-    }
+    },
+    relatedNotaSlug: 'la-fiab-en-mataderos'
   },
   {
     id: 'arjona-bar-del-glorias-2026-12-03',
@@ -517,7 +519,8 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     source: {
       label: 'Alternativa Teatral',
       url: 'https://www.alternativateatral.com/obra97759-antes-de-entrar-dejen-salir'
-    }
+    },
+    relatedNotaSlug: 'teatro-en-mataderos-este-mes'
   },
   {
     id: 'alfredo-silva-glorias-2026-12-05',
@@ -678,7 +681,8 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     source: {
       label: 'Ferias de la Ciudad (GCBA)',
       url: 'https://buenosaires.gob.ar/gcaba_historico/ubicaciones-y-horarios'
-    }
+    },
+    relatedNotaSlug: 'la-fiab-en-mataderos'
   },
   {
     id: 'dyango-bar-del-glorias-2026-12-17',
@@ -747,7 +751,8 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     source: {
       label: 'Ferias de la Ciudad (GCBA)',
       url: 'https://buenosaires.gob.ar/gcaba_historico/ubicaciones-y-horarios'
-    }
+    },
+    relatedNotaSlug: 'la-fiab-en-mataderos'
   },
   {
     id: 'manualistas-alberdi-2026-12-27',
@@ -778,7 +783,7 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     venueName: 'Plaza Salaberry',
     title: 'Atención veterinaria gratuita para perros y gatos',
     description:
-      'Unidad móvil veterinaria de Animales BA (GCBA) para atención clínica básica en Mataderos. Requiere turno previo sin excepción desde miBA (las agendas semanales habilitan los jueves a las 10 hs). Llevar chapita, collar/correa y bozal o transportadora.',
+      'El cronograma de Animales BA anota atención veterinaria en Plaza Salaberry el lunes 28 y el martes 29 y miércoles 30 de diciembre. No es el operativo de vacunación antirrábica. La atención clínica se pide con turno online.',
     category: 'Comunidad',
     barrio: 'Mataderos',
     ambito: 'Mataderos',
@@ -788,8 +793,8 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     endsAt: '2026-12-30T17:00:00-03:00',
     isMultiDay: true,
     dateBadge: '28 al 30 dic',
-    timeLabel: 'Lun 28, mar 29 y mié 30/12 · Horario según turno miBA',
-    priceLabel: 'Gratuita · Con turno previo vía miBA (habilita jueves 10 hs)',
+    timeLabel: 'Lun 28, mar 29 y mié 30/12',
+    priceLabel: 'Gratuita · Atención clínica con turno online',
     isFree: true,
     highlightTag: 'Animales BA · Turno previo',
     source: {
@@ -818,7 +823,8 @@ export const AGENDA_ITEMS: AgendaItem[] = [
     source: {
       label: 'Ferias de la Ciudad (GCBA)',
       url: 'https://buenosaires.gob.ar/gcaba_historico/ubicaciones-y-horarios'
-    }
+    },
+    relatedNotaSlug: 'la-fiab-en-mataderos'
   }
 ];
 

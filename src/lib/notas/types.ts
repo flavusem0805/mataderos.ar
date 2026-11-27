@@ -14,8 +14,10 @@ export interface DatoUtil {
 }
 
 export interface Bloque {
-  kind: 'h2' | 'h3' | 'p';
+  kind: 'h2' | 'h3' | 'p' | 'figure';
   text: string;
+  /** Solo en kind figure: foto ya cargada en FOTOS. */
+  image?: FotoId;
 }
 
 export interface Nota {

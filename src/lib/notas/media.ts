@@ -301,7 +301,101 @@ export const FOTOS = {
     licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
     sourceUrl: 'https://commons.wikimedia.org/wiki/File:Club_Glorias_Argentinas.jpg',
     changes: 'Copia reducida para la web.'
-  }
+  },
+  elCedron: {
+    src: '/notas/el-cedron.jpg',
+    alt: 'Puerta vidriada de la pizzería El Cedrón, en avenida Juan B. Alberdi y Murguiondo, con el fileteado «El Rey de la Pizza» y el nombre del bar.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'junio de 2013',
+    license: 'CC BY 2.5 AR',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.5/ar/',
+    sourceUrl:
+      'https://buenosaires.gob.ar/gcaba_historico/noticias/historias-de-mi-comuna-el-cedron-la-pizza-y-la-impronta-de-mataderos',
+    changes:
+      'Redimensionada a 1600x1200 en JPEG desde el archivo original https://static.buenosaires.gob.ar/sites/default/files/media/image/2014/07/08/1f9ad9acaeece94b27e745a1a08c60d303ca8ba1.jpg'
+  },
+  muestraPcb: {
+    src: '/notas/muestra-pcb.jpg',
+    alt: 'Intérpretes de danza folklórica sobre el escenario durante una presentación del Programa Cultural en Barrios de la Ciudad.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'noviembre de 2026',
+    license: 'CC BY 2.5 AR',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.5/ar/',
+    sourceUrl: 'https://buenosaires.gob.ar/cultura/programa-cultural-en-barrios',
+    changes:
+      'Copia JPEG de la imagen publicada en https://buenosaires.gob.ar/sites/default/files/2026-11/Programa%20Cultural%20en%20Barrios.jpg'
+  },
+  nocheTemplosCiudad: {
+    src: '/notas/noche-templos-ciudad.jpg',
+    alt: 'Vecinos y visitantes recorriendo la nave iluminada de un templo porteño durante La Noche de los Templos.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'noviembre de 2026',
+    license: 'CC BY 2.5 AR',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.5/ar/',
+    sourceUrl:
+      'https://buenosaires.gob.ar/noticias/los-imperdibles-para-disfrutar-la-noche-de-los-templos-en-la-ciudad-mas-linda-del-mundo',
+    changes:
+      'Copia JPEG de la imagen publicada en https://buenosaires.gob.ar/sites/default/files/2026-11/noche%20templos%202.jpg'
+  },
+  fiabCiudad: {
+    src: '/notas/fiab-ciudad.jpg',
+    alt: 'Puestos callejeros de las Ferias Itinerantes de Abastecimiento Barrial con vecinos haciendo compras sobre una vereda arbolada.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'agosto de 2026',
+    license: 'CC BY 2.5 AR',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.5/ar/',
+    sourceUrl: 'https://buenosaires.gob.ar/gcaba_historico/ferias-itinerantes',
+    changes:
+      'Redimensionada a 1600x1067 en JPEG desde el archivo original https://static.buenosaires.gob.ar/sites/default/files/2026-08/ferias%20itinerantes.jpg'
+  },
+  elPlataSala: {
+    src: '/notas/el-plata-sala.jpg',
+    alt: 'Escenario iluminado y primeras filas de butacas rojas de la sala principal del Cine Teatro El Plata, en Mataderos.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'octubre de 2021',
+    license: 'CC BY 2.5 AR',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.5/ar/',
+    sourceUrl:
+      'https://buenosaires.gob.ar/gcaba_historico/noticias/la-ciudad-reabre-el-cine-teatro-el-plata-un-icono-cultural-de-mataderos',
+    changes:
+      'Copia JPEG de la imagen publicada en https://static.buenosaires.gob.ar/sites/default/files/media/image/2021/10/15/93e80245b21428963cefcfffcf3ccaaa32f42e00.jpg'
+  },
+  laEsperanzaMataderos: {
+    src: '/notas/la-esperanza-mataderos.jpg',
+    alt: 'Fachada en esquina de la confitería y panadería La Esperanza, en avenida de los Corrales 6602 esquina Timoteo Gordillo, Mataderos.',
+    author: 'Roberto Fiadone (Wikimedia Commons)',
+    taken: 'diciembre de 2014',
+    license: 'CC BY-SA 4.0',
+    licenseUrl: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    sourceUrl:
+      'https://commons.wikimedia.org/wiki/File:Confiter%C3%ADa_panader%C3%ADa_La_Esperanza_Mataderos.JPG',
+    changes:
+      'Recorte horizontal 3:2 y redimensión a 1600x1067 en JPEG desde el original 2975x2781 de Wikimedia Commons.'
+  },
+  consejoConsultivoComuna9: {
+    src: '/notas/consejo-consultivo-comuna-9.jpg',
+    alt: 'Reunión abierta de vecinos en mesas de trabajo e intercambio del Consejo Consultivo Comunal.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'octubre de 2026',
+    license: 'CC BY 2.5 AR',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.5/ar/',
+    sourceUrl:
+      'https://buenosaires.gob.ar/gobierno-y-vinculo-ciudadano/gestion-comunal/comunas/comuna-9',
+    changes:
+      'Copia JPEG de la imagen publicada en https://buenosaires.gob.ar/sites/default/files/2026-10/Consejo%20consultivo%20comunal%209.jpg'
+  },
+  macedonioLeguizamon: {
+    src: '/notas/macedonio-leguizamon.jpg',
+    alt: 'Frente de la Escuela N.° 16 Dr. Martiniano Leguizamón, en Martiniano Leguizamón 1470, donde funciona por la tarde el Centro Cultural Macedonio Fernández.',
+    author: 'Gobierno de la Ciudad de Buenos Aires',
+    taken: 'mayo de 2022',
+    license: 'CC BY 2.5 AR',
+    licenseUrl: 'https://creativecommons.org/licenses/by/2.5/ar/',
+    sourceUrl:
+      'https://buenosaires.gob.ar/gcaba_historico/escuelas-centenarias-1922-2022/escuela-ndeg-16-de-20-dr-martiniano-leguizamon',
+    changes:
+      'Recorte horizontal 4:3 del original vertical 3120x4160 y redimensión a 1600x1200 en JPEG desde https://static.buenosaires.gob.ar/sites/default/files/media/image/2022/06/27/eadf8c12e80632a184598d28ea86b8c89e21f84f.jpg'
+  },
 } as const satisfies Record<string, Foto>;
 
 export type FotoId = keyof typeof FOTOS;

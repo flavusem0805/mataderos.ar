@@ -86,6 +86,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'Un templo del barrio que este sábado se visita de noche: coro, mosaicos, reliquias y la historia de Naón.',
     category: 'Patrimonio',
     publishedAt: '2026-11-27',
+    image: 'nocheTemplosCiudad',
     placeLabel: 'Parroquia San Vicente de Paúl · Manuel Artigas 6150',
     blocks: [
       {
@@ -122,7 +123,7 @@ export const NOVEDADES: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'Si se lee despacio el programa de la parroquia, la noche no es una misa abierta y nada más. A las 20 el coro. A las 21, tres cosas a la vez en el papel: el mosaico de María del Carmen Dany, las reliquias de Mamá Antula y San Roque, y la visita por la historia y los altares. Desde las 21:30 la música de meditación se repite cada media hora. No hay, en esas crónicas, un cupo numérico para Artigas 6150 ni un precio. La entrada figura libre y gratuita. La piedra fundamental del 28 de diciembre de 1913, los nueve años de obra con los vecinos, la caída de Naón el 15 de abril de 1922, la erección del 25 de mayo, el primer párroco Miguel Lloverás, la ley 3056 y los 25 años de Domingo Bresci, de 1975 a 2000, son el motivo para entrar. El colegio que Naón quiso junto al templo, dedicado al Divino Rostro de Jesús, también está en ese relato. El sábado se puede escuchar a Red Coral Argentina, con Hugo Castro, y en la visita guiada preguntar por el campanario. No encontré una foto del frente con licencia para bajarla al portal. La dirección alcanza para llegar: Manuel Artigas 6150.'
+        text: 'Si se lee despacio el programa de la parroquia, la noche no es una misa abierta y nada más. A las 20 el coro. A las 21, tres cosas a la vez en el papel: el mosaico de María del Carmen Dany, las reliquias de Mamá Antula y San Roque, y la visita por la historia y los altares. Desde las 21:30 la música de meditación se repite cada media hora. No hay, en esas crónicas, un cupo numérico para Artigas 6150 ni un precio. La entrada figura libre y gratuita. La piedra fundamental del 28 de diciembre de 1913, los nueve años de obra con los vecinos, la caída de Naón el 15 de abril de 1922, la erección del 25 de mayo, el primer párroco Miguel Lloverás, la ley 3056 y los 25 años de Domingo Bresci, de 1975 a 2000, son el motivo para entrar. El colegio que Naón quiso junto al templo, dedicado al Divino Rostro de Jesús, también está en ese relato. El sábado se puede escuchar a Red Coral Argentina, con Hugo Castro, y en la visita guiada preguntar por el campanario. No hay una foto libre del frente de Manuel Artigas 6150 para reproducir acá: la imagen que acompaña esta nota es de la edición de La Noche de los Templos en la Ciudad. La dirección alcanza para llegar.'
       },
       {
         kind: 'p',
@@ -219,6 +220,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'No es la feria del domingo. Es la feria de la semana, la de la verdura y la carne, con precios acordados.',
     category: 'Feria',
     publishedAt: '2026-11-27',
+    image: 'fiabCiudad',
     placeLabel: 'FIAB 10 · Basualdo 800',
     blocks: [
       {
@@ -255,7 +257,7 @@ export const NOVEDADES: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'El mapa oficial agrupa cada feria por día de la semana y le pone número, barrio, calle y comuna. La 10 del martes es Mataderos. Otras 10 caen, otros días, en Villa Gral. Mitre o en Colegiales: el número viaja, no es un local fijo con persiana. Por eso se llama itinerante. En Mataderos el punto fijo de la semana, mientras el cronograma no cambie, es Basualdo 800, de 8 a 14, los martes. Se llega caminando desde Alberdi. No hace falta el domingo ni la sortija para hacer la compra. Aquí Mataderos contaba 24 ferias y 140 feriantes en toda la Ciudad. El puesto de Mataderos es uno de esos puntos, no un mercado propio del barrio con otro reglamento. Lo que se lleva es comida y almacén: verdura, carne, pescado, lácteos, fiambre, pasta, pan, aceite, bebida sin alcohol, dietética, especias, limpieza, bazar, plantas y mascotas. El precio es el acordado. El reintegro, si se paga con Buepp un martes, es el 30 por ciento hasta el tope mensual. No hay foto de Basualdo 800 con licencia para esta nota. La dirección está escrita: Basualdo 800, entre Manuel Artigas y Juan B. Alberdi, los martes de 8 a 14, entre Manuel Artigas y Juan B. Alberdi, martes de 8 a 14. El viernes no figura.'
+        text: 'El mapa oficial agrupa cada feria por día de la semana y le pone número, barrio, calle y comuna. La 10 del martes es Mataderos. Otras 10 caen, otros días, en Villa Gral. Mitre o en Colegiales: el número viaja, no es un local fijo con persiana. Por eso se llama itinerante. En Mataderos el punto fijo de la semana, mientras el cronograma no cambie, es Basualdo 800, de 8 a 14, los martes. Se llega caminando desde Alberdi. No hace falta el domingo ni la sortija para hacer la compra. Aquí Mataderos contaba 24 ferias y 140 feriantes en toda la Ciudad. El puesto de Mataderos es uno de esos puntos, no un mercado propio del barrio con otro reglamento. Lo que se lleva es comida y almacén: verdura, carne, pescado, lácteos, fiambre, pasta, pan, aceite, bebida sin alcohol, dietética, especias, limpieza, bazar, plantas y mascotas. El precio es el acordado. El reintegro, si se paga con Buepp un martes, es el 30 por ciento hasta el tope mensual. No hay foto libre específica de la cuadra de Basualdo 800; la imagen de esta nota muestra puestos de las Ferias Itinerantes de Abastecimiento Barrial de la Ciudad. La dirección está escrita: Basualdo 800, entre Manuel Artigas y Juan B. Alberdi, los martes de 8 a 14, entre Manuel Artigas y Juan B. Alberdi, martes de 8 a 14. El viernes no figura.'
       },
       {
         kind: 'p',
@@ -352,6 +354,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'Una sala de Alberdi y una sala de Larrazábal. Dos obras, dos maneras de entrar.',
     category: 'Cultura',
     publishedAt: '2026-11-27',
+    image: 'elPlataSala',
     blocks: [
       {
         kind: 'p',
@@ -413,6 +416,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'Detrás de la semana de ofertas hay una asociación vieja. Esta nota es sobre la asociación, no sobre el descuento de cada vidriera.',
     category: 'Comercio',
     publishedAt: '2026-11-27',
+    image: 'laEsperanzaMataderos',
     blocks: [
       {
         kind: 'p',
@@ -483,6 +487,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'No es la junta comunal. Es el lugar donde un vecino de Mataderos puede sentar un tema y empujarlo como recomendación.',
     category: 'Comuna',
     publishedAt: '2026-11-27',
+    image: 'consejoConsultivoComuna9',
     blocks: [
       {
         kind: 'p',
@@ -548,6 +553,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'Una sede del programa más grande de talleres gratuitos de la Ciudad, en Leguizamón 1470. Diciembre ya tiene fecha.',
     category: 'Cultura',
     publishedAt: '2026-11-27',
+    image: 'macedonioLeguizamon',
     placeLabel: 'Centro Cultural Macedonio Fernández · Martiniano Leguizamón 1470',
     blocks: [
       {
@@ -576,7 +582,7 @@ export const NOVEDADES: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'No encontré una foto del frente con licencia para republicar. Por eso la nota no lleva imagen. El diciembre de este año, con las cuatro muestras, está en [el cierre de talleres](/notas/cierre-de-ano-macedonio-fernandez-diciembre-2026). Allá están Ritmos y huellas, Crear jugar y compartir, la tarde de música y la de teatro, de 18 a 20:45, sin entrada. Acá queda el lugar: un centro del PCB en Mataderos, de lunes a viernes de 18 a 21, activo desde 1984, con el teléfono 4687-0063 y el correo ccmacedonio@gmail.com que la entrevista de 2019 dejó escritos. Papatino contaba entonces que al asumir quiso escuchar a alumnos y vecinos antes de imponer un programa, que después achicó la cantidad de eventos para cuidar las presentaciones, y que la guardería para las madres que cursan no se pudo abrir por trabas legales. La fiesta de los 40 años, el 2 de noviembre de 2024, eligió esta sede a las 19:30. La dirección de esa noche figura como Leguizamón 1474. El PDF de 2026 dice 1470. Los dos números están publicados. El teléfono y el correo, también: 4687-0063 y ccmacedonio@gmail.com.'
+        text: 'La foto de la nota muestra el frente de la Escuela N.° 16 Dr. Martiniano Leguizamón, en Leguizamón 1470, el edificio donde funciona el centro cultural por la tarde. El diciembre de este año, con las cuatro muestras, está en [el cierre de talleres](/notas/cierre-de-ano-macedonio-fernandez-diciembre-2026). Allá están Ritmos y huellas, Crear jugar y compartir, la tarde de música y la de teatro, de 18 a 20:45, sin entrada. Acá queda el lugar: un centro del PCB en Mataderos, de lunes a viernes de 18 a 21, activo desde 1984, con el teléfono 4687-0063 y el correo ccmacedonio@gmail.com que la entrevista de 2019 dejó escritos. Papatino contaba entonces que al asumir quiso escuchar a alumnos y vecinos antes de imponer un programa, que después achicó la cantidad de eventos para cuidar las presentaciones, y que la guardería para las madres que cursan no se pudo abrir por trabas legales. La fiesta de los 40 años, el 2 de noviembre de 2024, eligió esta sede a las 19:30. La dirección de esa noche figura como Leguizamón 1474. El PDF de 2026 dice 1470. Los dos números están publicados. El teléfono y el correo, también: 4687-0063 y ccmacedonio@gmail.com.'
       },
       {
         kind: 'p',
@@ -584,7 +590,7 @@ export const NOVEDADES: Nota[] = [
       },
       {
         kind: 'p',
-        text: 'En noviembre de 2024 el programa cumplió 40 años y abrió la fiesta en esta sede: sábado 2 de noviembre, 19:30, música, folklore, percusión y bandas, en Martiniano Leguizamón 1474. La crónica dice que el PCB ofrece talleres gratuitos de iniciación, formación y producción, cursos, charlas y seminarios, en música, danza, artes escénicas, letras y artes visuales, en 36 centros, 14 comunas, 28 barrios y más de 93.000 personas por año. El PDF de muestras de 2026 escribe 1470. La fiesta de 2024 escribe 1474. Diciembre de este año, de 18 a 20:45 y sin entrada, está en la nota del cierre de talleres. No hay foto del frente con licencia para acompañar este texto.'
+        text: 'En noviembre de 2024 el programa cumplió 40 años y abrió la fiesta en esta sede: sábado 2 de noviembre, 19:30, música, folklore, percusión y bandas, en Martiniano Leguizamón 1474. La crónica dice que el PCB ofrece talleres gratuitos de iniciación, formación y producción, cursos, charlas y seminarios, en música, danza, artes escénicas, letras y artes visuales, en 36 centros, 14 comunas, 28 barrios y más de 93.000 personas por año. El PDF de muestras de 2026 escribe 1470. La fiesta de 2024 escribe 1474. Diciembre de este año, de 18 a 20:45 y sin entrada, está en la nota del cierre de talleres.'
       },
     ],
     fuentes: [

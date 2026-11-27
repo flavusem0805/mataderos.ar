@@ -233,6 +233,7 @@ export const ACTUALIDAD: Nota[] = [
     dek: 'El centro cultural de Martiniano Leguizamón 1470 cierra el ciclo 2026 del Programa Cultural en Barrios con cuatro tardes abiertas al barrio, siempre de 18 a 20:45 y con entrada libre.',
     category: 'Cultura',
     publishedAt: '2026-11-24',
+    image: 'muestraPcb',
     placeLabel: 'Centro Cultural Macedonio Fernández · Martiniano Leguizamón 1470',
     datos: {
       title: 'Muestras en Martiniano Leguizamón 1470',

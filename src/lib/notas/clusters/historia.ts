@@ -10,7 +10,7 @@ export const HISTORIA: Nota[] = [
     dek: 'El barrio no nació de un loteo. Nació de una mudanza: la ciudad corrió los mataderos hacia el oeste y alrededor de ese trabajo se armó un pueblo.',
     category: 'Historia',
     publishedAt: '2026-02-26',
-    image: 'torre',
+    image: 'corralesViejos',
     datos: {
       title: 'Datos para ubicar la historia',
       rows: [
@@ -150,7 +150,7 @@ export const HISTORIA: Nota[] = [
     dek: 'Chicago prestó el apodo industrial. La faena prestó el nombre que se quedó. El club guardó los dos.',
     category: 'Historia',
     publishedAt: '2026-04-16',
-    image: 'gauchos',
+    image: 'cartelMataderos',
     datos: {
       title: 'Los dos nombres',
       rows: [
@@ -327,7 +327,7 @@ export const HISTORIA: Nota[] = [
     dek: 'Antes del ring cargaba medias reses. El apodo no se lo puso un periódico de Buenos Aires centro: se lo ganó en los corrales.',
     category: 'Personajes',
     publishedAt: '2026-06-25',
-    image: 'resero',
+    image: 'bustoSuarez',
     datos: {
       title: 'Para no mezclar al Torito con el club',
       rows: [
@@ -409,7 +409,7 @@ export const HISTORIA: Nota[] = [
     dek: 'El club se fundó en un puente sobre el Cildáñez, se vistió con los colores de una chata de pasto y se quedó con el nombre que el barrio dejó atrás.',
     category: 'Clubes',
     publishedAt: '2026-07-14',
-    image: 'gauchos',
+    image: 'tribunaChicago',
     datos: {
       title: 'Datos del club',
       rows: [

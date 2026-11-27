@@ -11,7 +11,7 @@ export const ACTUALIDAD: Nota[] = [
     dek: 'Del viernes 27 al domingo 29 el barrio concentra tres noches en El Plata, el arranque de los últimos cuatro domingos de la Feria y el anuncio de un mural en el casco. Horarios, precios, reglas de sala y cómo ordenarlos sin cruzar el barrio a las corridas.',
     category: 'Actualidad',
     publishedAt: '2026-11-24',
-    image: 'elPlata',
+    image: 'adampolNino',
     datos: {
       title: 'El fin de semana en Mataderos',
       rows: [
@@ -133,7 +133,7 @@ export const ACTUALIDAD: Nota[] = [
     dek: 'Unos treinta comercios de cercanía participan con promociones y financiación hasta el domingo 29. Por primera vez la campaña del Centro Comercial Alberdi incorpora de lleno a De los Corrales y Directorio.',
     category: 'Comercio',
     publishedAt: '2026-11-24',
-    image: 'corrales',
+    image: 'casaFenk',
     datos: {
       title: 'SALE MATADEROS en datos',
       rows: [
@@ -347,7 +347,7 @@ export const ACTUALIDAD: Nota[] = [
     dek: 'El reloj francés Prost Frères de la torre ya volvió a ponerse en marcha tras más de una década detenido y la renovación de Av. de los Corrales y la plazoleta quedó terminada; continúan las tareas sobre las fachadas de La Recova y el monumento a El Resero.',
     category: 'Patrimonio',
     publishedAt: '2026-11-25',
-    image: 'resero',
+    image: 'reseroInduni',
     datos: {
       title: 'Estado de la obra (noviembre 2026)',
       rows: [
@@ -492,6 +492,7 @@ export const ACTUALIDAD: Nota[] = [
     dek: 'Tres semanas después de perder 2-0 ante Chacarita y bajar a la Primera B tras doce años, el club de Mataderos cerró el ciclo de Christian Gómez, confirmó cuatro rescisiones y busca definir entrenador cerca del 1 de diciembre.',
     category: 'Deportes',
     publishedAt: '2026-11-24',
+    image: 'tribunaPerales',
     placeLabel: 'Estadio República de Mataderos · Justo Suárez 6900',
     datos: {
       title: 'El mapa de Chicago tras el descenso (al 24/11/2026)',

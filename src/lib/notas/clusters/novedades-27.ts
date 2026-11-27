@@ -26,11 +26,6 @@ export const NOVEDADES: Nota[] = [
         text: 'Solo Ascenso titula la novedad con dos conocidos. Facundo Argüello es el nuevo director deportivo. Mario Marcelo, el Fruta, es el secretario técnico. Los dos fueron jugadores del Torito y los dos tienen ascensos en el currículo. Argüello, además, ya dirigió al primer equipo. Olé precisa el recorrido: salió de la casa, jugó casi 200 partidos oficiales con la verdinegra, fue técnico en 2017 y venía de hacer el mismo trabajo en Orense de Ecuador, donde pasó de coordinar las inferiores a la mánager. El Inflador lo llama mánager y ubica el puesto en el hueco que dejó Gómez. Solo Ascenso habla de director deportivo. Las dos fórmulas nombran el mismo cargo de conducción, no dos personas distintas.'
       },
       {
-        kind: 'figure',
-        image: 'tribunaChicago',
-        text: 'La tribuna República de Mataderos, en la cancha del club, en 2010.'
-      },
-      {
         kind: 'h2',
         text: 'Scouting y video'
       },
@@ -162,7 +157,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'Tres domingos más frente a La Recova. Después, el verano sin puestos.',
     category: 'Feria',
     publishedAt: '2026-11-27',
-    image: 'baile',
+    image: 'preparandoSortija',
     blocks: [
       {
         kind: 'p',
@@ -175,11 +170,6 @@ export const NOVEDADES: Nota[] = [
       {
         kind: 'p',
         text: 'Turismo la llama Feria de las Artesanías y Tradiciones Populares Argentinas. Dice que nació hace más de treinta años y que la Legislatura la declaró Patrimonio Cultural de la Ciudad. El texto oficial la pone delante de lo que fue el Mercado Nacional de Hacienda: cientos de puestos, platería, mates, ponchos, mantas, facones y cuero, comida típica, talleres de guitarra, danzas, telar y sikus, y un escenario con música tradicional. En fechas patrias —25 de mayo, 20 de junio, 9 de julio y 17 de agosto— arma ediciones especiales. Eso es lo que el barrio presta a la ciudad cada domingo de temporada: un paseo que no se inventa en una plaza cualquiera, porque está atado al casco, a los oficios y a la gente que vive de vender ahí.'
-      },
-      {
-        kind: 'figure',
-        image: 'sortija',
-        text: 'La sortija, sobre Lisandro de la Torre, en un domingo de feria de 2007.'
       },
       {
         kind: 'h2',
@@ -295,7 +285,7 @@ export const NOVEDADES: Nota[] = [
     dek: 'Una es folklore y comida de olla. La otra es el parque, de 10 a 20, con lo que hacen los manualistas.',
     category: 'Feria',
     publishedAt: '2026-11-27',
-    image: 'baile',
+    image: 'jacarandaAlberdi',
     blocks: [
       {
         kind: 'p',
@@ -316,11 +306,6 @@ export const NOVEDADES: Nota[] = [
       {
         kind: 'p',
         text: 'La otra es la Feria de Manualistas de Parque Alberdi, en Lisandro de la Torre y Av. Directorio. La página de Espacio Público de la Ciudad dice que funciona domingos y feriados de 10 a 20. Ciudad Capital repite ese horario y esa esquina. No es el escenario folklórico. Es la feria de manualistas: la ficha oficial habla de objetos de emprendedores, con materialidades y diseños distintos. Entre lo que enumera hay aromatizantes, artes plásticas, decoración, juegos, estampado, filete, fotografía, indumentaria, instrumentos, joyería, cuero, metal y mates. Ciudad Capital la ubica en el oeste, cerca de Mataderos, como un espacio ferial propio del parque.'
-      },
-      {
-        kind: 'figure',
-        image: 'jacarandaAlberdi',
-        text: 'Parque Alberdi en noviembre de 2007, con jacarandás y la torre del mercado al fondo. La foto es del parque, no de los puestos.'
       },
       {
         kind: 'p',
@@ -367,7 +352,6 @@ export const NOVEDADES: Nota[] = [
     dek: 'Una sala de Alberdi y una sala de Larrazábal. Dos obras, dos maneras de entrar.',
     category: 'Cultura',
     publishedAt: '2026-11-27',
-    image: 'elPlata',
     blocks: [
       {
         kind: 'p',
@@ -429,7 +413,6 @@ export const NOVEDADES: Nota[] = [
     dek: 'Detrás de la semana de ofertas hay una asociación vieja. Esta nota es sobre la asociación, no sobre el descuento de cada vidriera.',
     category: 'Comercio',
     publishedAt: '2026-11-27',
-    image: 'avenidaMataderos',
     blocks: [
       {
         kind: 'p',
@@ -442,11 +425,6 @@ export const NOVEDADES: Nota[] = [
       {
         kind: 'p',
         text: 'Diario CEMBA, al presentar la campaña, dice que el centro tiene 74 años de trayectoria y reúne a más de un centenar de comerciantes. El área que describe queda entre la avenida General Paz, Escalada, Eva Perón y Emilio Castro. Publica el CUIT 30-71755713-8 y el domicilio legal en Don Bosco 3563. No es, en ese texto, la dueña de cada negocio de la avenida. Es la asociación que los junta.'
-      },
-      {
-        kind: 'figure',
-        image: 'casaFenk',
-        text: 'Casa FENK, un local de la avenida Alberdi. La foto muestra un comercio de la avenida, no la sede del centro.'
       },
       {
         kind: 'h2',
@@ -505,7 +483,6 @@ export const NOVEDADES: Nota[] = [
     dek: 'No es la junta comunal. Es el lugar donde un vecino de Mataderos puede sentar un tema y empujarlo como recomendación.',
     category: 'Comuna',
     publishedAt: '2026-11-27',
-    image: 'avenidaMataderos',
     blocks: [
       {
         kind: 'p',
